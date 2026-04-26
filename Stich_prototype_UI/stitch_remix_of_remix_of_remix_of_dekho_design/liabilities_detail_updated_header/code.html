@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liabilities - Dekho Finance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "secondary-fixed-dim": "#f4bb92",
+                "surface-container-high": "#ede7e1",
+                "inverse-on-surface": "#f6f0ea",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed": "#2f1501",
+                "on-secondary": "#ffffff",
+                "on-primary-container": "#ffe3d1",
+                "error": "#ba1a1a",
+                "on-primary-fixed-variant": "#613f25",
+                "secondary-container": "#fdc39a",
+                "surface-dim": "#dfd9d3",
+                "surface-bright": "#fef8f2",
+                "on-secondary-fixed": "#301400",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#eebc9a",
+                "surface-variant": "#e7e2dc",
+                "surface": "#fef8f2",
+                "primary-fixed-dim": "#eebc9a",
+                "on-background": "#1d1b18",
+                "tertiary": "#6e4726",
+                "surface-container-low": "#f9f3ed",
+                "on-error-container": "#93000a",
+                "tertiary-container": "#895f3c",
+                "tertiary-fixed-dim": "#f1bc92",
+                "secondary-fixed": "#ffdcc5",
+                "on-secondary-fixed-variant": "#653d1e",
+                "primary-fixed": "#ffdcc5",
+                "on-error": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#7c563a",
+                "secondary": "#805533",
+                "outline": "#83746b",
+                "on-tertiary-fixed-variant": "#633e1e",
+                "on-tertiary-fixed": "#2e1500",
+                "on-tertiary-container": "#ffe3cf",
+                "tertiary-fixed": "#ffdcc2",
+                "outline-variant": "#d5c3b8",
+                "inverse-surface": "#32302c",
+                "on-surface": "#1d1b18",
+                "on-secondary-container": "#794e2e",
+                "on-surface-variant": "#51443c",
+                "surface-container-highest": "#e7e2dc",
+                "background": "#fef8f2",
+                "on-primary": "#ffffff",
+                "surface-container": "#f3ede7",
+                "primary-container": "#876043",
+                "primary": "#6c482d"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Public Sans"],
+                "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .backdrop-blur-24px {
+            backdrop-filter: blur(24px);
+        }
+        body {
+            background-color: #fef8f2;
+            font-family: 'Public Sans', sans-serif;
+            color: #1d1b18;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased mb-32">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl shadow-[0px_20px_40px_rgba(107,72,45,0.06)] transition-colors duration-300">
+<div class="flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 duration-200 hover:bg-[#F3EDE7] dark:hover:bg-stone-800 p-2 rounded-full transition-all">
+<span class="material-symbols-outlined text-[#6C482D] dark:text-[#D5C3B8]">arrow_back</span>
+</button>
+<h1 class="font-['Manrope'] font-bold tracking-tight text-2xl text-[#1D1B18] dark:text-white">Liabilities</h1>
+</div>
+<button class="active:scale-95 duration-200 hover:bg-[#F3EDE7] dark:hover:bg-stone-800 p-2 rounded-full transition-all">
+<span class="material-symbols-outlined text-[#6C482D] dark:text-[#D5C3B8]">more_vert</span>
+</button>
+</div>
+</header>
+<main class="px-5 mt-4 space-y-8 max-w-md mx-auto">
+<!-- Header: Hero Balance Card -->
+<section class="relative overflow-hidden rounded-[2rem] p-8 shadow-[0px_20px_40px_rgba(107,72,45,0.06)] border" style="background: linear-gradient(135deg, #8B5E3C 0%, #6E4A2F 100%);">
+<div class="relative z-10">
+<p class="font-label font-medium tracking-wider uppercase text-xs mb-1 text-white/80">Money you owe</p>
+<h2 class="font-headline text-5xl font-extrabold mb-2 tracking-tight text-white">₹27,500</h2>
+<div class="flex items-center gap-2">
+<span class="flex items-center justify-center bg-white/20 text-white rounded-full px-2 py-0.5 text-sm font-semibold backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm mr-1">trending_down</span>
+                        ₹3,000
+                    </span>
+<p class="text-white/70 text-sm font-medium">reduced this month</p>
+</div>
+</div>
+<div class="absolute -right-12 -top-12 w-48 h-48 rounded-full blur-3xl bg-white/10"></div>
+</section>
+<!-- Progress Indicator -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-6 space-y-4">
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<h3 class="font-headline font-bold text-lg leading-tight">Steady Progress</h3>
+<p class="text-on-surface-variant text-sm">You're making steady progress</p>
+</div>
+<p class="font-headline font-extrabold text-primary text-xl">18%</p>
+</div>
+<div class="relative w-full h-3 bg-outline-variant/20 rounded-full">
+<div class="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-1000" style="width: 18%"></div>
+</div>
+<p class="text-on-surface-variant text-xs italic">You’ve reduced 18% of your total dues since January.</p>
+</section>
+<!-- Urgency Indicator -->
+<section class="bg-secondary-container/40 rounded-[1.25rem] p-5 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-weight="fill">calendar_today</span>
+</div>
+<div>
+<p class="font-label text-xs font-bold uppercase text-on-secondary-container tracking-widest">Upcoming Payments</p>
+<p class="font-headline text-lg font-bold text-on-background">₹12,500 due this week</p>
+</div>
+</section>
+<!-- Liability Cards -->
+<section class="space-y-4">
+<h3 class="font-headline font-bold text-xl px-2">Your Dues</h3>
+<!-- Credit Card -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-5 flex items-center justify-between shadow-sm border border-outline-variant/5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">credit_card</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Credit Card</p>
+<p class="text-xs text-[#E6A23C] font-medium bg-orange-50 px-2 py-0.5 rounded-full inline-block mt-1">Due in 8 days</p>
+</div>
+</div>
+<p class="font-headline font-bold text-lg text-on-surface">₹12,500</p>
+</div>
+<!-- Personal Loan -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-5 flex items-center justify-between shadow-sm border border-outline-variant/5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Personal Loan</p>
+<p class="text-xs text-on-surface-variant font-medium mt-1">₹2,000 EMI monthly</p>
+</div>
+</div>
+<p class="font-headline font-bold text-lg text-on-surface">₹10,000</p>
+</div>
+<!-- Borrowed from Friend -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-5 flex items-center justify-between shadow-sm border border-outline-variant/5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Borrowed from Friend</p>
+<p class="text-xs text-on-surface-variant font-medium mt-1">No interest</p>
+</div>
+</div>
+<p class="font-headline font-bold text-lg text-on-surface">₹5,000</p>
+</div>
+</section>
+<!-- Trend Chart -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0px_20px_40px_rgba(107,72,45,0.06)]">
+<h3 class="font-headline font-bold text-lg mb-6">Your liabilities over time</h3>
+<div class="w-full h-40 flex items-end justify-between gap-2 px-2">
+<!-- Simple bar representation of a downward trend since line charts need SVG/Library -->
+<div class="w-full h-full flex items-end justify-between gap-1">
+<div class="flex-1 bg-primary/10 rounded-t-lg h-[90%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[80%]"></div>
+<div class="flex-1 bg-primary/30 rounded-t-lg h-[75%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-lg h-[60%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-lg h-[50%]"></div>
+<div class="flex-1 bg-primary rounded-t-lg h-[40%]"></div>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600 text-sm">auto_graph</span>
+<p class="text-sm font-medium">Your liabilities are decreasing over time</p>
+</div>
+</section>
+<!-- AI Insight Card -->
+<section class="bg-tertiary-container rounded-[1.5rem] p-6 text-on-tertiary-container relative overflow-hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-sm" data-weight="fill">neurology</span>
+<p class="font-label text-[10px] font-bold tracking-[0.2em] uppercase">Insight</p>
+</div>
+<p class="font-body text-lg leading-relaxed font-medium">You are consistently reducing your liabilities. By maintaining this pace, you could be debt-free in <span class="font-bold">14 months</span>.</p>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-8xl">lightbulb</span>
+</div>
+</section>
+<!-- Smart Actions -->
+<section class="space-y-3 pb-8">
+<h3 class="font-headline font-bold text-lg px-2">Smart Actions</h3>
+<button class="w-full text-left bg-white p-4 rounded-xl flex justify-between items-center hover:bg-surface-container transition-colors group">
+<span class="text-primary font-semibold">Pay high-interest dues first</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="w-full text-left bg-white p-4 rounded-xl flex justify-between items-center hover:bg-surface-container transition-colors group">
+<span class="text-primary font-semibold">Reduce credit usage</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-full border border-[#D5C3B8]/15 bg-white/90 dark:bg-stone-950/90 backdrop-blur-24px shadow-[0px_20px_40px_rgba(107,72,45,0.08)] z-50">
+<div class="flex justify-around items-center px-2 py-2">
+<div class="flex flex-col items-center justify-center text-[#B0A79F] p-3 hover:text-[#6C482D] transition-all">
+<span class="material-symbols-outlined" data-icon="insert_chart">insert_chart</span>
+<span class="font-['Public_Sans'] text-[10px] font-medium tracking-wider uppercase mt-1">Behavior</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#B0A79F] p-3 hover:text-[#6C482D] transition-all">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Public_Sans'] text-[10px] font-medium tracking-wider uppercase mt-1">Expenses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#B0A79F] p-3 hover:text-[#6C482D] transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Public_Sans'] text-[10px] font-medium tracking-wider uppercase mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#8B5E3C] text-white rounded-full p-3 transition-all scale-110 shadow-lg">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-['Public_Sans'] text-[10px] font-medium tracking-wider uppercase mt-1">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#B0A79F] p-3 hover:text-[#6C482D] transition-all">
+<span class="material-symbols-outlined" data-icon="show_chart">show_chart</span>
+<span class="font-['Public_Sans'] text-[10px] font-medium tracking-wider uppercase mt-1">Grow</span>
+</div>
+</div>
+</nav>
+</body></html>

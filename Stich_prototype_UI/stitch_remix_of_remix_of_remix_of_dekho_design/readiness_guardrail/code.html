@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Investment Readiness - Grow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#EEBC9A",
+                        "outline-variant": "#D5C3B8",
+                        "on-primary-container": "#FFE3D1",
+                        "on-secondary-fixed": "#301400",
+                        "on-tertiary-fixed": "#2E1500",
+                        "tertiary": "#6E4726",
+                        "surface": "#FEF8F2",
+                        "on-error-container": "#93000A",
+                        "surface-bright": "#FEF8F2",
+                        "inverse-surface": "#32302C",
+                        "surface-container-low": "#F9F3ED",
+                        "on-tertiary": "#FFFFFF",
+                        "surface-container-high": "#EDE7E1",
+                        "on-secondary": "#FFFFFF",
+                        "surface-variant": "#E7E2DC",
+                        "inverse-on-surface": "#F6F0EA",
+                        "on-primary-fixed-variant": "#613F25",
+                        "tertiary-container": "#895F3C",
+                        "outline": "#83746B",
+                        "on-tertiary-container": "#FFE3CF",
+                        "tertiary-fixed": "#FFDCC2",
+                        "surface-tint": "#7C563A",
+                        "error": "#BA1A1A",
+                        "on-primary": "#FFFFFF",
+                        "secondary-fixed-dim": "#F4BB92",
+                        "on-secondary-fixed-variant": "#653D1E",
+                        "on-surface-variant": "#51443C",
+                        "primary-fixed": "#FFDCC5",
+                        "on-surface": "#1D1B18",
+                        "tertiary-fixed-dim": "#F1BC92",
+                        "surface-container": "#F3EDE7",
+                        "error-container": "#FFDAD6",
+                        "secondary-fixed": "#FFDCC5",
+                        "secondary-container": "#FDC39A",
+                        "surface-dim": "#DFD9D3",
+                        "secondary": "#805533",
+                        "surface-container-lowest": "#FFFFFF",
+                        "on-primary-fixed": "#2F1501",
+                        "on-tertiary-fixed-variant": "#633E1E",
+                        "background": "#FEF8F2",
+                        "primary": "#6C482D",
+                        "on-error": "#FFFFFF",
+                        "inverse-primary": "#EEBC9A",
+                        "surface-container-highest": "#E7E2DC",
+                        "on-background": "#1D1B18",
+                        "on-secondary-container": "#794E2E",
+                        "primary-container": "#876043"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Public Sans"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .brushed-leather {
+            background: linear-gradient(135deg, #6C482D 0%, #876043 100%);
+        }
+        .glass-header {
+            background: rgba(254, 248, 242, 0.8);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed-dim">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 glass-header">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-stone-900 p-2 hover:bg-stone-200/50 rounded-full transition-colors">menu</button>
+<span class="font-headline font-extrabold tracking-tight text-xl text-[#8B5E3C]">Grow</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary-fixed overflow-hidden">
+<img alt="User profile" data-alt="Close up portrait of a friendly professional man with soft studio lighting and a clean neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz2Hd86eKNR_Xe2IhJkSaJ0o9DK66QKotrnp-o1rC-sq7AUBr1ewIWP_4N9HrHXta8uvFTCXz509m5Zse10GJaCvLqRQMWeLMA6AapZe7eC7K6NBY6hXySqIGyWBXYllUFZMKHI_NwKPHli9PiaC8Xt8dRHkkb0Pcr6sHzjQ6eRR1panihKM5X5wTFKReBF2KTgblUzOXCk73hwx3829oDOUO1Eit5v3fTlDoqO9sKTOAle8By6EuaEj43ycBzlPiL0caU3R-yvDKO"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto space-y-8">
+<!-- Hero Section: Sentiment Card -->
+<section class="brushed-leather rounded-lg p-8 relative overflow-hidden shadow-lg shadow-primary/10">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<div class="relative z-10">
+<span class="font-label text-white/70 uppercase tracking-[0.15em] font-bold text-[10px] mb-3 block">Current Status</span>
+<h1 class="font-headline font-extrabold text-white text-3xl leading-tight mb-4 max-w-[80%]">
+                    You’re close, but not ready to invest yet
+                </h1>
+<p class="text-white/80 text-sm leading-relaxed mb-6 max-w-md">
+                    Investing is a marathon, not a sprint. We want to ensure your financial foundation is unbreakable before you take the next step toward wealth creation.
+                </p>
+<div class="flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/5">
+<div class="flex-1">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-white text-[10px] uppercase font-bold tracking-wider">Readiness Score</span>
+<span class="font-headline text-white font-extrabold text-xl">64%</span>
+</div>
+<div class="h-2 bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed-dim w-[64%] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Insights Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Reason 1 -->
+<div class="bg-surface-container-low p-6 rounded-lg border border-transparent hover:border-outline-variant/30 transition-all">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">savings</span>
+</div>
+<h3 class="font-headline font-bold text-on-surface mb-2">Emergency fund too low</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                    You currently have 1.2 months of expenses saved. We recommend 6 months of stability before market exposure.
+                </p>
+</div>
+<!-- Reason 2 -->
+<div class="bg-surface-container-low p-6 rounded-lg border border-transparent hover:border-outline-variant/30 transition-all">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">credit_card_off</span>
+</div>
+<h3 class="font-headline font-bold text-on-surface mb-2">Credit card dues high</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                    Your current debt interest rates (24%+) are higher than expected market returns. Pay these first.
+                </p>
+</div>
+</section>
+<!-- Readiness Plan Card -->
+<section class="bg-surface-container p-1 bg-gradient-to-br from-tertiary/5 to-transparent rounded-xl">
+<div class="bg-surface-container-lowest p-8 rounded-[1.8rem] shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline font-extrabold text-2xl text-on-surface">Readiness Plan</h2>
+<span class="material-symbols-outlined text-tertiary">edit_note</span>
+</div>
+<div class="space-y-6">
+<!-- Step 1 -->
+<div class="flex gap-6 group">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full border-2 border-primary text-primary flex items-center justify-center font-bold text-xs">1</div>
+<div class="w-0.5 h-full bg-surface-container-highest mt-2"></div>
+</div>
+<div class="pb-6">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Build savings</h4>
+<p class="text-on-surface-variant text-sm mt-1">Set aside $400 monthly into your high-yield bucket to reach your 6-month safety net.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex gap-6 group">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full border-2 border-outline text-outline flex items-center justify-center font-bold text-xs">2</div>
+<div class="w-0.5 h-full bg-surface-container-highest mt-2"></div>
+</div>
+<div class="pb-6">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Reduce dues</h4>
+<p class="text-on-surface-variant text-sm mt-1">Consolidate card balances and target the highest interest debt with the 'Avalanche' method.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex gap-6 group">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full border-2 border-outline text-outline flex items-center justify-center font-bold text-xs">3</div>
+</div>
+<div class="">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Stabilize surplus</h4>
+<p class="text-on-surface-variant text-sm mt-1">Audit recurring subscriptions to increase your monthly investable surplus by 15%.</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-10 bg-primary text-white font-headline font-bold py-4 rounded-full shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    Improve readiness
+                </button>
+</div>
+</section>
+<!-- Compassionate Footer Note -->
+<div class="text-center px-4">
+<p class="text-on-surface-variant text-xs italic opacity-70">
+                "Wealth is not about how much money you make, but how much you keep and how well you protect it."
+            </p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-4 pb-8 z-50">
+<div class="bg-[#FEF8F2]/80 dark:bg-stone-900/80 backdrop-blur-xl w-[92%] rounded-full border border-stone-200/20 shadow-lg shadow-stone-900/10 flex justify-around items-center h-16">
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Public_Sans'] text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Behavior</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Public_Sans'] text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Expenses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Public_Sans'] text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Public_Sans'] text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#8B5E3C] text-[#FEF8F2] rounded-full w-14 h-14 -mt-4 shadow-md scale-110">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-['Public_Sans'] text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Grow</span>
+</div>
+</div>
+</nav>
+</body></html>

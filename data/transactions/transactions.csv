@@ -1,0 +1,186 @@
+id,date,merchant,amount,category,payment_mode,notes
+TX0001,2025-11-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0016,2025-11-03,Zomato,620,Food,UPI,
+TX0002,2025-11-04,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0034,2025-11-05,Practo Consult,509,Health,UPI,
+TX0013,2025-11-07,D-Mart,3198,Food,UPI,
+TX0007,2025-11-08,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0017,2025-11-10,Blinkit,646,Food,UPI,
+TX0033,2025-11-10,HealthifyMe,716,Health,UPI,
+TX0003,2025-11-11,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0014,2025-11-12,D-Mart,2129,Food,UPI,
+TX0008,2025-11-14,HMWSSB Water,294,Bills,Net Banking,
+TX0020,2025-11-14,BigBasket,2782,Food,UPI,
+TX0028,2025-11-16,Croma,11768,Shopping,Card,
+TX0004,2025-11-17,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0005,2025-11-17,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0015,2025-11-17,D-Mart,3999,Food,UPI,
+TX0023,2025-11-17,Ola,221,Travel,UPI,
+TX0021,2025-11-19,Zomato,467,Food,UPI,
+TX0024,2025-11-19,Hyderabad Metro,174,Travel,UPI,
+TX0010,2025-11-20,D-Mart,2100,Food,UPI,
+TX0006,2025-11-21,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0018,2025-11-21,D-Mart,1852,Food,UPI,
+TX0032,2025-11-21,SonyLIV,463,Entertainment,Card,
+TX0031,2025-11-22,SonyLIV,467,Entertainment,Card,
+TX0027,2025-11-23,Rapido,156,Travel,UPI,
+TX0030,2025-11-23,Hotstar,771,Entertainment,Card,
+TX0009,2025-11-25,HMWSSB Water,356,Bills,Card,
+TX0026,2025-11-25,Uber,293,Travel,UPI,
+TX0022,2025-11-26,Uber,237,Travel,UPI,
+TX0025,2025-11-26,Ola,259,Travel,UPI,
+TX0011,2025-11-27,Zomato,332,Food,UPI,
+TX0012,2025-11-27,Zomato,491,Food,UPI,
+TX0019,2025-11-28,Blinkit,520,Food,UPI,
+TX0029,2025-11-28,Ajio,2534,Shopping,Card,
+TX0035,2025-12-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0051,2025-12-01,D-Mart,1866,Food,UPI,
+TX0066,2025-12-02,Ola,383,Travel,UPI,
+TX0073,2025-12-02,BookMyShow,802,Entertainment,Card,
+TX0053,2025-12-03,Blinkit,863,Food,UPI,
+TX0065,2025-12-04,Ola,95,Travel,UPI,
+TX0069,2025-12-04,Ajio,1249,Shopping,UPI,
+TX0047,2025-12-06,Blinkit,492,Food,UPI,
+TX0074,2025-12-06,PVR Cinemas,1112,Entertainment,Card,
+TX0064,2025-12-07,Rapido,118,Travel,UPI,
+TX0071,2025-12-07,Flipkart,2804,Shopping,UPI,
+TX0054,2025-12-08,Blinkit,787,Food,UPI,
+TX0072,2025-12-08,SonyLIV,437,Entertainment,Card,
+TX0042,2025-12-09,Airtel Broadband,1352,Bills,Card,
+TX0057,2025-12-11,BigBasket,2218,Food,UPI,
+TX0068,2025-12-11,Amazon,3209,Shopping,UPI,
+TX0041,2025-12-12,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0063,2025-12-13,Hyderabad Metro,116,Travel,UPI,
+TX0040,2025-12-15,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0048,2025-12-16,D-Mart,3606,Food,UPI,
+TX0049,2025-12-16,Zomato,585,Food,UPI,
+TX0059,2025-12-16,Rapido,121,Travel,UPI,
+TX0052,2025-12-19,Zomato,280,Food,UPI,
+TX0038,2025-12-20,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0077,2025-12-20,OYO,3258,Travel,Card,Goa trip
+TX0036,2025-12-21,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0056,2025-12-22,Blinkit,876,Food,UPI,
+TX0061,2025-12-22,Hyderabad Metro,44,Travel,UPI,
+TX0046,2025-12-23,Zomato,486,Food,UPI,
+TX0060,2025-12-23,Rapido,175,Travel,UPI,
+TX0076,2025-12-23,IndiGo Airlines,5226,Travel,Card,Goa trip
+TX0050,2025-12-24,BigBasket,2061,Food,UPI,
+TX0055,2025-12-25,Zomato,572,Food,UPI,
+TX0067,2025-12-25,Croma,7331,Shopping,Card,
+TX0075,2025-12-25,PharmEasy,923,Health,UPI,
+TX0045,2025-12-26,BigBasket,3036,Food,UPI,
+TX0062,2025-12-26,Rapido,172,Travel,UPI,
+TX0070,2025-12-26,Ajio,1814,Shopping,Card,
+TX0043,2025-12-27,Jio Recharge,681,Bills,Card,
+TX0058,2025-12-28,Blinkit,666,Food,UPI,
+TX0037,2025-12-29,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0044,2025-12-30,Jio Recharge,712,Bills,UPI,
+TX0039,2025-12-31,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0078,2026-01-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0093,2026-01-03,Swiggy,319,Food,UPI,
+TX0106,2026-01-03,PVR Cinemas,687,Entertainment,Card,
+TX0101,2026-01-04,Croma,10670,Shopping,UPI,
+TX0087,2026-01-06,BigBasket,2305,Food,UPI,
+TX0089,2026-01-06,D-Mart,2219,Food,UPI,
+TX0102,2026-01-06,Amazon,5743,Shopping,Card,
+TX0080,2026-01-07,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0084,2026-01-09,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0105,2026-01-11,BookMyShow,576,Entertainment,Card,
+TX0096,2026-01-12,Swiggy,633,Food,UPI,
+TX0103,2026-01-12,Croma,2497,Shopping,Card,
+TX0085,2026-01-13,Gas Agency,1069,Bills,UPI,
+TX0094,2026-01-14,D-Mart,3114,Food,UPI,
+TX0090,2026-01-15,BigBasket,3202,Food,UPI,
+TX0079,2026-01-17,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0083,2026-01-17,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0091,2026-01-17,Zomato,528,Food,UPI,
+TX0104,2026-01-17,Croma,11896,Shopping,UPI,
+TX0097,2026-01-19,Hyderabad Metro,126,Travel,UPI,
+TX0099,2026-01-19,Hyderabad Metro,124,Travel,UPI,
+TX0100,2026-01-19,Rapido,124,Travel,UPI,
+TX0098,2026-01-23,Rapido,64,Travel,UPI,
+TX0088,2026-01-25,BigBasket,3053,Food,UPI,
+TX0107,2026-01-25,HealthifyMe,932,Health,UPI,
+TX0081,2026-01-26,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0086,2026-01-28,Jio Recharge,695,Bills,UPI,
+TX0092,2026-01-28,BigBasket,4004,Food,UPI,
+TX0095,2026-01-28,Blinkit,781,Food,UPI,
+TX0082,2026-01-29,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0108,2026-02-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0111,2026-02-01,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0128,2026-02-01,Hyderabad Metro,130,Travel,UPI,
+TX0112,2026-02-02,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0129,2026-02-02,Hyderabad Metro,64,Travel,UPI,
+TX0113,2026-02-04,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0130,2026-02-04,Flipkart,2919,Shopping,Card,
+TX0109,2026-02-09,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0114,2026-02-09,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0122,2026-02-09,Blinkit,725,Food,UPI,
+TX0125,2026-02-10,D-Mart,3696,Food,UPI,
+TX0132,2026-02-12,Hotstar,704,Entertainment,Card,
+TX0118,2026-02-13,Blinkit,371,Food,UPI,
+TX0110,2026-02-14,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0127,2026-02-14,Uber,190,Travel,UPI,
+TX0119,2026-02-20,BigBasket,3441,Food,UPI,
+TX0131,2026-02-20,Flipkart,2519,Shopping,UPI,
+TX0117,2026-02-21,D-Mart,3018,Food,UPI,
+TX0115,2026-02-22,Airtel Broadband,873,Bills,Net Banking,
+TX0120,2026-02-22,D-Mart,2565,Food,UPI,
+TX0124,2026-02-23,BigBasket,1956,Food,UPI,
+TX0126,2026-02-25,Hyderabad Metro,154,Travel,UPI,
+TX0133,2026-02-25,HealthifyMe,688,Health,UPI,
+TX0134,2026-02-25,HealthifyMe,830,Health,UPI,
+TX0123,2026-02-27,D-Mart,2230,Food,UPI,
+TX0116,2026-02-28,HMWSSB Water,397,Bills,UPI,
+TX0121,2026-02-28,Zomato,603,Food,UPI,
+TX0135,2026-03-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0139,2026-03-01,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0148,2026-03-01,Zomato,589,Food,UPI,
+TX0156,2026-03-01,Ola,141,Travel,UPI,
+TX0160,2026-03-04,Flipkart,3316,Shopping,Card,
+TX0163,2026-03-04,PVR Cinemas,1462,Entertainment,Card,
+TX0136,2026-03-05,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0144,2026-03-05,Airtel Broadband,1374,Bills,Net Banking,
+TX0137,2026-03-06,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0158,2026-03-06,H&M,1112,Shopping,Card,
+TX0142,2026-03-08,Airtel Broadband,1271,Bills,UPI,
+TX0149,2026-03-08,Swiggy,422,Food,UPI,
+TX0152,2026-03-09,Swiggy,461,Food,UPI,
+TX0165,2026-03-10,SonyLIV,463,Entertainment,Card,
+TX0166,2026-03-10,Apollo Pharmacy,608,Health,UPI,
+TX0146,2026-03-11,Blinkit,801,Food,UPI,
+TX0147,2026-03-11,Blinkit,765,Food,UPI,
+TX0141,2026-03-12,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0151,2026-03-12,D-Mart,3268,Food,UPI,
+TX0162,2026-03-13,Nykaa,415,Shopping,UPI,
+TX0164,2026-03-13,BookMyShow,445,Entertainment,Card,
+TX0153,2026-03-15,Rapido,99,Travel,UPI,
+TX0143,2026-03-16,PhonePe BBPS,777,Bills,Card,
+TX0154,2026-03-16,Ola,271,Travel,UPI,
+TX0138,2026-03-18,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0145,2026-03-21,Swiggy,458,Food,UPI,
+TX0155,2026-03-21,Hyderabad Metro,62,Travel,UPI,
+TX0140,2026-03-22,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0150,2026-03-24,Blinkit,824,Food,UPI,
+TX0159,2026-03-24,Myntra,1680,Shopping,UPI,
+TX0157,2026-03-27,Hyderabad Metro,168,Travel,UPI,
+TX0161,2026-03-28,Nykaa,665,Shopping,UPI,
+TX0167,2026-04-01,House Rent,18000,Rent,Net Banking,Monthly rent
+TX0176,2026-04-01,Swiggy,530,Food,UPI,
+TX0178,2026-04-02,Swiggy,232,Food,UPI,
+TX0184,2026-04-02,Hotstar,936,Entertainment,Card,
+TX0172,2026-04-03,Amazon Prime,299,Subscriptions,Card,Monthly subscription
+TX0177,2026-04-03,Swiggy,355,Food,UPI,
+TX0168,2026-04-05,Netflix,649,Subscriptions,Card,Monthly subscription
+TX0170,2026-04-05,YouTube Premium,189,Subscriptions,Card,Monthly subscription
+TX0179,2026-04-05,Hyderabad Metro,41,Travel,UPI,
+TX0183,2026-04-05,Ajio,1103,Shopping,Card,
+TX0171,2026-04-06,Notion Pro,320,Subscriptions,Card,Monthly subscription
+TX0181,2026-04-06,Rapido,66,Travel,UPI,
+TX0185,2026-04-08,Practo Consult,1184,Health,UPI,
+TX0169,2026-04-09,Spotify,119,Subscriptions,Card,Monthly subscription
+TX0180,2026-04-10,Rapido,119,Travel,UPI,
+TX0173,2026-04-11,Cult.fit Gym,1999,Health,UPI,Monthly gym membership
+TX0182,2026-04-12,Amazon,5282,Shopping,Card,
+TX0175,2026-04-14,Gas Agency,996,Bills,UPI,
+TX0174,2026-04-28,Gas Agency,1026,Bills,Net Banking,

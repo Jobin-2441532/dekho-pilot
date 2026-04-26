@@ -1,0 +1,18 @@
+{
+  "user_id": "user_001",
+  "name": "Arjun Sharma",
+  "city": "Hyderabad",
+  "age_group": "25-30",
+  "income_range": "60k-1L",
+  "monthly_income": 75000,
+  "financial_stage": "Early career",
+  "purposes": [
+    "Track spending",
+    "Build emergency fund",
+    "Save for a goal"
+  ],
+  "monthly_budget": 45000,
+  "risk_comfort": "moderate",
+  "rent": 18000,
+  "note": "SYNTHETIC DATA \u2014 fictional user for prototype demonstration only"
+}

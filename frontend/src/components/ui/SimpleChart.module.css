@@ -1,0 +1,14 @@
+/* PremiumChart / SimpleChart wrapper */
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-on-surface);
+  margin-bottom: var(--space-2);
+}

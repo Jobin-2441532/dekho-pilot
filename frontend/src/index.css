@@ -1,0 +1,445 @@
+/* =====================================================
+   Dekho — Global Design System
+   Fonts: Manrope (headlines) + Inter (body/data)
+   Themes: Light (Editorial Organicism) | Dark (Quiet Architect)
+   ===================================================== */
+
+/* ─── LIGHT THEME ─── Editorial Organicism (Stitch) */
+[data-theme="light"],
+:root {
+  /* ── Backgrounds ── */
+  --bg-base:               #FEF8F2;  /* page canvas */
+  --bg-surface:            #F9F3ED;  /* sections */
+  --bg-surface-high:       #EDE7E1;  /* elevated cards */
+  --bg-surface-highest:    #E7E2DC;  /* deeply nested */
+  --bg-card:               #FFFFFF;  /* primary cards */
+  --bg-dim:                #DFD9D3;  /* dimmed overlay */
+
+  /* ── Brand / Primary ── */
+  --color-primary:         #6C482D;
+  --color-primary-mid:     #876043;
+  --color-primary-light:   #EEBC9A;
+  --color-primary-fixed:   #FFDCC5;
+  --color-on-primary:      #FFFFFF;
+  --color-primary-gradient: linear-gradient(135deg, #6C482D 0%, #876043 100%);
+
+  /* ── Secondary ── */
+  --color-secondary:       #805533;
+  --color-secondary-container: #FDC39A;
+  --color-on-secondary:    #FFFFFF;
+
+  /* ── Tertiary ── */
+  --color-tertiary:        #6E4726;
+  --color-tertiary-container: #895F3C;
+  --color-on-tertiary:     #FFFFFF;
+
+  /* ── Text ── */
+  --color-on-surface:      #1D1B18;  /* primary text */
+  --color-on-surface-var:  #51443C;  /* secondary text */
+  --color-muted:           #83746B;  /* muted / placeholder */
+  --color-inverse:         #FEF8F2;  /* text on dark bg */
+
+  /* ── Signals ── */
+  --color-positive:        #2E7D32;
+  --color-positive-bg:     #E8F5E9;
+  --color-warning:         #B45309;
+  --color-warning-bg:      #FFF8EB;
+  --color-negative:        #BA1A1A;
+  --color-negative-bg:     #FFDAD6;
+
+  /* ── Outline / Border ── */
+  --color-outline:         #83746B;
+  --color-outline-var:     #D5C3B8;  /* ghost borders */
+
+  /* ── Inactive Nav ── */
+  --color-nav-inactive:    #B0A79F;
+
+  /* ── Shadows (warm-tinted, editorial) ── */
+  --shadow-sm:  0 1px 3px rgba(107,72,45,0.06), 0 1px 2px rgba(107,72,45,0.04);
+  --shadow-md:  0 4px 12px rgba(107,72,45,0.08), 0 2px 4px rgba(107,72,45,0.05);
+  --shadow-lg:  0px 20px 40px rgba(107,72,45,0.06);
+  --shadow-card: 0px 20px 40px rgba(107,72,45,0.06);
+
+  /* ── Glassmorphism (dock + sticky headers) ── */
+  --glass-bg:              rgba(255,255,255,0.82);
+  --glass-blur:            24px;
+  --glass-border:          rgba(213,195,184,0.4);
+
+  /* ── Scrollbar ── */
+  --scrollbar-thumb:       #D5C3B8;
+}
+
+/* ─── DARK THEME ─── Dark Editorial Organicism */
+[data-theme="dark"] {
+  /* ── Backgrounds ── */
+  --bg-base:               #1a1714;
+  --bg-surface:            #24201c;
+  --bg-surface-high:       #2d2823;
+  --bg-surface-highest:    #36302a;
+  --bg-card:               #1e1b18;
+  --bg-dim:                #12100e;
+
+  /* ── Brand / Primary ── */
+  --color-primary:         #e2ab86;
+  --color-primary-mid:     #c98d66;
+  --color-primary-light:   #f3d2be;
+  --color-primary-fixed:   #5c3d26;
+  --color-on-primary:      #332012;
+  --color-primary-gradient: linear-gradient(135deg, #c98d66 0%, #e2ab86 100%);
+
+  /* ── Secondary ── */
+  --color-secondary:       #e6b885;
+  --color-secondary-container: #59432b;
+  --color-on-secondary:    #3b2b17;
+
+  /* ── Tertiary ── */
+  --color-tertiary:        #bdae9c;
+  --color-tertiary-container: #474037;
+  --color-on-tertiary:     #2b2620;
+
+  /* ── Text ── */
+  --color-on-surface:      #eae5e0;
+  --color-on-surface-var:  #b5ada6;
+  --color-muted:           #8c847d;
+  --color-inverse:         #1a1714;
+
+  /* ── Signals ── */
+  --color-positive:        #81c784;
+  --color-positive-bg:     rgba(129, 199, 132, 0.12);
+  --color-warning:         #ffb74d;
+  --color-warning-bg:      rgba(255, 183, 77, 0.12);
+  --color-negative:        #e57373;
+  --color-negative-bg:     rgba(229, 115, 115, 0.12);
+
+  /* ── Outline / Border ── */
+  --color-outline:         #5c554e;
+  --color-outline-var:     #3d3732;
+
+  /* ── Inactive Nav ── */
+  --color-nav-inactive:    #706861;
+
+  /* ── Shadows ── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg:  0px 20px 40px rgba(0,0,0,0.5);
+  --shadow-card: 0px 20px 40px rgba(0,0,0,0.4);
+
+  /* ── Glassmorphism ── */
+  --glass-bg:              rgba(36, 32, 28, 0.82);
+  --glass-blur:            24px;
+  --glass-border:          rgba(92, 85, 78, 0.3);
+
+  /* ── Scrollbar ── */
+  --scrollbar-thumb:       #5c554e;
+}
+
+/* ─── TYPOGRAPHY TOKENS ─── */
+:root {
+  --font-headline: 'Manrope', system-ui, sans-serif;
+  --font-body:     'Inter', system-ui, sans-serif;
+
+  /* Scale */
+  --text-xs:    0.6875rem;  /* 11px */
+  --text-sm:    0.75rem;    /* 12px */
+  --text-base:  0.875rem;   /* 14px */
+  --text-md:    1rem;       /* 16px */
+  --text-lg:    1.125rem;   /* 18px */
+  --text-xl:    1.25rem;    /* 20px */
+  --text-2xl:   1.5rem;     /* 24px */
+  --text-3xl:   1.875rem;   /* 30px */
+  --text-4xl:   2.25rem;    /* 36px */
+  --text-display: 3.5rem;   /* 56px - balance hero */
+
+  /* Weights */
+  --font-light:     300;
+  --font-normal:    400;
+  --font-medium:    500;
+  --font-semibold:  600;
+  --font-bold:      700;
+  --font-extrabold: 800;
+
+  /* ─── SPACING SCALE ─── */
+  --space-1:  0.25rem;   /* 4px  */
+  --space-2:  0.5rem;    /* 8px  */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* ─── BORDER RADIUS ─── */
+  --radius-xs:   0.25rem;   /* 4px  */
+  --radius-sm:   0.5rem;    /* 8px  */
+  --radius-md:   0.75rem;   /* 12px */
+  --radius-lg:   1rem;      /* 16px */
+  --radius-xl:   1.5rem;    /* 24px */
+  --radius-2xl:  2rem;      /* 32px */
+  --radius-full: 9999px;
+
+  /* ─── TRANSITIONS ─── */
+  --transition-fast:   150ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-base:   250ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow:   400ms cubic-bezier(0.2, 0, 0, 1);   /* premium/calm */
+
+  /* ─── Z-INDEX ─── */
+  --z-base:     0;
+  --z-above:    10;
+  --z-sticky:   50;
+  --z-overlay:  100;
+  --z-modal:    200;
+  --z-fab:      150;
+  --z-dock:     140;
+  --z-toast:    300;
+
+  /* ─── LAYOUT ─── */
+  --dock-height:    72px;
+  --fab-size:       52px;
+  --screen-max:     480px;   /* max mobile width */
+  --page-padding-x: var(--space-5);
+}
+
+/* ─── CSS RESET ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  color: var(--color-on-surface);
+  background-color: var(--bg-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100dvh;           /* lock body to viewport */
+  overflow: hidden;         /* prevent body-level scroll — only .content scrolls */
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+}
+
+/* ─── TYPOGRAPHY ─── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headline);
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+  color: var(--color-on-surface);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-md); }
+
+p {
+  color: var(--color-on-surface-var);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--color-primary-mid); }
+
+/* Tabular nums for all financial figures */
+.num, [data-num] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+}
+
+/* ─── FOCUS / ACCESSIBILITY ─── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── APP SHELL ─── */
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max);
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--bg-base);
+}
+
+/* ─── PAGE CONTAINER ─── */
+.page {
+  flex: 1;
+  padding: var(--space-4) var(--page-padding-x);
+  padding-bottom: calc(var(--dock-height) + var(--space-8));
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+/* ─── GLASSMORPHISM UTILITY ─── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+/* ─── CARD UTILITY ─── (tonal layering — no borders by default) */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+}
+
+.card-surface {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+/* ─── PROGRESS BAR (12px pill — Stitch spec) ─── */
+.progress-track {
+  height: 12px;
+  background: var(--color-outline-var);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* ─── BADGE / CHIP ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+}
+
+.badge-positive { background: var(--color-positive-bg); color: var(--color-positive); }
+.badge-warning  { background: var(--color-warning-bg);  color: var(--color-warning);  }
+.badge-negative { background: var(--color-negative-bg); color: var(--color-negative); }
+.badge-primary  { background: var(--color-primary-fixed); color: var(--color-primary); }
+
+/* ─── BUTTON PRIMITIVES ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  border-radius: var(--radius-xl);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+  background: var(--color-primary-gradient);
+  color: var(--color-on-primary);
+  padding: var(--space-4) var(--space-6);
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: var(--bg-surface-high);
+  color: var(--color-on-surface);
+  padding: var(--space-3) var(--space-5);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-primary);
+  padding: var(--space-3) var(--space-4);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+}
+.btn-ghost:hover { text-decoration-color: var(--color-primary); }
+
+/* ─── SECTION HEADER ─── */
+.section-label {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-3);
+}
+
+/* ─── DIVIDER BAN — tonal only, use bg shifts instead ─── */
+/* Never use <hr> or border-bottom for content separation */
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+/* ─── SMOOTH PAGE TRANSITION ─── */
+.page-enter {
+  animation: pageFadeIn 250ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── THEME TRANSITION ─── all color changes animate */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Prevent transition on non-color properties */
+*, *::before, *::after {
+  transition-property: none;
+}
+
+body,
+.card,
+.card-surface,
+.glass,
+.btn,
+.badge,
+nav,
+[data-theme-animate] {
+  transition: background-color var(--transition-slow),
+              color var(--transition-slow),
+              border-color var(--transition-slow),
+              box-shadow var(--transition-slow);
+}

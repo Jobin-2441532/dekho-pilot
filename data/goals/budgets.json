@@ -1,0 +1,30 @@
+[
+  {
+    "category": "Food",
+    "monthly_limit": 8000
+  },
+  {
+    "category": "Shopping",
+    "monthly_limit": 4000
+  },
+  {
+    "category": "Entertainment",
+    "monthly_limit": 2000
+  },
+  {
+    "category": "Travel",
+    "monthly_limit": 3000
+  },
+  {
+    "category": "Subscriptions",
+    "monthly_limit": 1500
+  },
+  {
+    "category": "Health",
+    "monthly_limit": 3000
+  },
+  {
+    "category": "Bills",
+    "monthly_limit": 5000
+  }
+]

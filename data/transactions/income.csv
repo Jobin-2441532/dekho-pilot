@@ -1,0 +1,10 @@
+id,date,source,amount,type,notes
+INC001,2025-11-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary
+INC100,2025-11-21,Freelance — UI Design,5825,freelance,Contract project
+INC002,2025-12-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary
+INC101,2025-12-12,Freelance — UI Design,13084,freelance,Contract project
+INC003,2026-01-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary
+INC102,2026-01-18,Freelance — UI Design,12533,freelance,Contract project
+INC004,2026-02-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary
+INC005,2026-03-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary
+INC006,2026-04-01,Employer — TechCorp Hyderabad,75000,salary,Monthly net salary

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#EEBC9A",
+                    "outline-variant": "#D5C3B8",
+                    "on-primary-container": "#FFE3D1",
+                    "on-secondary-fixed": "#301400",
+                    "on-tertiary-fixed": "#2E1500",
+                    "tertiary": "#6E4726",
+                    "surface": "#FEF8F2",
+                    "on-error-container": "#93000A",
+                    "surface-bright": "#FEF8F2",
+                    "inverse-surface": "#32302C",
+                    "surface-container-low": "#F9F3ED",
+                    "on-tertiary": "#FFFFFF",
+                    "surface-container-high": "#EDE7E1",
+                    "on-secondary": "#FFFFFF",
+                    "surface-variant": "#E7E2DC",
+                    "inverse-on-surface": "#F6F0EA",
+                    "on-primary-fixed-variant": "#613F25",
+                    "tertiary-container": "#895F3C",
+                    "outline": "#83746B",
+                    "on-tertiary-container": "#FFE3CF",
+                    "tertiary-fixed": "#FFDCC2",
+                    "surface-tint": "#7C563A",
+                    "error": "#BA1A1A",
+                    "on-primary": "#FFFFFF",
+                    "secondary-fixed-dim": "#F4BB92",
+                    "on-secondary-fixed-variant": "#653D1E",
+                    "on-surface-variant": "#51443C",
+                    "primary-fixed": "#FFDCC5",
+                    "on-surface": "#1D1B18",
+                    "tertiary-fixed-dim": "#F1BC92",
+                    "surface-container": "#F3EDE7",
+                    "error-container": "#FFDAD6",
+                    "secondary-fixed": "#FFDCC5",
+                    "secondary-container": "#FDC39A",
+                    "surface-dim": "#DFD9D3",
+                    "secondary": "#805533",
+                    "surface-container-lowest": "#FFFFFF",
+                    "on-primary-fixed": "#2F1501",
+                    "on-tertiary-fixed-variant": "#633E1E",
+                    "background": "#FEF8F2",
+                    "primary": "#6C482D",
+                    "on-error": "#FFFFFF",
+                    "inverse-primary": "#EEBC9A",
+                    "surface-container-highest": "#E7E2DC",
+                    "on-background": "#1D1B18",
+                    "on-secondary-container": "#794E2E",
+                    "primary-container": "#876043"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Public Sans"],
+                    "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-header {
+        background: rgba(254, 248, 242, 0.8);
+        backdrop-filter: blur(24px);
+      }
+      .brushed-leather {
+        background: linear-gradient(135deg, #6C482D 0%, #876043 100%);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#8B5E3C]">menu</span>
+<span class="font-headline font-extrabold tracking-tight text-xl text-[#8B5E3C]">Grow</span>
+</div>
+<div class="h-10 w-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="close-up portrait of a professional woman with a friendly expression in a modern sunlit office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYKKLTBAlTU_E3-TFkYjrK8l_FOeokEYLm5JQdQbv2pXQvQIlT86jViSdnCG6fUHNNaWDKQntysSUMItmnI3WB0a8oghH7pzqQRi1DXFYN3vcNMNANf9zMCgY_bslI8NLrScfAROPYY8N4am3izn7qef00VxPCdBQE8xNjK4WRqXwUBPM1M0VI-10-IeuZmaRbi4hciZuXvNjMBVAkza2BSFYWi1-nvVuA0_92eETM871HnK1lIpYpLPLBgk8zIfXvpNyKy-4z4Tbf"/>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto">
+<!-- Hero Section -->
+<header class="mb-10">
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold text-secondary mb-2 block">Personalized recommendations</span>
+<h1 class="font-headline font-extrabold text-4xl tracking-tight text-on-surface mb-3">Recommended for you</h1>
+<p class="text-on-surface-variant leading-relaxed">Based on your recent financial profile and goal trajectory, we’ve curated assets that balance growth with your specific liquidity needs.</p>
+</header>
+<!-- Insights / Why this fits you Section -->
+<section class="bg-primary p-8 rounded-lg mb-8 relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-primary-container text-sm">auto_awesome</span>
+<h2 class="font-headline font-bold text-lg text-on-primary-container">Why this fits you</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-1">
+<span class="font-label text-[8px] uppercase tracking-[0.15em] font-bold text-on-primary-container/70">Stability Profile</span>
+<p class="text-sm text-on-primary-container/90">Your <span class="font-bold text-on-primary-container">stable income</span> patterns suggest a higher capacity for consistent monthly compounding.</p>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[8px] uppercase tracking-[0.15em] font-bold text-on-primary-container/70">Safety Net</span>
+<p class="text-sm text-on-primary-container/90">You have maintained a <span class="font-bold text-on-primary-container">3 months savings buffer</span>, allowing for long-term equity exposure.</p>
+</div>
+</div>
+</div>
+<div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px] text-on-primary-container">analytics</span>
+</div>
+</section>
+<!-- Recommendation Cards (Bento-style) -->
+<div class="space-y-6">
+<!-- Card 1: Liquid Fund -->
+<div class="group bg-surface-container-low rounded-lg p-1 transition-all hover:bg-surface-container-high">
+<div class="bg-surface-container-lowest rounded-[1.8rem] p-6 shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex flex-col">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full mb-3">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label text-[10px] font-bold">HIGH SUITABILITY</span>
+</div>
+<h3 class="font-headline font-bold text-2xl text-on-surface">Liquid Fund</h3>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label text-[10px] font-bold text-outline uppercase tracking-wider">Suggested SIP</span>
+<span class="font-headline font-extrabold text-2xl text-primary">₹5,000</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="p-4 bg-surface-container-low rounded-2xl">
+<span class="font-label text-[9px] font-bold text-outline uppercase block mb-1">Risk Level</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-600 text-lg">shield</span>
+<span class="font-bold text-on-surface">Low risk</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-2xl">
+<span class="font-label text-[9px] font-bold text-outline uppercase block mb-1">Use Case</span>
+<span class="font-bold text-on-surface">High liquidity</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-sm text-on-surface-variant max-w-[60%]">Ideal for short-term parking of idle cash with instant access.</p>
+<button class="bg-primary text-on-primary font-label text-[10px] font-bold px-6 py-3 rounded-full flex items-center gap-2 transition-transform active:scale-95">
+                            INVEST NOW
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2: Index Fund SIP (Brushed Leather Gradient accent) -->
+<div class="group brushed-leather rounded-lg p-1 transition-all">
+<div class="bg-surface-container-lowest rounded-[1.8rem] p-6 shadow-sm h-full">
+<div class="flex justify-between items-start mb-6">
+<div class="flex flex-col">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full mb-3">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+<span class="font-label text-[10px] font-bold">WEALTH CREATOR</span>
+</div>
+<h3 class="font-headline font-bold text-2xl text-on-surface">Index Fund SIP</h3>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label text-[10px] font-bold text-outline uppercase tracking-wider">Suggested SIP</span>
+<span class="font-headline font-extrabold text-2xl text-primary">₹12,500</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="p-4 bg-surface-container-low rounded-2xl">
+<span class="font-label text-[9px] font-bold text-outline uppercase block mb-1">Risk Level</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-lg">error</span>
+<span class="font-bold text-on-surface">Moderate risk</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-2xl">
+<span class="font-label text-[9px] font-bold text-outline uppercase block mb-1">Use Case</span>
+<span class="font-bold text-on-surface">Long-term</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-sm text-on-surface-variant max-w-[60%]">Optimized for capital appreciation over a 5-10 year horizon.</p>
+<button class="bg-primary text-on-primary font-label text-[10px] font-bold px-6 py-3 rounded-full flex items-center gap-2 transition-transform active:scale-95">
+                            INVEST NOW
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Support Text -->
+<footer class="mt-12 flex flex-col items-center gap-4 text-center">
+<div class="flex items-center gap-2 py-2 px-4 bg-surface-container-high rounded-full">
+<span class="font-label text-[8px] font-bold text-outline uppercase tracking-widest">Execution powered by</span>
+<div class="flex items-center gap-1">
+<span class="font-headline font-extrabold text-[#00D09C] text-sm tracking-tight">Groww</span>
+</div>
+</div>
+<p class="text-[10px] text-outline max-w-xs leading-relaxed uppercase tracking-[0.05em]">Investment in securities market are subject to market risks. Read all the related documents carefully before investing.</p>
+</footer>
+</main>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 w-full flex justify-around items-center px-4 pb-8 z-50 pointer-events-none">
+<div class="bg-[#FEF8F2]/80 backdrop-blur-xl w-[92%] rounded-full border border-stone-200/20 shadow-lg flex justify-around items-center p-2 pointer-events-auto">
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined text-[24px]">psychology</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Behavior</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Expenses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#8B5E3C] text-[#FEF8F2] rounded-full w-14 h-14 -mt-10 shadow-md scale-110" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+<span class="font-label text-[8px] uppercase tracking-[0.15em] font-bold">Grow</span>
+</a>
+</div>
+</div>
+</body></html>

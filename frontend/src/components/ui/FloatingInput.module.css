@@ -1,0 +1,99 @@
+/* FloatingInput — floating label input/textarea */
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Base field */
+.field {
+  width: 100%;
+  padding: var(--space-5) var(--space-4) var(--space-2);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--color-outline-var);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-on-surface);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-sizing: border-box;
+  resize: none;
+}
+
+.field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-fixed);
+}
+
+/* Textarea */
+.textarea {
+  min-height: 100px;
+  padding-top: var(--space-6);
+}
+
+/* Floating label */
+.label {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-muted);
+  pointer-events: none;
+  transition: all var(--transition-fast);
+  background: transparent;
+  padding: 0 2px;
+}
+
+/* Float label up when field has value or is focused */
+.field:focus + .label,
+.field:not(:placeholder-shown) + .label {
+  top: var(--space-2);
+  transform: translateY(0);
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+}
+
+/* Textarea label adjustment */
+.textarea + .label {
+  top: var(--space-3);
+  transform: none;
+}
+
+/* Right icon */
+.withIconRight .field {
+  padding-right: var(--space-10);
+}
+
+.iconRight {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+}
+
+/* Error state */
+.error .field {
+  border-color: var(--color-negative);
+}
+.error .field:focus {
+  box-shadow: 0 0 0 3px var(--color-negative-bg);
+}
+.error .label { color: var(--color-negative); }
+
+/* Helper / error text */
+.helper {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  margin-top: var(--space-1);
+  padding: 0 var(--space-1);
+}
+
+.errorText { color: var(--color-negative); }

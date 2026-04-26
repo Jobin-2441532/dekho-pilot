@@ -1,0 +1,38 @@
+[
+  {
+    "id": "g1",
+    "name": "Emergency Fund",
+    "emoji": "shield",
+    "target_amount": 90000,
+    "current_amount": 45000,
+    "monthly_contribution": 5000,
+    "deadline": "2026-09-30",
+    "priority": "high",
+    "status": "active",
+    "notes": "3 months of expenses (rent + living costs)"
+  },
+  {
+    "id": "g2",
+    "name": "Goa Trip",
+    "emoji": "beach",
+    "target_amount": 25000,
+    "current_amount": 18000,
+    "monthly_contribution": 3500,
+    "deadline": "2026-06-15",
+    "priority": "medium",
+    "status": "active",
+    "notes": "Flight + hotel for 4 days"
+  },
+  {
+    "id": "g3",
+    "name": "New Laptop",
+    "emoji": "laptop",
+    "target_amount": 80000,
+    "current_amount": 12000,
+    "monthly_contribution": 4000,
+    "deadline": "2026-12-31",
+    "priority": "low",
+    "status": "active",
+    "notes": "MacBook Air or equivalent"
+  }
+]

@@ -1,0 +1,104 @@
+/* LoadingState component — Skeleton, Spinner, EmptyState, ErrorState */
+
+/* ── Skeleton shimmer animation ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-high) 25%,
+    var(--bg-surface-highest) 50%,
+    var(--bg-surface-high) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* rect vs circle */
+.rect   { border-radius: var(--radius-sm); }
+.circle { border-radius: var(--radius-full); }
+
+/* ── Skeleton lines ── */
+.line   { height: 12px; border-radius: var(--radius-full); }
+.short  { width: 35%; }
+.medium { width: 60%; }
+.long   { width: 90%; }
+
+/* ── Skeleton card ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Spinner ── */
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--bg-surface-high);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 0.75s linear infinite;
+  margin: var(--space-8) auto;
+  display: block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Empty / Error state ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  gap: var(--space-3);
+}
+
+.emptyIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  margin-bottom: var(--space-2);
+}
+
+.emptyTitle {
+  font-family: var(--font-headline);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-on-surface);
+}
+
+.emptyText {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  line-height: 1.6;
+  max-width: 260px;
+}

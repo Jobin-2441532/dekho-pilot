@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dekho - Assets</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-fixed-dim": "#f1bc92",
+                "surface-container-low": "#f9f3ed",
+                "secondary-fixed": "#ffdcc5",
+                "outline-variant": "#d5c3b8",
+                "on-secondary-fixed-variant": "#653d1e",
+                "on-background": "#1d1b18",
+                "primary-fixed-dim": "#eebc9a",
+                "error": "#ba1a1a",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#ede7e1",
+                "surface-container": "#f3ede7",
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "inverse-primary": "#eebc9a",
+                "error-container": "#ffdad6",
+                "surface-dim": "#dfd9d3",
+                "surface": "#fef8f2",
+                "background": "#fef8f2",
+                "on-primary-fixed-variant": "#613f25",
+                "on-tertiary": "#ffffff",
+                "on-secondary-container": "#794e2e",
+                "tertiary-fixed": "#ffdcc2",
+                "tertiary": "#6e4726",
+                "on-primary-container": "#ffe3d1",
+                "on-error-container": "#93000a",
+                "secondary-fixed-dim": "#f4bb92",
+                "on-tertiary-container": "#ffe3cf",
+                "on-primary-fixed": "#2f1501",
+                "on-surface-variant": "#51443c",
+                "tertiary-container": "#895f3c",
+                "on-tertiary-fixed-variant": "#633e1e",
+                "inverse-surface": "#32302c",
+                "on-surface": "#1d1b18",
+                "on-secondary-fixed": "#301400",
+                "surface-container-highest": "#e7e2dc",
+                "secondary-container": "#fdc39a",
+                "surface-bright": "#fef8f2",
+                "primary-fixed": "#ffdcc5",
+                "secondary": "#805533",
+                "primary-container": "#876043",
+                "primary": "#6c482d",
+                "surface-variant": "#e7e2dc",
+                "on-tertiary-fixed": "#2e1500",
+                "outline": "#83746b",
+                "surface-tint": "#7c563a",
+                "inverse-on-surface": "#f6f0ea",
+                "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Public Sans"],
+                "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-header {
+        background: rgba(254, 248, 242, 0.8);
+        backdrop-filter: blur(24px);
+      }
+      .brushed-leather-gradient {
+        background: linear-gradient(135deg, #6c482d 0%, #876043 100%);
+      }
+      .hero-pattern {
+        background-image: radial-gradient(circle at 20% 150%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                          radial-gradient(circle at 80% -20%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#FEF8F2]/80 dark:bg-[#1D1B18]/80 backdrop-blur-xl">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<button class="text-[#6C482D] dark:text-[#D5C3B8] hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-['Manrope'] font-black text-2xl text-[#1F1F1F] dark:text-[#FEF8F2] tracking-tighter">Dekho</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="professional portrait of a confident woman with a warm smile in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-7NeAyxiyW9UWqg28Vs94rh9KRFDjKJXLyqdT26-5j0NvMlgOZDFX1xw68kIu9zMcaJDOWanHlEsl9SI8xjW5303GfGbtFC8U5CLYUMLw73iLj4O0WPHDLFWgBe_ev-9nb5jrXWPXjRYe8DOIIFT2aHclDxP8H2QmilR5gh2xM0Nx7llzOsb14uXQo-FrJ3rI59KUSeQ_JQmPPvOVEJJW16EzsM5BMqEUcpyWkS6WItlIVs8h-UNhTy3MriUDWW_Tp2q1bOjIEkpW"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-8">
+<!-- Net Worth Hero Card -->
+<section class="hero-pattern p-8 rounded-[2rem] shadow-[0px_20px_40px_rgba(107,72,45,0.12)] relative overflow-hidden group bg-[#8B5E3C]" style="background-color: #8B5E3C;">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-[0.15em] text-white/60 mb-1">Your Net Worth</p>
+<h2 class="font-headline font-extrabold text-4xl text-white tracking-tight mb-3">₹ 3,42,500</h2>
+<div class="flex items-center gap-2 mb-8">
+<span class="bg-white/10 px-2 py-0.5 rounded-full text-[10px] font-bold text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                        +₹12,400 (3.7%)
+                    </span>
+<span class="text-white/40 text-[10px] font-medium uppercase tracking-wider">This Month</span>
+</div>
+<button class="group/btn flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs font-semibold">
+                    Tap to see details
+                    <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Decorative curves -->
+<svg class="absolute right-0 bottom-0 opacity-10 pointer-events-none" fill="none" height="120" viewbox="0 0 180 120" width="180">
+<path d="M0 120C40 120 80 80 120 40C160 0 200 0 240 0" stroke="white" stroke-width="2"></path>
+<path d="M0 100C30 100 60 70 90 40C120 10 150 10 180 10" stroke="white" stroke-width="2"></path>
+</svg>
+</section>
+<!-- Performance Chart Section -->
+<section class="bg-surface-container-low rounded-[2rem] p-6 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-headline font-bold text-lg text-on-background">Performance</h3>
+<div class="flex gap-1 p-1 bg-surface-container rounded-full">
+<button class="px-3 py-1 text-[10px] font-bold rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors">1M</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded-full bg-primary text-on-primary shadow-sm transition-all">3M</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors">6M</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors">1Y</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors">ALL</button>
+</div>
+</div>
+<div class="h-40 w-full relative">
+<!-- Simple SVG Chart Representation -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 400 150">
+<path d="M0,130 C40,125 80,110 120,115 S180,80 240,85 S320,40 400,30" fill="none" stroke="#6C482D" stroke-linecap="round" stroke-width="3"></path>
+<!-- Area under curve -->
+<path d="M0,130 C40,125 80,110 120,115 S180,80 240,85 S320,40 400,30 V150 H0 Z" fill="url(#chartGradient)" opacity="0.1"></path>
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#6C482D"></stop>
+<stop offset="100%" stop-color="transparent"></stop>
+</lineargradient>
+</defs>
+<!-- Current Point -->
+<circle cx="400" cy="30" fill="#6C482D" r="4"></circle>
+</svg>
+</div>
+<p class="text-on-surface-variant text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="lightbulb">lightbulb</span>
+                Most growth came from your investments this month
+            </p>
+</section>
+<!-- Financial Split Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Savings Card -->
+<div class="bg-surface-container-lowest p-5 rounded-2xl border-l-4 border-blue-200">
+<p class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Savings</p>
+<p class="font-headline font-bold text-xl text-on-background mb-1">₹ 1,20,000</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">Safe &amp; accessible</p>
+</div>
+<!-- Investments Card -->
+<div class="bg-surface-container-lowest p-5 rounded-2xl border-l-4 border-emerald-200">
+<p class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Investments</p>
+<p class="font-headline font-bold text-xl text-on-background mb-1">₹ 2,05,000</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">Growing your money</p>
+</div>
+<!-- Liabilities Card -->
+<div class="bg-surface-container-lowest p-5 rounded-2xl border-l-4 border-rose-200">
+<p class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Liabilities</p>
+<p class="font-headline font-bold text-xl text-on-background mb-1">₹ 17,500</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">Money you owe</p>
+</div>
+</section>
+<!-- Growth Breakdown Section -->
+<section class="bg-surface-container-lowest p-8 rounded-[2rem] space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="font-headline font-bold text-lg text-on-background">Growth breakdown</h3>
+<p class="text-on-surface-variant text-sm">₹12,400 earned this month</p>
+</div>
+<div class="w-12 h-12 rounded-full border-4 border-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="auto_graph">auto_graph</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="w-full h-3 bg-surface-container rounded-full flex overflow-hidden">
+<div class="h-full bg-primary" style="width: 65%;"></div>
+<div class="h-full bg-tertiary-fixed-dim" style="width: 25%;"></div>
+<div class="h-full bg-secondary-fixed" style="width: 10%;"></div>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-on-surface-variant">Contributions</span>
+</div>
+<span class="font-semibold">₹8,000</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+<span class="text-on-surface-variant">Market growth</span>
+</div>
+<span class="font-semibold">₹3,200</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed"></div>
+<span class="text-on-surface-variant">Interest</span>
+</div>
+<span class="font-semibold">₹1,200</span>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Insight Card -->
+<section class="bg-tertiary-container text-on-tertiary-container p-8 rounded-[2rem] relative overflow-hidden">
+<!-- Decorative Arcs -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<circle cx="90" cy="10" fill="none" r="30" stroke="white" stroke-width="0.5"></circle>
+<circle cx="90" cy="10" fill="none" r="40" stroke="white" stroke-width="0.5"></circle>
+<circle cx="10" cy="90" fill="none" r="20" stroke="white" stroke-width="0.5"></circle>
+</svg>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h4 class="font-label text-[10px] font-bold uppercase tracking-[0.2em]">Today's Insight</h4>
+</div>
+<p class="font-headline font-medium text-lg leading-relaxed">
+                    Your investments are performing well. <span class="font-bold underline decoration-white/30 underline-offset-4">60% of your growth</span> came from market gains this period.
+                </p>
+<div class="pt-4">
+<button class="bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-sm">
+                        Read full report
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-8 w-full z-50 flex justify-around items-center px-4">
+<div class="bg-[#FFFFFF]/90 dark:bg-[#1D1B18]/90 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-lg rounded-full border border-[#D5C3B8]/20 shadow-[0px_20px_40px_rgba(107,72,45,0.1)] flex justify-around items-center py-2 px-1"><!-- Behavior -->
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] px-2 active:scale-90 transition-transform hover:text-[#6C482D] dark:hover:text-[#FEF8F2]" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Public_Sans'] font-medium text-[8px] uppercase tracking-tighter mt-1">Behavior</span>
+</a>
+<!-- Expenses -->
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] px-2 active:scale-90 transition-transform hover:text-[#6C482D] dark:hover:text-[#FEF8F2]" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Public_Sans'] font-medium text-[8px] uppercase tracking-tighter mt-1">Expenses</span>
+</a>
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] px-2 active:scale-90 transition-transform hover:text-[#6C482D] dark:hover:text-[#FEF8F2]" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-['Public_Sans'] font-medium text-[8px] uppercase tracking-tighter mt-1">Home</span>
+</a>
+<!-- Assets (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-[#6E4A2F] text-white rounded-2xl w-14 h-14 transition-all duration-300 active:scale-90 shadow-lg -translate-y-4" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Public_Sans'] font-medium text-[8px] uppercase tracking-tighter">Assets</span>
+</a>
+<!-- Grow -->
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] px-2 active:scale-90 transition-transform hover:text-[#6C482D] dark:hover:text-[#FEF8F2]" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-['Public_Sans'] font-medium text-[8px] uppercase tracking-tighter mt-1">Grow</span>
+</a></div>
+</nav>
+</body></html>

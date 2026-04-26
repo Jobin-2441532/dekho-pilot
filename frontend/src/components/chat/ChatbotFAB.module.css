@@ -1,0 +1,60 @@
+/* ── Chatbot FAB — fixed bottom-right, above the dock ── */
+
+.wrapper {
+  position: fixed;
+  bottom: calc(var(--dock-height) + var(--space-5) + 12px);
+  right: var(--space-5);
+  z-index: var(--z-fab);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── The button ── */
+.fab {
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-primary);
+  background: var(--color-primary-gradient);
+  box-shadow: 0 4px 20px rgba(108, 72, 45, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.fab.open {
+  background: var(--bg-surface-high);
+  color: var(--color-on-surface);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Pulse ring ── */
+.pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-primary);
+  opacity: 0;
+  animation: pulse 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] .fab {
+  box-shadow: 0 4px 20px rgba(78, 222, 163, 0.35);
+}
+
+[data-theme="dark"] .pulse {
+  border-color: var(--color-primary);
+}

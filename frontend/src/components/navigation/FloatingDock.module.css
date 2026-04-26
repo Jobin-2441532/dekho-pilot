@@ -1,0 +1,137 @@
+/* ── Floating Dock — matches Stitch "Editorial Organicism" bottom nav ── */
+
+.dock {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+  max-width: calc(var(--screen-max) - 2rem);
+  z-index: var(--z-dock);
+  padding-bottom: max(env(safe-area-inset-bottom), var(--space-3));
+  margin-bottom: var(--space-3);
+  pointer-events: none; /* let inner handle events */
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  pointer-events: all;
+
+  /* Glassmorphism */
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Nav Item ── */
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--color-nav-inactive);
+  transition: color var(--transition-fast), background var(--transition-fast);
+  flex: 1;
+  min-width: 0;
+}
+
+.item:hover {
+  color: var(--color-on-surface-var);
+  background: var(--bg-surface);
+}
+
+/* ── Center (Home) item ── */
+.center {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  padding: 0;
+  background: var(--color-primary-gradient);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 16px rgba(108, 72, 45, 0.35);
+  margin-top: -8px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+}
+
+.center:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(108, 72, 45, 0.45);
+  color: var(--color-on-primary);
+  background: var(--color-primary-gradient);
+}
+
+.center .label {
+  display: none; /* center button is icon-only */
+}
+
+/* ── Active state ── */
+.active {
+  color: var(--color-primary);
+}
+
+.active .iconWrap {
+  position: relative;
+}
+
+/* Active indicator dot */
+.active .iconWrap::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+/* Center item active — same gradient, just slight brightness shift */
+.center.active {
+  opacity: 0.92;
+  color: var(--color-on-primary);
+}
+
+.center.active .iconWrap::after {
+  display: none;
+}
+
+/* ── Icon wrapper ── */
+.iconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Label ── */
+.label {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ── Dark theme overrides ── */
+[data-theme="dark"] .center {
+  box-shadow: 0 4px 20px rgba(78, 222, 163, 0.3);
+}
+
+[data-theme="dark"] .center:hover {
+  box-shadow: 0 8px 32px rgba(78, 222, 163, 0.45);
+}

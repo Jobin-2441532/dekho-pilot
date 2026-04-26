@@ -1,0 +1,33 @@
+.heatmap {
+  width: 100%;
+}
+
+.heatmapDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: var(--space-2);
+}
+
+.heatmapDay {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.heatmapGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.heatmapCell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.heatmapCell:hover {
+  opacity: 0.8;
+}

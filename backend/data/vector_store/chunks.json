@@ -1,0 +1,1214 @@
+[
+  {
+    "id": "kb_01_budgeting_basics_000",
+    "text": "## What Is a Budget?\n\nA budget is a plan that tells your money where to go before the month begins. Instead of wondering where it went, a budget gives you intentional control over every rupee you earn.\n\nBudgeting does not mean deprivation. It means awareness. A good budget reflects your actual life — your rent, your food habits, your goals — rather than an idealised version of it.\n\n---\n\n## The 50-30-20 Rule\n\nOne of the most popular frameworks for personal budgeting:\n\n- **50% — Needs**: Rent, groceries, utilities, transport, minimum loan payments\n- **30% — Wants**: Eating out, entertainment, shopping, subscriptions\n- **20% — Savings + investments**: Emergency fund, goals, SIPs, PPF\n\n**Example for ₹75,000 income:**\n- Needs: ₹37,500 (rent ₹18,000 + groceries ₹4,500 + bills ₹4,000 + transport ₹3,000 + health ₹3,000)\n- Wants: ₹22,500 (food delivery ₹5,000 + entertainment ₹3,000 + shopping ₹8,000 + subscriptions ₹2,000)\n- Savings: ₹15,000 (emergency fund + goals + SIP)\n\nThis is a guideline, not a rigid law. Adjust based on your city, income, and priorities.\n\n---\n\n## Zero-Based Budgeting\n\nEvery rupee of your income is assigned a purpose until you reach zero. Income minus expenses minus savings equals zero. This does not mean you spend everything — savings and investments are also an \"expense\" in this model.",
+    "source": "01_budgeting_basics.md",
+    "chunk_type": "knowledge",
+    "category": "budgeting",
+    "metadata": {
+      "file": "01_budgeting_basics.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_01_budgeting_basics_001",
+    "text": "Every rupee of your income is assigned a purpose until you reach zero. Income minus expenses minus savings equals zero. This does not mean you spend everything — savings and investments are also an \"expense\" in this model.\n\n**How it works:**\n1. List your monthly income (salary + any freelance)\n2. List every expected expense\n3. Assign remaining money to goals and savings\n4. Income - All assigned amounts = 0\n\n---\n\n## Pay Yourself First\n\nMove money to savings or investments the moment salary arrives — before spending on wants. This removes the temptation to spend first and \"save what's left\" (which is usually nothing).\n\n**Practical approach:**\n- On salary day, immediately transfer ₹X to your emergency fund / goal account\n- Then pay rent and bills\n- Whatever remains covers food and discretionary spending\n\n---\n\n## Budget Categories for Indian Households\n\nTypical categories to track:\n- Housing (rent, maintenance, electricity, water, gas)\n- Food (groceries + food delivery + eating out)\n- Transport (Metro, Uber, fuel, EMI if any)\n- Health (gym, pharmacy, consultations, insurance premium)\n- Subscriptions (OTT platforms, apps, cloud storage)\n- Shopping (clothing, electronics, personal care)\n- Entertainment (movies, events, dining out)\n- Education (courses, books)\n- Savings and goals (emergency fund, SIP, specific goals)\n- Miscellaneous (gifts, one-off purchases)\n\n---",
+    "source": "01_budgeting_basics.md",
+    "chunk_type": "knowledge",
+    "category": "budgeting",
+    "metadata": {
+      "file": "01_budgeting_basics.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_01_budgeting_basics_002",
+    "text": "---\n\n## Why Budgeting Feels Hard\n\n- **Income irregularity**: Freelancers and gig workers face unpredictable income. Budget on your lowest expected month.\n- **Lifestyle inflation**: Income rises but so do expenses, leaving no room for savings.\n- **Social spending**: Weddings, birthdays, peer pressure to eat out or travel.\n- **Subscription creep**: Small monthly charges that add up unnoticed.\n\n---\n\n## Starting Small\n\nYou do not need a perfect budget on day one. Track expenses for one month without changing behaviour. That baseline becomes your real starting point. Then set one improvement: cut ₹1,000 from food delivery, or automate ₹2,000 to savings.\n\nSmall, consistent adjustments beat ambitious plans that last one week.",
+    "source": "01_budgeting_basics.md",
+    "chunk_type": "knowledge",
+    "category": "budgeting",
+    "metadata": {
+      "file": "01_budgeting_basics.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_02_emergency_fund_000",
+    "text": "## What Is an Emergency Fund?\n\nAn emergency fund is money set aside specifically for unexpected financial shocks — job loss, medical emergency, urgent travel, sudden home repair. It is not money for planned expenses or lifestyle wants.\n\nThe defining quality of an emergency fund: it sits liquid (accessible immediately), not invested in stocks or locked in an FD.\n\n---\n\n## How Much Should You Save?\n\nThe standard target is **3 to 6 months of essential monthly expenses**.\n\nEssential expenses means: rent, groceries, utilities, transport, health, loan EMIs. Not food delivery or subscriptions — those can be cut in a crisis.\n\n**Example calculation:**\n- Rent: ₹18,000\n- Groceries: ₹4,500\n- Bills + utilities: ₹3,500\n- Transport: ₹2,500\n- Health basics: ₹2,000\n- **Monthly essential total: ₹30,500**\n- **3-month target: ₹91,500**\n- **6-month target: ₹1,83,000**\n\nA useful shortcut: if your monthly income is ₹75,000 and your essential expenses are ~40% of that, target 3 months of essentials first (≈ ₹90,000), then extend to 6 months over time.\n\n---\n\n## Why 3–6 Months?",
+    "source": "02_emergency_fund.md",
+    "chunk_type": "knowledge",
+    "category": "emergency_fund",
+    "metadata": {
+      "file": "02_emergency_fund.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_02_emergency_fund_001",
+    "text": "## Why 3–6 Months?\n\n- **3 months**: Enough to cover a job transition, a medical bill, or a sudden travel need.\n- **6 months**: Better if you are self-employed, on contract, have dependants, or live in a high-rent city.\n- **Single income households**: Lean toward 6 months.\n- **Dual income households**: 3 months may be adequate initially.\n\n---\n\n## Where to Keep It\n\nThe emergency fund should sit in:\n- **Savings account** with a reputable bank (HDFC, SBI, Kotak)\n- **Liquid mutual fund** (same-day redemption, slightly better returns than savings account)\n- **Sweep-in FD** (available with HDFC, ICICI — auto-creates FDs from excess savings, redeemable anytime)\n\n**Do not keep it in:**\n- Equity stocks or mutual funds (volatile, could be down when you need it)\n- Long-term FDs with lock-in periods\n- Physical cash at home (insecure, no interest)\n\n---\n\n## Building It Gradually\n\nYou do not need ₹90,000 on day one. Start with a ₹1,000 buffer, grow to ₹10,000, then build toward 1 month of expenses, then 3 months.",
+    "source": "02_emergency_fund.md",
+    "chunk_type": "knowledge",
+    "category": "emergency_fund",
+    "metadata": {
+      "file": "02_emergency_fund.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_02_emergency_fund_002",
+    "text": "You do not need ₹90,000 on day one. Start with a ₹1,000 buffer, grow to ₹10,000, then build toward 1 month of expenses, then 3 months.\n\n**Strategy:**\n1. Open a separate savings account named \"Emergency Fund\"\n2. Set a standing instruction to transfer a fixed amount on salary day\n3. Treat it like a non-negotiable EMI — it leaves your account the moment income arrives\n4. Do not touch it for anything that is not a true emergency\n\n---\n\n## Common Mistakes\n\n- **Using it for planned expenses**: A vacation is not an emergency. A medical bill for a pre-planned surgery is also not really an emergency.\n- **Investing it**: Returns are irrelevant for emergency money. Accessibility is what matters.\n- **Keeping it mixed with daily spending**: Keeping it in the same account as your salary leads to spending it.\n- **Not replenishing after use**: If you dip into it, rebuild it before resuming SIPs or goal savings.\n\n---\n\n## Emergency Fund vs Insurance\n\nAn emergency fund handles small-to-medium shocks (₹10,000–₹1,50,000 range). Insurance handles catastrophic events (hospitalisation, total disability, death). Both are necessary — they cover different risk magnitudes.\n\nA medical emergency fund top-up of ₹2,00,000 complements, not replaces, a health insurance policy.\n\n---\n\n## For the Dekho User",
+    "source": "02_emergency_fund.md",
+    "chunk_type": "knowledge",
+    "category": "emergency_fund",
+    "metadata": {
+      "file": "02_emergency_fund.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_02_emergency_fund_003",
+    "text": "## For the Dekho User\n\nIf your monthly essential expenses are approximately ₹30,500, your 3-month target is ₹91,500. You currently have ₹45,000 saved — you are 49% of the way there. Contributing ₹5,000/month will get you to the target in about 9 more months.",
+    "source": "02_emergency_fund.md",
+    "chunk_type": "knowledge",
+    "category": "emergency_fund",
+    "metadata": {
+      "file": "02_emergency_fund.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_03_savings_concepts_000",
+    "text": "## The Purpose of Saving\n\nSaving money is not about accumulation for its own sake. It is about buying future options: the ability to handle surprises, reach goals, and eventually work because you want to, not because you have to.\n\nEvery rupee saved today is potential freedom in the future.\n\n---\n\n## Savings vs Investment\n\nThese are not the same thing:\n- **Saving** = keeping money safe and accessible (savings account, FD, liquid fund)\n- **Investing** = putting money to work for growth, accepting some risk (equity mutual funds, stocks, SIP)\n\nBoth are necessary. Savings handle short-term needs and emergencies. Investments build long-term wealth.\n\n---\n\n## The Latte Factor (Indian Version)\n\nSmall daily expenses, compounded over time, have a large cumulative impact.\n\nIf you spend ₹250/day on food delivery lunches (5 days/week):\n- Monthly: ₹5,000\n- Annually: ₹60,000\n- Over 10 years (if invested at 12% returns): ₹11,50,000+\n\nThis is not an argument to stop enjoying life. It is an argument to be intentional about which small habits you keep versus which ones quietly drain your savings.\n\n---\n\n## Rule: Save Before Spending\n\nThe most powerful savings habit: automate a fixed amount to leave your account on salary day, before discretionary spending begins.\n\nStart with even 5% of income (₹3,750 on ₹75,000). Over time, increase to 10%, then 20%.\n\n---",
+    "source": "03_savings_concepts.md",
+    "chunk_type": "knowledge",
+    "category": "savings",
+    "metadata": {
+      "file": "03_savings_concepts.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_03_savings_concepts_001",
+    "text": "---\n\n## Goal-Based Savings\n\nSaving without a goal is vulnerable to spending creep. Attaching a saving amount to a specific goal creates emotional motivation:\n\n- \"I'm saving ₹5,000/month for my emergency fund\" is stronger than \"I'll save whatever is left\"\n- \"This ₹3,500/month is going to Goa in June\" feels more real than \"I'll take a trip someday\"\n\nUse separate accounts or labelled envelopes (digitally or mentally) for each goal.\n\n---\n\n## Savings Rate\n\nSavings rate = (Amount saved ÷ Monthly income) × 100\n\n| Savings Rate | Assessment |\n|---|---|\n| Less than 5% | Survival mode — prioritise emergency fund |\n| 5–15% | Starting well — build habits first |\n| 15–25% | Healthy — add investments alongside savings |\n| 25–40% | Strong — accelerate your financial timeline |\n| Above 40% | Exceptional — path to financial independence |\n\nA savings rate of 20% is a strong goal for early career professionals in India.\n\n---\n\n## Short-Term vs Long-Term Savings",
+    "source": "03_savings_concepts.md",
+    "chunk_type": "knowledge",
+    "category": "savings",
+    "metadata": {
+      "file": "03_savings_concepts.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_03_savings_concepts_002",
+    "text": "## Short-Term vs Long-Term Savings\n\n| Horizon | Purpose | Instrument |\n|---|---|---|\n| 0–3 months | Emergency buffer | Savings account |\n| 3–12 months | Goal fund (travel, gadget) | Recurring Deposit, Liquid Fund |\n| 1–3 years | Large purchase, wedding | Fixed Deposit, Short-duration debt fund |\n| 3+ years | Wealth building | Equity Mutual Fund, PPF, NPS |\n\n---\n\n## The Power of Recurring Deposits (RD)\n\nA Recurring Deposit is a bank product where you commit to depositing a fixed amount every month for a set period (3 months to 10 years). The bank pays interest (typically 5–7.5% per annum, similar to FD rates).\n\nIdeal for saving toward a specific goal with a deadline — e.g., ₹3,000/month for 12 months for a ₹36,000+ travel fund.\n\n---\n\n## Inflation and Purchasing Power\n\nMoney in a savings account earns 2.5–4% interest. Inflation in India averages 4–6% per year. This means money sitting only in savings accounts slowly loses purchasing power.\n\nSavings account = safe storage, not real growth.\nFor goals 3+ years away, equity investments are essential to beat inflation.\n\n---\n\n## Savings for Self-Employed / Freelancers",
+    "source": "03_savings_concepts.md",
+    "chunk_type": "knowledge",
+    "category": "savings",
+    "metadata": {
+      "file": "03_savings_concepts.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_03_savings_concepts_003",
+    "text": "## Savings for Self-Employed / Freelancers\n\nWithout a fixed salary:\n1. Identify your lowest-income month over the past year\n2. Budget as if every month is that amount\n3. In higher-income months, sweep the excess into savings immediately\n4. Maintain a 6-month emergency fund (vs 3 for salaried)\n5. Set aside 25–30% of income for taxes and social security costs",
+    "source": "03_savings_concepts.md",
+    "chunk_type": "knowledge",
+    "category": "savings",
+    "metadata": {
+      "file": "03_savings_concepts.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_04_investments_basics_000",
+    "text": "## Why Invest?\n\nSavings in a bank account earn 2.5–4% annually. Inflation erodes purchasing power at 4–6% annually. This means money held purely in savings accounts loses real value over time.\n\nInvesting allows your money to grow faster than inflation, building long-term wealth.\n\n---\n\n## Mutual Funds\n\nA mutual fund pools money from thousands of investors and invests in stocks, bonds, or both, managed by a professional fund manager.\n\n**Key types:**\n- **Equity Mutual Funds**: Invest in stocks. Higher returns (10–15% historically), higher volatility. Suitable for 5+ year horizons.\n- **Debt Mutual Funds**: Invest in bonds, government securities. Lower risk (6–8%), stable returns. 1–3 year horizon.\n- **Hybrid Funds**: Mix of equity and debt. Moderate risk and return.\n- **Liquid Funds**: Ultra short-term, near-zero risk. Better than savings account for parking money.\n- **Index Funds**: Track a market index (Nifty 50, Sensex). Low-cost passive investing.\n\n---\n\n## SIP — Systematic Investment Plan\n\nA SIP is an automatic monthly investment into a mutual fund, similar to an EMI but for your own wealth.",
+    "source": "04_investments_basics.md",
+    "chunk_type": "knowledge",
+    "category": "investments",
+    "metadata": {
+      "file": "04_investments_basics.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_04_investments_basics_001",
+    "text": "A SIP is an automatic monthly investment into a mutual fund, similar to an EMI but for your own wealth.\n\n**Why SIPs work:**\n1. **Rupee cost averaging**: You buy more units when markets are low, fewer when high — averaging out the purchase cost over time.\n2. **Discipline**: Automatic deduction means you invest before you can spend.\n3. **Compounding**: Returns earn returns. ₹3,000/month at 12% annually for 15 years = ₹15.5 lakhs.\n\n**Starting a SIP**: Minimum ₹500/month on platforms like Zerodha Coin, Groww, Paytm Money, or directly via AMC websites.\n\n---\n\n## PPF — Public Provident Fund\n\nA government-backed savings scheme:\n- **Interest rate**: 7.1% per annum (set quarterly by government)\n- **Tax-free**: Interest and maturity amount are tax-exempt under EEE status\n- **Lock-in**: 15 years (partial withdrawal allowed after year 6)\n- **Annual limit**: ₹500 minimum, ₹1.5 lakh maximum per year\n- **Risk**: Sovereign guarantee — zero credit risk\n\nIdeal for: Any Indian wanting safe, tax-free, long-term wealth building.\n\n---\n\n## NPS — National Pension System\n\nA government pension scheme for long-term retirement savings:\n- Market-linked returns (mix of equity, corporate bonds, government securities)\n- Additional ₹50,000 tax deduction under Section 80CCD(1B) beyond 80C limit\n- Lock-in until retirement age (60), partial withdrawal allowed in certain cases\n\nSuitable for disciplined long-term savers who want tax benefits.\n\n---",
+    "source": "04_investments_basics.md",
+    "chunk_type": "knowledge",
+    "category": "investments",
+    "metadata": {
+      "file": "04_investments_basics.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_04_investments_basics_002",
+    "text": "---\n\n## FD — Fixed Deposit\n\nA bank or NBFC product where you park money for a fixed term at a guaranteed interest rate.\n\n- Interest: 5.5–8% depending on bank and tenure\n- Lock-in: Flexible tenures (7 days to 10 years)\n- Penalty for premature withdrawal (typically 0.5–1%)\n- TDS applicable: Interest is taxable as per income slab\n\nBest for: Short-to-medium term goals (1–3 years), capital preservation.\n\n---\n\n## Gold\n\nIndians are culturally connected to gold. Financial aspects:\n- **Sovereign Gold Bonds (SGB)**: Government-issued, 2.5% annual interest + gold price appreciation. No making charges. No risk of theft. 8-year tenure. Best option for gold investment.\n- **Gold ETF**: Traded on stock exchange. Lower cost than physical gold. No lock-in.\n- **Physical gold**: Illiquid, storage risk, high making charges. Financial products are better.\n\nAs a general rule: Limit gold exposure to 5–10% of investment portfolio.\n\n---\n\n## Stocks / Direct Equity\n\nBuying shares in individual companies:\n- Highest potential returns, highest volatility\n- Requires research, time, and temperament\n- Use a SEBI-registered stockbroker (Zerodha, Upstox, ICICI Direct)\n- Not recommended as a starting point — mutual funds (especially index funds) are safer for beginners\n\n---\n\n## Key Principles for Indian Investors",
+    "source": "04_investments_basics.md",
+    "chunk_type": "knowledge",
+    "category": "investments",
+    "metadata": {
+      "file": "04_investments_basics.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_04_investments_basics_003",
+    "text": "## Key Principles for Indian Investors\n\n1. **Start early**: Time in market matters more than timing the market\n2. **Start small**: ₹500/month SIP is a valid beginning\n3. **Diversify**: Don't put all money in one asset class\n4. **Ignore short-term noise**: Markets go up and down; don't panic-sell\n5. **Keep costs low**: Choose index funds with expense ratios < 0.5%\n6. **Use tax-advantaged accounts**: PPF, ELSS (80C), NPS (80CCD)\n7. **Review annually**: Not monthly — checking too often leads to emotional decisions\n\n---\n\n## The Investment Pyramid (India)\n\n```\n         [Stocks]          ← Only 5-10%, once foundation is solid\n        [Equity MF]        ← Core wealth builder for 5+ year goals\n     [Hybrid / Debt MF]    ← 1-3 year goals\n  [FD / RD / PPF / NPS]   ← Guaranteed returns, tax benefits\n[Emergency Fund + Savings] ← Always the foundation first\n```\n\nBuild from the bottom up. Never invest money in equity that you may need within 3 years.",
+    "source": "04_investments_basics.md",
+    "chunk_type": "knowledge",
+    "category": "investments",
+    "metadata": {
+      "file": "04_investments_basics.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_05_credit_and_debt_000",
+    "text": "## Credit Cards: Tool, Not Trap\n\nA credit card is a short-term interest-free loan if paid in full by the due date. Used wisely, it provides:\n- Reward points, cashback, or airline miles\n- Purchase protection and extended warranty\n- A 30–50 day interest-free period\n- Credit history building (important for future loans)\n\nUsed poorly, it becomes expensive debt at 36–48% annual interest.\n\n---\n\n## The Only Rule That Matters\n\n**Pay the full statement balance every month before the due date.**\n\nIf you pay only the minimum amount:\n- The remaining balance attracts interest at 2.5–4% per month (30–48% per year)\n- Interest compounds daily on carry-forward balances\n- Your effective cost of purchases balloons rapidly\n\n**Example**: ₹10,000 unpaid balance at 3.5% monthly interest:\n- After 1 month: ₹10,350\n- After 6 months: ₹12,293\n- After 12 months: ₹15,111\n\nA ₹10,000 expense becomes ₹15,111 before you've finished paying it off.\n\n---\n\n## Credit Score (CIBIL Score)\n\nA CIBIL score (300–900) determines how lenders assess your creditworthiness.",
+    "source": "05_credit_and_debt.md",
+    "chunk_type": "knowledge",
+    "category": "credit_and_debt",
+    "metadata": {
+      "file": "05_credit_and_debt.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_05_credit_and_debt_001",
+    "text": "A CIBIL score (300–900) determines how lenders assess your creditworthiness.\n\n**What affects your score:**\n- Payment history (most important — pay on time, always)\n- Credit utilisation (keep usage below 30% of your credit limit)\n- Credit age (older accounts help)\n- Mix of credit types (credit card + personal loan + home loan)\n- Hard inquiries (applying for too many loans/cards in short periods lowers score)\n\n**Good range**: 750+ qualifies for lower interest rates on future loans.\n\n---\n\n## Debt Repayment: Avalanche Method\n\nIf you have multiple debts, list them by interest rate (highest first). Pay minimums on all, then attack the highest-rate debt with any extra money.\n\n**Why**: Mathematically optimal — saves the most money in interest.\n\nExample:\n1. Credit card: ₹20,000 at 40% → attack first\n2. Personal loan: ₹50,000 at 14% → pay minimum until card cleared\n3. Education loan: ₹2,00,000 at 8% → pay minimum last\n\n---\n\n## Debt Repayment: Snowball Method\n\nList debts by balance (smallest first). Pay minimums on all, then eliminate the smallest debt first.\n\n**Why**: Psychological wins — clearing a debt entirely is motivating. Behavioural research shows many people stick to snowball better than avalanche.\n\nChoose the method you will actually follow.\n\n---\n\n## Personal Loans in India",
+    "source": "05_credit_and_debt.md",
+    "chunk_type": "knowledge",
+    "category": "credit_and_debt",
+    "metadata": {
+      "file": "05_credit_and_debt.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_05_credit_and_debt_002",
+    "text": "## Personal Loans in India\n\n- Typically 11–24% annual interest (varies by lender, credit score, income)\n- Often used for emergencies, weddings, home renovation\n- Avoid where possible — save in advance instead\n- If unavoidable, compare: bank personal loan < NBFC < credit card < payday lender\n\n---\n\n## Buy-Now-Pay-Later (BNPL)\n\nProducts like Simpl, LazyPay, or Amazon Pay Later offer short credit lines.\n- Interest-free if repaid within the billing cycle\n- Become expensive quickly if you carry balances\n- Can negatively impact CIBIL score if overdue\n- Treat as a convenience tool, not a way to afford things you cannot\n\n---\n\n## Red Flags: Signs of a Debt Problem\n\n- You are spending more than you earn consistently\n- You are using one credit card to pay another\n- You are borrowing for daily expenses like groceries\n- You skip tracking because the numbers are uncomfortable\n- Your minimum payment takes more than 10% of your monthly income\n\nIf any of these apply, the priority is: stop accumulating new debt, build an emergency fund (even a small one), and create a structured repayment plan.\n\n---\n\n## EMIs and Loan Planning",
+    "source": "05_credit_and_debt.md",
+    "chunk_type": "knowledge",
+    "category": "credit_and_debt",
+    "metadata": {
+      "file": "05_credit_and_debt.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_05_credit_and_debt_003",
+    "text": "## EMIs and Loan Planning\n\nAn EMI (Equated Monthly Instalment) is a fixed monthly payment for a loan. Before taking an EMI:\n1. Calculate total interest paid over the loan tenure (not just monthly amount)\n2. Ensure total EMIs ≤ 40% of monthly take-home pay\n3. Prioritise closing high-interest EMIs early if you have surplus\n\nEMI calculators are available on BankBazaar, Paisabazaar, and all bank websites.\n\n---\n\n## Healthy Credit Habits Checklist\n\n- [ ] Pay full credit card balance every statement cycle\n- [ ] Keep credit utilisation below 30%\n- [ ] Have only 1–2 credit cards (complexity risk)\n- [ ] Check CIBIL score annually (free on official site)\n- [ ] Never pay only the minimum — it is a trap\n- [ ] No EMI for short-lived items (meals, subscriptions, clothing)",
+    "source": "05_credit_and_debt.md",
+    "chunk_type": "knowledge",
+    "category": "credit_and_debt",
+    "metadata": {
+      "file": "05_credit_and_debt.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_06_upi_and_digital_payments_000",
+    "text": "## What Is UPI?\n\nUnified Payments Interface (UPI) is a real-time payment system developed by the National Payments Corporation of India (NPCI). It allows instant money transfer between bank accounts via a mobile app — 24 hours a day, 7 days a week, 365 days a year.\n\nUPI handles over 10 billion transactions per month in India as of 2025, making it one of the largest real-time payment systems in the world.\n\n---\n\n## How UPI Works\n\n- Each UPI user has a VPA (Virtual Payment Address) — e.g., arjun@okhdfc\n- You link your bank account to the UPI ID\n- To pay: Enter UPI ID or scan QR, enter amount, authenticate with UPI PIN\n- Settlement happens in real time between bank accounts — no wallet involved\n\n**Apps**: PhonePe, Google Pay (GPay), BHIM, Paytm, Amazon Pay, WhatsApp Pay, banks' own apps\n\n---\n\n## UPI Limits\n\n- **Default limit**: ₹1 lakh per transaction, ₹2 lakh per day (varies by bank)\n- **UPI Lite**: For small payments up to ₹500 — no PIN required, funds stored in device wallet\n- Higher limits available for specific purposes (hospital, education): up to ₹5 lakh per transaction\n- NEFT and RTGS remain options for very large corporate transfers\n\n---\n\n## UPI and Spending Behaviour",
+    "source": "06_upi_and_digital_payments.md",
+    "chunk_type": "knowledge",
+    "category": "upi_payments",
+    "metadata": {
+      "file": "06_upi_and_digital_payments.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_06_upi_and_digital_payments_001",
+    "text": "## UPI and Spending Behaviour\n\nUPI frictionlessness is a double-edged sword:\n- **Pro**: Easy, instant, no cash handling\n- **Con**: The ease removes spending friction\n\nResearch and anecdotal evidence suggest that digital payment users often underestimate their spending because there is no physical money leaving hands. Transactions happen in background notifications, easy to miss.\n\n**Signs of frictionless overspending via UPI:**\n- You are surprised when reviewing your bank statement\n- Small amounts (₹50–₹300) appear dozens of times per month\n- Zomato, Swiggy, and coffee shop UPI payments dominate your statement\n\n---\n\n## Tracking UPI Spending\n\nPhonePe and Google Pay have in-app expense categorisation and monthly summaries. However, they only show payments — not full context.\n\nFor full visibility:\n- Download your bank statement (CSV or PDF)\n- Filter by UPI transactions\n- Categorise manually or use a finance app like Dekho\n- Look for frequency patterns — how many transactions per category?\n\n---\n\n## UPI AutoPay\n\nAutoPay allows recurring payments via UPI — similar to NACH mandates. Examples:\n- Netflix, Spotify, mutual fund SIPs, loan EMIs\n- Set up once, deducts automatically on schedule\n- Can be cancelled anytime through the UPI app\n\nCheck your active UPI AutoPay mandates periodically — you may be paying for services you no longer use.\n\n---\n\n## Safety and Fraud Prevention",
+    "source": "06_upi_and_digital_payments.md",
+    "chunk_type": "knowledge",
+    "category": "upi_payments",
+    "metadata": {
+      "file": "06_upi_and_digital_payments.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_06_upi_and_digital_payments_002",
+    "text": "## Safety and Fraud Prevention\n\n**Never share:**\n- Your UPI PIN (it is only for authentication — no legitimate bank or service will ask for it)\n- OTP received on your phone\n- Screenshots of your UPI screen\n\n**Common UPI frauds:**\n- \"Collect money\" requests (scammers send collection requests, not payment links)\n- QR codes that are payment requests disguised as receiving codes\n- Fake customer care numbers for banks and UPI apps (find official numbers only on the bank's website)\n- SIM swap attacks — scammers port your number to a new SIM\n\n**If defrauded:**\n1. Call your bank immediately (24/7 helpline)\n2. Register complaint on RBI's Sachet portal (sachet.rbi.org.in)\n3. File an FIR with cybercrime cell (cybercrime.gov.in)\n\nUPI transactions are irrevocable once sent — prevention is critical.\n\n---\n\n## BBPS — Bharat Bill Payment System\n\nA centralised platform for paying utility bills — electricity, water, gas, telecom, insurance premiums, school fees, and more.\n\nAccessible via PhonePe, Google Pay, Paytm, bank apps. All payments under BBPS receive an instant confirmation receipt downloadable for records.\n\nUsing BBPS for recurring bills simplifies expense tracking — all bills appear as a single category in your transaction history.\n\n---\n\n## Rupay vs Visa vs Mastercard",
+    "source": "06_upi_and_digital_payments.md",
+    "chunk_type": "knowledge",
+    "category": "upi_payments",
+    "metadata": {
+      "file": "06_upi_and_digital_payments.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_06_upi_and_digital_payments_003",
+    "text": "## Rupay vs Visa vs Mastercard\n\nFor credit and debit cards in India:\n- **Rupay**: India's domestic card network. Works across all Indian ATMs and most merchants. Lower fees, occasionally more merchant offers specific to India. Now accepted internationally.\n- **Visa/Mastercard**: International networks, widely accepted globally, essential for international travel.\n\nMost Indians benefit from having one Rupay debit card (for domestic use) and one Visa/Mastercard credit card (for international use and rewards).",
+    "source": "06_upi_and_digital_payments.md",
+    "chunk_type": "knowledge",
+    "category": "upi_payments",
+    "metadata": {
+      "file": "06_upi_and_digital_payments.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_07_goal_setting_habits_000",
+    "text": "## Why Goals Matter More Than Willpower\n\nWillpower is a finite resource — it depletes under stress, fatigue, and social pressure. Systems and goals that require no willpower in the moment are more sustainable.\n\nSetting a specific financial goal and automating progress toward it removes the daily decision of whether to save. It makes the right behaviour the default behaviour.\n\n---\n\n## SMART Financial Goals\n\nFinancial goals should be:\n- **Specific**: \"Save ₹25,000 for Goa trip\" not \"save for travel\"\n- **Measurable**: Track ₹ saved vs target\n- **Achievable**: Realistic given your income and expenses\n- **Relevant**: Connected to what genuinely matters to you\n- **Time-bound**: Deadline creates urgency and backward planning\n\n**Weak goal**: \"I want to save more money\"\n**SMART goal**: \"I will save ₹3,500/month in a dedicated account to reach ₹25,000 by June 15, 2026, for my Goa trip\"\n\n---\n\n## Types of Financial Goals\n\n**Short-term (0–1 year)**:\n- Emergency fund\n- Festival/wedding gift budget\n- Travel fund\n- New gadget\n\n**Medium-term (1–3 years)**:\n- Down payment for a vehicle\n- Higher education fee\n- Starting an investment portfolio\n- Moving to a better apartment\n\n**Long-term (5+ years)**:\n- Home ownership\n- Retirement corpus\n- Child's education fund\n- Financial independence\n\n---\n\n## Goal Prioritisation Framework",
+    "source": "07_goal_setting_habits.md",
+    "chunk_type": "knowledge",
+    "category": "goal_setting",
+    "metadata": {
+      "file": "07_goal_setting_habits.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_07_goal_setting_habits_001",
+    "text": "## Goal Prioritisation Framework\n\nWhen you cannot save for all goals at once, use this order:\n1. Emergency fund (3 months of essentials) — always first\n2. High-interest debt repayment — frees cash for everything else\n3. Goals with hard deadlines (wedding, exam fee, travel date)\n4. Medium-priority goals (new gadget, vehicle down payment)\n5. Long-term wealth building (SIP, PPF, retirement)\n\n---\n\n## The Habit Stack\n\nPair new financial habits with existing ones:\n- \"When salary credits, I transfer ₹5,000 to emergency fund\"\n- \"On the last Sunday of each month, I review my expenses\"\n- \"When I get a delivery notification from Swiggy, I note the amount in my tracker\"\n\nBehaviour research shows habits formed through triggers (existing actions) are more durable than habits relying on motivation alone.\n\n---\n\n## Spending Triggers and Patterns\n\nCommon psychological drivers of unplanned spending:",
+    "source": "07_goal_setting_habits.md",
+    "chunk_type": "knowledge",
+    "category": "goal_setting",
+    "metadata": {
+      "file": "07_goal_setting_habits.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_07_goal_setting_habits_002",
+    "text": "Common psychological drivers of unplanned spending:\n\n**Emotional spending**: Shopping or ordering food when stressed, bored, or anxious. The purchase feels like relief but the financial effect is real.\n**Social spending**: Peer pressure to keep up with friends' lifestyle. Travelling, eating out, or gifting beyond your means.\n**Convenience spending**: Ordering food instead of cooking because it is easier. Taking cabs because metro requires a walk.\n**Reward spending**: \"I worked hard this week, I deserve this.\" Real rewards are fine — but becoming a daily habit erodes savings.\n**Subscription accumulation**: Signing up for free trials and forgetting to cancel. Paying for platforms you rarely use.\n\n---\n\n## Identifying Your Patterns\n\nLook at your transaction history and ask:\n1. What time of day do most discretionary transactions happen? (Evening? 11pm?)\n2. What day of week? (Weekend splurges?)\n3. What is the context? (After a long work day? After socialising?)\n4. Which merchant appears most frequently?\n\nThese patterns reveal your triggers. With awareness, you can interrupt the pattern with a pause: before spending, ask \"Does this align with my goal right now?\"\n\n---\n\n## Celebrating Milestones Without Destroying Progress\n\nReaching 50% of a savings goal, paying off a debt, or hitting a saving streak are worth celebrating. But celebrations that cost money can undermine the goal.",
+    "source": "07_goal_setting_habits.md",
+    "chunk_type": "knowledge",
+    "category": "goal_setting",
+    "metadata": {
+      "file": "07_goal_setting_habits.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_07_goal_setting_habits_003",
+    "text": "Reaching 50% of a savings goal, paying off a debt, or hitting a saving streak are worth celebrating. But celebrations that cost money can undermine the goal.\n\n**Low-cost celebrations**: Cook a special meal, watch a movie at home, take a day off for yourself, share the achievement with someone who will cheer you on.\n\nReserve large celebrations (travel, gifts) for achievement of the full goal — and budget for it in advance.\n\n---\n\n## The Consistency Principle\n\nA 10% savings rate maintained for 12 months beats a 40% savings rate maintained for 2 months and then abandoned.\n\nConsistency compounds. Missing weeks or months is normal — what matters is returning to the plan without guilt, not abandoning it because of a stumble.\n\n---\n\n## Reviewing Goals Quarterly\n\nEvery 3 months:\n1. Are your goals still relevant? Life changes — goals should too.\n2. Are your income or expenses significantly different?\n3. Did you meet or miss your monthly target? Why?\n4. Do you need to adjust timelines or contribution amounts?\n\nAn annual review is the minimum. Quarterly is better. Monthly reviews can be counterproductive (too much short-term noise).",
+    "source": "07_goal_setting_habits.md",
+    "chunk_type": "knowledge",
+    "category": "goal_setting",
+    "metadata": {
+      "file": "07_goal_setting_habits.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_08_indian_finance_terms_000",
+    "text": "## Regulatory Bodies\n\n**RBI — Reserve Bank of India**\nCentral bank of India. Controls monetary policy, regulates banks, manages exchange rates, and issues currency. All banks must be registered with RBI.\n\n**SEBI — Securities and Exchange Board of India**\nRegulates capital markets, stock exchanges, mutual funds, and investment advisors. Ensures investor protection and market integrity. All mutual fund houses and stockbrokers require SEBI registration.\n\n**IRDAI — Insurance Regulatory and Development Authority of India**\nRegulates the insurance industry. Approves products, sets norms for premiums and claims. All insurers must be IRDAI-registered.\n\n**PFRDA — Pension Fund Regulatory and Development Authority**\nRegulates the National Pension System (NPS) and pension funds.\n\n---\n\n## Banking Terms\n\n**NEFT** (National Electronic Funds Transfer): Fund transfer in batches, settled in 30 minutes, available 24/7. No upper limit. Nominal charges.\n\n**RTGS** (Real Time Gross Settlement): Real-time transfer for large amounts (minimum ₹2 lakh). Instantaneous settlement. Used for high-value transactions.\n\n**IMPS** (Immediate Payment Service): Instant (24/7) fund transfer, up to ₹5 lakh per transaction. Available even on holidays.\n\n**UPI** (Unified Payments Interface): Instant transfers via VPA. No minimum; maximum ₹1–5 lakh per transaction depending on purpose.\n\n**KYC** (Know Your Customer): Process of verifying identity using PAN, Aadhaar, proof of address. Required for opening bank accounts, investing in mutual funds, purchasing insurance.",
+    "source": "08_indian_finance_terms.md",
+    "chunk_type": "knowledge",
+    "category": "terminology",
+    "metadata": {
+      "file": "08_indian_finance_terms.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_08_indian_finance_terms_001",
+    "text": "**KYC** (Know Your Customer): Process of verifying identity using PAN, Aadhaar, proof of address. Required for opening bank accounts, investing in mutual funds, purchasing insurance.\n\n**IFSC** (Indian Financial System Code): 11-character code identifying a specific bank branch for NEFT/RTGS transfers.\n\n---\n\n## Investment Terms\n\n**NAV** (Net Asset Value): The per-unit value of a mutual fund. Calculated daily. When you invest in an MF, you buy units at the current NAV.\n\n**AUM** (Assets Under Management): Total market value of assets managed by a fund house. Larger AUM indicates investor trust but does not guarantee better performance.\n\n**Expense Ratio**: Annual fee charged by a mutual fund as a percentage of AUM. Lower is better. Index funds: 0.05–0.5%. Actively managed funds: 0.5–2%.\n\n**SIP** (Systematic Investment Plan): Regular, automatic investment in a mutual fund — monthly, weekly, or daily.\n\n**ELSS** (Equity Linked Savings Scheme): Mutual fund eligible for Section 80C tax deduction. 3-year lock-in. Mix of equity and tax benefit.\n\n**FD** (Fixed Deposit): Bank or NBFC deposit at a guaranteed interest rate for a fixed tenure.\n\n**RD** (Recurring Deposit): Monthly fixed deposit. Commit to regular deposits; bank pays interest on accumulated balance.\n\n**Demat Account**: Dematerialised account that holds shares and securities in electronic form. Like a bank account for stocks. Required for stock market investing.",
+    "source": "08_indian_finance_terms.md",
+    "chunk_type": "knowledge",
+    "category": "terminology",
+    "metadata": {
+      "file": "08_indian_finance_terms.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_08_indian_finance_terms_002",
+    "text": "**Demat Account**: Dematerialised account that holds shares and securities in electronic form. Like a bank account for stocks. Required for stock market investing.\n\n**Corpus**: Total accumulated amount in a savings or investment pool. \"My retirement corpus\" means the total money saved for retirement.\n\n**Compounding**: Earning returns on previously earned returns. The longer the period, the more powerful the effect. Einstein reportedly called it the eighth wonder of the world.\n\n---\n\n## Insurance Terms\n\n**Term Insurance**: Pure life insurance. Pays a large lump sum to nominees if the insured dies during the policy term. No maturity benefit. Cheapest form of life insurance. Recommended for anyone with financial dependants.\n\n**Endowment / Traditional Plans**: Life insurance + savings combined. Returns are low (4–6%). SEBI and financial advisors generally recommend separating insurance (term plan) and investments (MF/ELSS).\n\n**Health Insurance**: Covers hospitalisation costs, surgery, ICU, daycare procedures. Individual or family floater. Essential for all adults.\n\n**Premium**: The periodic payment made to maintain an insurance policy.\n\n**Sum Assured**: The amount the insurer pays upon the occurrence of the insured event (death, hospitalisation, etc.).\n\n---\n\n## Tax Terms\n\n**PAN** (Permanent Account Number): 10-character alphanumeric identifier for all financial transactions. Required for investing, banking above certain limits, filing income tax.",
+    "source": "08_indian_finance_terms.md",
+    "chunk_type": "knowledge",
+    "category": "terminology",
+    "metadata": {
+      "file": "08_indian_finance_terms.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_08_indian_finance_terms_003",
+    "text": "**PAN** (Permanent Account Number): 10-character alphanumeric identifier for all financial transactions. Required for investing, banking above certain limits, filing income tax.\n\n**ITR** (Income Tax Return): Annual declaration of income and tax paid filed with the Income Tax Department. Due date: July 31 for most individuals.\n\n**Section 80C**: Provides up to ₹1.5 lakh tax deduction for investments in EPF, PPF, ELSS, NSC, LIC premium, home loan principal, children's tuition fees.\n\n**Section 80D**: Tax deduction for health insurance premiums — up to ₹25,000 for self/family; ₹50,000 if parents are senior citizens.\n\n**HRA** (House Rent Allowance): Salary component that allows tax exemption on rent paid, subject to conditions.\n\n**TDS** (Tax Deducted at Source): Tax withheld by the payer before crediting income. Applicable on FD interest, salary, rent above ₹50,000/month, etc.\n\n**Form 26AS**: Annual tax credit statement showing all TDS deducted against your PAN. Available on the Income Tax portal.\n\n---\n\n## Account Aggregator (AA)\n\nA new RBI-regulated framework that allows individuals to securely and digitally share their financial data (from banks, insurers, mutual fund depositories) with third-party financial service providers — with explicit consent.\n\nThink of it as a data-sharing system where you control who sees your financial information and for how long. Enabled by the RBI's Open Banking vision.\n\n---\n\n## EMI and Loan Terms",
+    "source": "08_indian_finance_terms.md",
+    "chunk_type": "knowledge",
+    "category": "terminology",
+    "metadata": {
+      "file": "08_indian_finance_terms.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_08_indian_finance_terms_004",
+    "text": "## EMI and Loan Terms\n\n**EMI** (Equated Monthly Instalment): Fixed monthly payment on a loan, combining principal repayment and interest.\n\n**Tenure**: Duration of a loan. Longer tenure = lower EMI but more total interest paid.\n\n**Principal**: The original borrowed amount (excluding interest).\n\n**Moratorium**: Temporary suspension of EMI payments (e.g., during COVID-19). Interest may continue accruing during moratorium.\n\n**Processing Fee**: One-time charge by lender for processing the loan application. Typically 0.5–2% of loan amount.\n\n**Foreclosure**: Paying off the entire outstanding loan before its tenure ends. Banks may charge a prepayment penalty (0–4%).\n\n**CIBIL Score**: Credit score provided by TransUnion CIBIL, ranging from 300–900. Used by lenders to assess creditworthiness.",
+    "source": "08_indian_finance_terms.md",
+    "chunk_type": "knowledge",
+    "category": "terminology",
+    "metadata": {
+      "file": "08_indian_finance_terms.md",
+      "chunk_index": 4
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_000",
+    "text": "## Why We Spend the Way We Do\n\nFinancial behaviour is driven more by psychology than logic. Understanding the mental shortcuts and biases that drive spending helps you make better decisions — not just in theory, but in the moment.\n\n---\n\n## Mental Accounting\n\nPeople tend to treat money differently based on where it came from or where it is mentally \"stored.\"\n\n**Examples:**\n- A ₹5,000 Diwali bonus feels like \"free money\" and gets spent on something you would not normally buy\n- Money in a savings account feels more precious than money you got as a gift\n- A tax refund is spent instantly because it feels unexpected\n\nIn reality, ₹5,000 is ₹5,000 regardless of source. Decisions should be made on total wealth, not the label attached to a specific amount.\n\n---\n\n## Anchoring\n\nOur brains anchor on the first price we see, then evaluate everything relative to that anchor.\n\n**Examples:**\n- A jacket marked \"₹3,999, was ₹7,999\" feels like a deal — even if ₹3,999 is objectively expensive\n- A restaurant's ₹600 pasta seems reasonable after seeing a ₹1,200 steak\n- An Amazon product with a crossed-out price creates urgency even if the discount is manufactured",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_001",
+    "text": "**Examples:**\n- A jacket marked \"₹3,999, was ₹7,999\" feels like a deal — even if ₹3,999 is objectively expensive\n- A restaurant's ₹600 pasta seems reasonable after seeing a ₹1,200 steak\n- An Amazon product with a crossed-out price creates urgency even if the discount is manufactured\n\n**Counter-strategy**: Before buying, ask \"Would I buy this at this price if I had never seen the original price?\" Set your own anchor based on value, not marked-up comparisons.\n\n---\n\n## Loss Aversion\n\nHumans feel losses about 2x more intensely than equivalent gains. This biases toward:\n- Avoiding selling investments that have lost value (\"I'll hold until it recovers\")\n- Keeping subscriptions active because cancelling \"wastes what you paid\"\n- Not switching banks or credit cards because the process feels like loss\n\n**Application**: When evaluating a subscription you barely use, ask \"Would I pay to start this subscription today?\" If no, cancel it — the money already paid is gone (sunk cost).\n\n---\n\n## Sunk Cost Fallacy\n\nContinuing something because you have already invested money, time, or effort into it — even when the rational decision is to stop.",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_002",
+    "text": "Continuing something because you have already invested money, time, or effort into it — even when the rational decision is to stop.\n\n**Examples:**\n- Continuing a gym membership you do not use because \"I paid for the year\"\n- Finishing a bad, expensive meal because you ordered it\n- Staying in a financial product that is underperforming because switching feels like admitting a mistake\n\n**Counter-strategy**: Evaluate decisions on future value only, not past investment.\n\n---\n\n## Present Bias\n\nThe tendency to prefer immediate, smaller rewards over larger future rewards.\n\n**Examples:**\n- Spending ₹500 on dinner delivery tonight vs saving it toward a ₹25,000 goal\n- Delaying a SIP start because \"I'll do it next month\"\n- Taking an EMI now for something you could save for in 6 months\n\n**Counter-strategy**: Make the future feel real. Name your savings goals. Visualise what you are saving toward. Automate savings so the present-you never has the choice to spend.\n\n---\n\n## Social Comparison and Lifestyle Inflation\n\nIncome levels influence social circles, which influence spending expectations. When your peers upgrade their lifestyle, you feel pressure to match — even if it exceeds your budget.",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_003",
+    "text": "Income levels influence social circles, which influence spending expectations. When your peers upgrade their lifestyle, you feel pressure to match — even if it exceeds your budget.\n\n**Common triggers in India:**\n- Friends buying cars or bikes (FOMO on road trips)\n- Colleagues moving to better apartments\n- Weddings in social circles escalating gift expectations\n- Instagram travel showcasing expensive experiences\n\nLifestyle inflation is natural. The problem is when it outpaces income growth, leaving nothing for wealth-building.\n\n**Counter-strategy**: Define your own lifestyle benchmark based on your goals — not your social feed.\n\n---\n\n## The Endowment Effect and Subscriptions\n\nOnce you own or enrol in something, you value it more than before. This applies strongly to subscriptions:\n- You signed up when it was free or cheap\n- Even when you rarely use it, cancelling feels like giving up something you own\n- The ₹649/month on Netflix feels smaller than ₹7,788/year when visualised annually\n\n**Review exercise**: List every active subscription. For each one, ask: \"If I were not already subscribed, would I sign up for this today at this price?\" Cancel anything where the answer is no.\n\n---\n\n## Food Delivery Economics\n\nFood delivery apps (Zomato, Swiggy) have become the single largest discretionary expense category for young urban Indians — often exceeding total monthly grocery spend.",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_004",
+    "text": "Food delivery apps (Zomato, Swiggy) have become the single largest discretionary expense category for young urban Indians — often exceeding total monthly grocery spend.\n\nKey behaviours:\n- Late-night ordering driven by convenience and fatigue (not hunger)\n- Repeat ordering from 2–3 favourite restaurants (habit formation)\n- Platform discounts creating artificial urgency (\"Offer ends in 2 hours\")\n- Small orders (₹150–₹300 chai/snacks) accumulating invisibly\n\n**Analysis**: If you order food delivery 4x/week at ₹350 average, that is ₹5,600/month or ₹67,200/year. Even halving this frequency saves ₹33,600 annually.\n\n---\n\n## Impulse vs Intentional Purchases\n\nA purchase is intentional if it was considered at least 24 hours before buying. A purchase is impulsive if it happened within minutes to hours of the trigger.\n\nThe **24-hour rule**: For any non-essential purchase above ₹500, wait 24 hours. Most impulse purchases lose their urgency by the next day. This one rule can reduce impulsive spending by 30–50% for most people.\n\n---\n\n## Building a Healthier Money Mindset",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 4
+    }
+  },
+  {
+    "id": "kb_09_spending_behaviour_005",
+    "text": "## Building a Healthier Money Mindset\n\n1. **Track without judgement**: Looking at spending is not about shame — it is about information.\n2. **Separate identity from money**: You are not a failure if you overspent. The pattern can change.\n3. **Celebrate progress**: Small wins (transferred savings, declined an impulse) deserve acknowledgement.\n4. **Make peace with constraints**: A budget is not punishment — it is a map from where you are to where you want to be.\n5. **Focus on what you can control**: Market returns, tax laws, and inflation are outside your control. Your spending decisions are not.",
+    "source": "09_spending_behaviour.md",
+    "chunk_type": "knowledge",
+    "category": "spending_behaviour",
+    "metadata": {
+      "file": "09_spending_behaviour.md",
+      "chunk_index": 5
+    }
+  },
+  {
+    "id": "kb_10_tax_planning_000",
+    "text": "## Why Tax Planning Matters\n\nIncome tax is one of the largest annual outflows for a salaried professional. Strategic tax planning — legally minimising your tax liability using available deductions — can save ₹30,000 to ₹1,00,000+ per year depending on your income and investments.\n\nTax planning should happen year-round, not just in January–March.\n\n---\n\n## New vs Old Tax Regime (AY 2025-26 onwards)\n\nIndia now has two tax regimes:\n\n**New Regime (default from FY 2023-24)**:\n- Lower tax rates\n- No deductions available (no 80C, 80D, HRA, etc.)\n- Standard deduction of ₹75,000 for salaried employees\n- Better for those with fewer deductions\n\n**Old Regime**:\n- Higher tax rates\n- All deductions available (80C, 80D, HRA, LTA, etc.)\n- Better for those with high Section 80C investments and rent\n\n**Which is better?**: Calculate both. As a rule of thumb, if your total deductions exceed ₹3.75 lakh, the old regime likely saves more tax.\n\n---\n\n## Old Regime Tax Slabs (FY 2025-26)\n\n| Income | Tax Rate |\n|---|---|\n| Up to ₹2.5 lakh | Nil |\n| ₹2.5L – ₹5L | 5% |\n| ₹5L – ₹10L | 20% |\n| Above ₹10L | 30% |\n\nPlus 4% health and education cess on total tax.\n\n---\n\n## New Regime Tax Slabs (FY 2025-26)",
+    "source": "10_tax_planning.md",
+    "chunk_type": "knowledge",
+    "category": "tax_planning",
+    "metadata": {
+      "file": "10_tax_planning.md",
+      "chunk_index": 0
+    }
+  },
+  {
+    "id": "kb_10_tax_planning_001",
+    "text": "## New Regime Tax Slabs (FY 2025-26)\n\n| Income | Tax Rate |\n|---|---|\n| Up to ₹3 lakh | Nil |\n| ₹3L – ₹7L | 5% |\n| ₹7L – ₹10L | 10% |\n| ₹10L – ₹12L | 15% |\n| ₹12L – ₹15L | 20% |\n| Above ₹15L | 30% |\n\nNote: Income up to ₹7 lakh has zero tax under new regime due to rebate u/s 87A.\n\n---\n\n## Section 80C — ₹1.5 Lakh Deduction\n\nThe maximum 80C investment is ₹1.5 lakh per financial year. This covers:\n- **EPF**: Automatically deducted from salary (employee contribution of 12% of basic)\n- **PPF**: Up to ₹1.5 lakh annually. Tax-free Interest + maturity.\n- **ELSS**: Equity Linked Savings Scheme mutual funds. 3-year lock-in. Dual benefit: investment + deduction.\n- **LIC premium**: Premium paid toward life insurance\n- **Home loan principal**: Repayment of home loan principal\n- **NSC**: National Savings Certificate — 5-year lock-in, fixed rate\n- **Children's tuition fees**: Full-time schooling/college fees (up to 2 children)\n\n---\n\n## Section 80D — Health Insurance Deductions\n\n- Individual + family below 60: ₹25,000 deduction on premiums\n- Parents below 60: Additional ₹25,000 deduction (total ₹50,000)\n- Parents above 60 (senior citizens): Additional ₹50,000 deduction (total ₹75,000)",
+    "source": "10_tax_planning.md",
+    "chunk_type": "knowledge",
+    "category": "tax_planning",
+    "metadata": {
+      "file": "10_tax_planning.md",
+      "chunk_index": 1
+    }
+  },
+  {
+    "id": "kb_10_tax_planning_002",
+    "text": "- Individual + family below 60: ₹25,000 deduction on premiums\n- Parents below 60: Additional ₹25,000 deduction (total ₹50,000)\n- Parents above 60 (senior citizens): Additional ₹50,000 deduction (total ₹75,000)\n\nThis makes health insurance for parents a double benefit: protection + tax saving.\n\n---\n\n## HRA — House Rent Allowance\n\nIf you pay rent and receive HRA as part of your salary:\n\nExempt HRA = Least of:\n1. Actual HRA received from employer\n2. 50% of basic salary (metro cities) or 40% (non-metro)\n3. Actual rent paid minus 10% of basic salary\n\nMaintain rent receipts and landlord PAN (mandatory for rent > ₹1 lakh/year) to claim HRA exemption.\n\n---\n\n## Other Useful Deductions (Old Regime)\n\n**Section 80CCD(1B)**: Additional ₹50,000 deduction for NPS investment (over and above 80C limit).\n\n**Section 80E**: Interest paid on education loan — no upper limit, valid for 8 years.\n\n**Section 80EEA**: Additional ₹1.5 lakh deduction on home loan interest for first-time buyers (conditions apply).\n\n**Section 24(b)**: Interest on home loan deduction — up to ₹2 lakh for self-occupied property.\n\n---\n\n## Tax-Saving Checklist (Year-Round)",
+    "source": "10_tax_planning.md",
+    "chunk_type": "knowledge",
+    "category": "tax_planning",
+    "metadata": {
+      "file": "10_tax_planning.md",
+      "chunk_index": 2
+    }
+  },
+  {
+    "id": "kb_10_tax_planning_003",
+    "text": "## Tax-Saving Checklist (Year-Round)\n\n| Month | Action |\n|---|---|\n| April | Declare investments to employer for reduced TDS |\n| April–July | Review health insurance coverage and premiums |\n| July | File ITR for previous year (deadline July 31) |\n| August–November | Review equity ELSS investments |\n| December–January | Maximise PPF contribution if not done |\n| January | Submit investment proofs to employer HR |\n| February | Purchase LIC/health insurance if needed |\n| March 31 | Deadline to make all tax-saving investments for the year |\n\n---\n\n## Form 16 and ITR Filing\n\n**Form 16**: Issued by your employer. Contains your salary details, TDS deducted, and tax computation. Required for filing ITR.\n\n**Filing ITR**: Mandatory if income exceeds ₹2.5 lakh (old regime). Optional but beneficial if you have multiple income sources or want to claim refunds.\n\nFile at incometax.gov.in. Most salaried individuals use ITR-1 (simple form for salary + one house property + other income).\n\n---\n\n## Common Tax Mistakes to Avoid",
+    "source": "10_tax_planning.md",
+    "chunk_type": "knowledge",
+    "category": "tax_planning",
+    "metadata": {
+      "file": "10_tax_planning.md",
+      "chunk_index": 3
+    }
+  },
+  {
+    "id": "kb_10_tax_planning_004",
+    "text": "## Common Tax Mistakes to Avoid\n\n- Not declaring freelance or rent income (all income is taxable)\n- Missing the ITR deadline (penalty up to ₹10,000 + interest)\n- Not verifying Form 26AS before filing (TDS credits must match)\n- Over-investing in low-return tax-saving products (traditional LIC plans)\n- Ignoring short-term capital gains tax on sold mutual funds/stocks",
+    "source": "10_tax_planning.md",
+    "chunk_type": "knowledge",
+    "category": "tax_planning",
+    "metadata": {
+      "file": "10_tax_planning.md",
+      "chunk_index": 4
+    }
+  },
+  {
+    "id": "tx_month_2025-11",
+    "text": "Month: 2025-11\nTotal spend: ₹59,929 across 34 transactions.\nTop categories: Food ₹19,136, Rent ₹18,000, Shopping ₹14,302, Health ₹3,224, Entertainment ₹1,701.\nMost frequent merchants: D-Mart (5 times), Zomato (4 times), Blinkit (2 times), HMWSSB Water (2 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2025-11",
+      "transaction_count": 34,
+      "total": 59929.0
+    }
+  },
+  {
+    "id": "tx_month_2025-12",
+    "text": "Month: 2025-12\nTotal spend: ₹72,103 across 43 transactions.\nTop categories: Food ₹18,394, Rent ₹18,000, Shopping ₹16,407, Travel ₹9,708, Health ₹2,922.\nMost frequent merchants: Blinkit (5 times), Rapido (4 times), Zomato (4 times), BigBasket (3 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2025-12",
+      "transaction_count": 43,
+      "total": 72103.0
+    }
+  },
+  {
+    "id": "tx_month_2026-01",
+    "text": "Month: 2026-01\nTotal spend: ₹76,936 across 30 transactions.\nTop categories: Shopping ₹30,806, Food ₹20,158, Rent ₹18,000, Health ₹2,931, Bills ₹1,764.\nMost frequent merchants: BigBasket (4 times), Croma (3 times), Swiggy (2 times), D-Mart (2 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2026-01",
+      "transaction_count": 30,
+      "total": 76936.0
+    }
+  },
+  {
+    "id": "tx_month_2026-02",
+    "text": "Month: 2026-02\nTotal spend: ₹49,648 across 27 transactions.\nTop categories: Food ₹18,605, Rent ₹18,000, Shopping ₹5,438, Health ₹3,517, Subscriptions ₹1,576.\nMost frequent merchants: D-Mart (4 times), Hyderabad Metro (3 times), Flipkart (2 times), Blinkit (2 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2026-02",
+      "transaction_count": 27,
+      "total": 49648.0
+    }
+  },
+  {
+    "id": "tx_month_2026-03",
+    "text": "Month: 2026-03\nTotal spend: ₹43,492 across 32 transactions.\nTop categories: Rent ₹18,000, Food ₹7,588, Shopping ₹7,188, Bills ₹3,422, Health ₹2,607.\nMost frequent merchants: Swiggy (3 times), Blinkit (3 times), Ola (2 times), Airtel Broadband (2 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2026-03",
+      "transaction_count": 32,
+      "total": 43492.0
+    }
+  },
+  {
+    "id": "tx_month_2026-04",
+    "text": "Month: 2026-04\nTotal spend: ₹33,445 across 19 transactions.\nTop categories: Rent ₹18,000, Shopping ₹6,385, Health ₹3,183, Bills ₹2,022, Subscriptions ₹1,576.\nMost frequent merchants: Swiggy (3 times), Rapido (2 times), Gas Agency (2 times), House Rent (1 times).\nPayment modes: Card, Net Banking, UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "data_summary",
+    "category": "transactions",
+    "metadata": {
+      "month": "2026-04",
+      "transaction_count": 19,
+      "total": 33445.0
+    }
+  },
+  {
+    "id": "tx_large_TX0001",
+    "text": "Transaction on 2025-11-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2025-11-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0013",
+    "text": "Transaction on 2025-11-07: D-Mart — ₹3,198. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-11-07",
+      "merchant": "D-Mart",
+      "amount": 3198.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0014",
+    "text": "Transaction on 2025-11-12: D-Mart — ₹2,129. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-11-12",
+      "merchant": "D-Mart",
+      "amount": 2129.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0020",
+    "text": "Transaction on 2025-11-14: BigBasket — ₹2,782. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-11-14",
+      "merchant": "BigBasket",
+      "amount": 2782.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0028",
+    "text": "Transaction on 2025-11-16: Croma — ₹11,768. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2025-11-16",
+      "merchant": "Croma",
+      "amount": 11768.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0015",
+    "text": "Transaction on 2025-11-17: D-Mart — ₹3,999. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-11-17",
+      "merchant": "D-Mart",
+      "amount": 3999.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0010",
+    "text": "Transaction on 2025-11-20: D-Mart — ₹2,100. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-11-20",
+      "merchant": "D-Mart",
+      "amount": 2100.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0029",
+    "text": "Transaction on 2025-11-28: Ajio — ₹2,534. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2025-11-28",
+      "merchant": "Ajio",
+      "amount": 2534.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0035",
+    "text": "Transaction on 2025-12-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2025-12-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0071",
+    "text": "Transaction on 2025-12-07: Flipkart — ₹2,804. Category: Shopping. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2025-12-07",
+      "merchant": "Flipkart",
+      "amount": 2804.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0057",
+    "text": "Transaction on 2025-12-11: BigBasket — ₹2,218. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-12-11",
+      "merchant": "BigBasket",
+      "amount": 2218.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0068",
+    "text": "Transaction on 2025-12-11: Amazon — ₹3,209. Category: Shopping. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2025-12-11",
+      "merchant": "Amazon",
+      "amount": 3209.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0048",
+    "text": "Transaction on 2025-12-16: D-Mart — ₹3,606. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-12-16",
+      "merchant": "D-Mart",
+      "amount": 3606.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0077",
+    "text": "Transaction on 2025-12-20: OYO — ₹3,258. Category: Travel. Payment: Card. Note: Goa trip.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Travel",
+    "metadata": {
+      "date": "2025-12-20",
+      "merchant": "OYO",
+      "amount": 3258.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0076",
+    "text": "Transaction on 2025-12-23: IndiGo Airlines — ₹5,226. Category: Travel. Payment: Card. Note: Goa trip.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Travel",
+    "metadata": {
+      "date": "2025-12-23",
+      "merchant": "IndiGo Airlines",
+      "amount": 5226.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0050",
+    "text": "Transaction on 2025-12-24: BigBasket — ₹2,061. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-12-24",
+      "merchant": "BigBasket",
+      "amount": 2061.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0067",
+    "text": "Transaction on 2025-12-25: Croma — ₹7,331. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2025-12-25",
+      "merchant": "Croma",
+      "amount": 7331.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0045",
+    "text": "Transaction on 2025-12-26: BigBasket — ₹3,036. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2025-12-26",
+      "merchant": "BigBasket",
+      "amount": 3036.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0078",
+    "text": "Transaction on 2026-01-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2026-01-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0101",
+    "text": "Transaction on 2026-01-04: Croma — ₹10,670. Category: Shopping. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-01-04",
+      "merchant": "Croma",
+      "amount": 10670.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0087",
+    "text": "Transaction on 2026-01-06: BigBasket — ₹2,305. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-06",
+      "merchant": "BigBasket",
+      "amount": 2305.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0089",
+    "text": "Transaction on 2026-01-06: D-Mart — ₹2,219. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-06",
+      "merchant": "D-Mart",
+      "amount": 2219.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0102",
+    "text": "Transaction on 2026-01-06: Amazon — ₹5,743. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-01-06",
+      "merchant": "Amazon",
+      "amount": 5743.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0103",
+    "text": "Transaction on 2026-01-12: Croma — ₹2,497. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-01-12",
+      "merchant": "Croma",
+      "amount": 2497.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0094",
+    "text": "Transaction on 2026-01-14: D-Mart — ₹3,114. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-14",
+      "merchant": "D-Mart",
+      "amount": 3114.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0090",
+    "text": "Transaction on 2026-01-15: BigBasket — ₹3,202. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-15",
+      "merchant": "BigBasket",
+      "amount": 3202.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0104",
+    "text": "Transaction on 2026-01-17: Croma — ₹11,896. Category: Shopping. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-01-17",
+      "merchant": "Croma",
+      "amount": 11896.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0088",
+    "text": "Transaction on 2026-01-25: BigBasket — ₹3,053. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-25",
+      "merchant": "BigBasket",
+      "amount": 3053.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0092",
+    "text": "Transaction on 2026-01-28: BigBasket — ₹4,004. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-01-28",
+      "merchant": "BigBasket",
+      "amount": 4004.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0108",
+    "text": "Transaction on 2026-02-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2026-02-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0130",
+    "text": "Transaction on 2026-02-04: Flipkart — ₹2,919. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-02-04",
+      "merchant": "Flipkart",
+      "amount": 2919.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0125",
+    "text": "Transaction on 2026-02-10: D-Mart — ₹3,696. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-02-10",
+      "merchant": "D-Mart",
+      "amount": 3696.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0119",
+    "text": "Transaction on 2026-02-20: BigBasket — ₹3,441. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-02-20",
+      "merchant": "BigBasket",
+      "amount": 3441.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0131",
+    "text": "Transaction on 2026-02-20: Flipkart — ₹2,519. Category: Shopping. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-02-20",
+      "merchant": "Flipkart",
+      "amount": 2519.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0117",
+    "text": "Transaction on 2026-02-21: D-Mart — ₹3,018. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-02-21",
+      "merchant": "D-Mart",
+      "amount": 3018.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0120",
+    "text": "Transaction on 2026-02-22: D-Mart — ₹2,565. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-02-22",
+      "merchant": "D-Mart",
+      "amount": 2565.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0123",
+    "text": "Transaction on 2026-02-27: D-Mart — ₹2,230. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-02-27",
+      "merchant": "D-Mart",
+      "amount": 2230.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0135",
+    "text": "Transaction on 2026-03-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2026-03-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0160",
+    "text": "Transaction on 2026-03-04: Flipkart — ₹3,316. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-03-04",
+      "merchant": "Flipkart",
+      "amount": 3316.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "tx_large_TX0151",
+    "text": "Transaction on 2026-03-12: D-Mart — ₹3,268. Category: Food. Payment: UPI.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Food",
+    "metadata": {
+      "date": "2026-03-12",
+      "merchant": "D-Mart",
+      "amount": 3268.0,
+      "payment_mode": "UPI"
+    }
+  },
+  {
+    "id": "tx_large_TX0167",
+    "text": "Transaction on 2026-04-01: House Rent — ₹18,000. Category: Rent. Payment: Net Banking. Note: Monthly rent.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Rent",
+    "metadata": {
+      "date": "2026-04-01",
+      "merchant": "House Rent",
+      "amount": 18000.0,
+      "payment_mode": "Net Banking"
+    }
+  },
+  {
+    "id": "tx_large_TX0182",
+    "text": "Transaction on 2026-04-12: Amazon — ₹5,282. Category: Shopping. Payment: Card.",
+    "source": "transactions.csv",
+    "chunk_type": "transaction",
+    "category": "Shopping",
+    "metadata": {
+      "date": "2026-04-12",
+      "merchant": "Amazon",
+      "amount": 5282.0,
+      "payment_mode": "Card"
+    }
+  },
+  {
+    "id": "profile_main",
+    "text": "User profile: Arjun Sharma from Hyderabad. Age group: 25-30. Monthly income: ₹75,000. Income range: 60k-1L. Financial stage: Early career. Monthly budget: ₹45,000. Risk comfort: moderate. Financial goals: Track spending, Build emergency fund, Save for a goal.",
+    "source": "user_profile.json",
+    "chunk_type": "data_summary",
+    "category": "profile",
+    "metadata": {
+      "user_id": "user_001",
+      "name": "Arjun Sharma",
+      "city": "Hyderabad",
+      "age_group": "25-30",
+      "income_range": "60k-1L",
+      "monthly_income": 75000,
+      "financial_stage": "Early career",
+      "purposes": [
+        "Track spending",
+        "Build emergency fund",
+        "Save for a goal"
+      ],
+      "monthly_budget": 45000,
+      "risk_comfort": "moderate",
+      "rent": 18000,
+      "note": "SYNTHETIC DATA — fictional user for prototype demonstration only"
+    }
+  },
+  {
+    "id": "goal_g1",
+    "text": "Savings goal: Emergency Fund. Target: ₹90,000. Current amount saved: ₹45,000 (50% complete). Remaining: ₹45,000. Monthly contribution: ₹5,000. Deadline: 2026-09-30. Priority: high. Notes: 3 months of expenses (rent + living costs).",
+    "source": "savings_goals.json",
+    "chunk_type": "data_summary",
+    "category": "goals",
+    "metadata": {
+      "id": "g1",
+      "name": "Emergency Fund",
+      "emoji": "shield",
+      "target_amount": 90000,
+      "current_amount": 45000,
+      "monthly_contribution": 5000,
+      "deadline": "2026-09-30",
+      "priority": "high",
+      "status": "active",
+      "notes": "3 months of expenses (rent + living costs)"
+    }
+  },
+  {
+    "id": "goal_g2",
+    "text": "Savings goal: Goa Trip. Target: ₹25,000. Current amount saved: ₹18,000 (72% complete). Remaining: ₹7,000. Monthly contribution: ₹3,500. Deadline: 2026-06-15. Priority: medium. Notes: Flight + hotel for 4 days.",
+    "source": "savings_goals.json",
+    "chunk_type": "data_summary",
+    "category": "goals",
+    "metadata": {
+      "id": "g2",
+      "name": "Goa Trip",
+      "emoji": "beach",
+      "target_amount": 25000,
+      "current_amount": 18000,
+      "monthly_contribution": 3500,
+      "deadline": "2026-06-15",
+      "priority": "medium",
+      "status": "active",
+      "notes": "Flight + hotel for 4 days"
+    }
+  },
+  {
+    "id": "goal_g3",
+    "text": "Savings goal: New Laptop. Target: ₹80,000. Current amount saved: ₹12,000 (15% complete). Remaining: ₹68,000. Monthly contribution: ₹4,000. Deadline: 2026-12-31. Priority: low. Notes: MacBook Air or equivalent.",
+    "source": "savings_goals.json",
+    "chunk_type": "data_summary",
+    "category": "goals",
+    "metadata": {
+      "id": "g3",
+      "name": "New Laptop",
+      "emoji": "laptop",
+      "target_amount": 80000,
+      "current_amount": 12000,
+      "monthly_contribution": 4000,
+      "deadline": "2026-12-31",
+      "priority": "low",
+      "status": "active",
+      "notes": "MacBook Air or equivalent"
+    }
+  },
+  {
+    "id": "budgets_summary",
+    "text": "Monthly budget limits:\n- Food: monthly limit ₹8,000\n- Shopping: monthly limit ₹4,000\n- Entertainment: monthly limit ₹2,000\n- Travel: monthly limit ₹3,000\n- Subscriptions: monthly limit ₹1,500\n- Health: monthly limit ₹3,000\n- Bills: monthly limit ₹5,000\nTotal budgeted spend: ₹26,500/month.",
+    "source": "budgets.json",
+    "chunk_type": "data_summary",
+    "category": "budgets",
+    "metadata": {
+      "budgets": [
+        {
+          "category": "Food",
+          "monthly_limit": 8000
+        },
+        {
+          "category": "Shopping",
+          "monthly_limit": 4000
+        },
+        {
+          "category": "Entertainment",
+          "monthly_limit": 2000
+        },
+        {
+          "category": "Travel",
+          "monthly_limit": 3000
+        },
+        {
+          "category": "Subscriptions",
+          "monthly_limit": 1500
+        },
+        {
+          "category": "Health",
+          "monthly_limit": 3000
+        },
+        {
+          "category": "Bills",
+          "monthly_limit": 5000
+        }
+      ]
+    }
+  }
+]

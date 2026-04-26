@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Curator | Personal Financial Narrative</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#f4bb92",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#eebc9a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#805533",
+                    "on-tertiary-container": "#ffe3cf",
+                    "outline-variant": "#d5c3b8",
+                    "surface-variant": "#e7e2dc",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#2e1500",
+                    "on-surface-variant": "#51443c",
+                    "on-secondary-fixed": "#301400",
+                    "tertiary-fixed-dim": "#f1bc92",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#ffdcc5",
+                    "on-background": "#1d1b18",
+                    "surface-container-highest": "#e7e2dc",
+                    "secondary-container": "#fdc39a",
+                    "on-surface": "#1d1b18",
+                    "inverse-surface": "#32302c",
+                    "surface-tint": "#7c563a",
+                    "tertiary-fixed": "#ffdcc2",
+                    "surface-dim": "#dfd9d3",
+                    "on-primary-container": "#ffe3d1",
+                    "tertiary-container": "#895f3c",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#fef8f2",
+                    "outline": "#83746b",
+                    "on-secondary-container": "#794e2e",
+                    "on-error": "#ffffff",
+                    "surface": "#fef8f2",
+                    "on-primary-fixed-variant": "#613f25",
+                    "on-tertiary-fixed-variant": "#633e1e",
+                    "surface-container": "#f3ede7",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#653d1e",
+                    "inverse-primary": "#eebc9a",
+                    "inverse-on-surface": "#f6f0ea",
+                    "primary-fixed": "#ffdcc5",
+                    "on-primary-fixed": "#2f1501",
+                    "tertiary": "#6e4726",
+                    "surface-container-low": "#f9f3ed",
+                    "primary-container": "#876043",
+                    "background": "#fef8f2",
+                    "primary": "#6c482d",
+                    "surface-container-high": "#ede7e1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Public Sans"],
+                    "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #fef8f2;
+        color: #1d1b18;
+      }
+      .glass-header {
+        background: rgba(254, 248, 242, 0.8);
+        backdrop-filter: blur(24px);
+      }
+      .insight-gradient {
+        background: linear-gradient(135deg, #6c482d 0%, #876043 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style></head>
+<body class="font-body selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar Updated from COMPONENTS_49 -->
+<nav class="fixed top-0 w-full z-50 bg-[#FEF8F2]/80 dark:bg-[#1D1B18]/80 backdrop-blur-xl flex justify-between items-center px-6 h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 active:scale-95 duration-200 cursor-pointer">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlYQGWi4R80nd2NIkbgXYdxko4t9ew5M3DQvytPO9YaDDrgK6WNur2sEIM4j7CBab5a-cDPQbSHB7Iusn2c7eFskvQjQ8lhqcwuEyr_gO6j1jj5qbkqElokj3yI-W-s33mFuv4zSpLXoFBlqNmDCqb2_XGQk9u67ThwozvL3hABVgVru62Eo5swa5JKDfk8yHmd5Q7fa_hmBk_rLFEVH3LSfGa4gh-nJt9xabrnkcRQy_z2xR-MWuiSDN0mRyNXLW-Hfdxsb2q07I3"/>
+</div>
+<div class="flex flex-col">
+<span class="text-2xl font-extrabold text-[#6C482D] dark:text-[#EDE7E1] tracking-tighter font-headline leading-none">DEKHO</span>
+<span class="font-body font-medium text-on-surface-variant text-[11px] mt-0.5">Good morning, Jobin</span>
+</div>
+</div>
+<button class="material-symbols-outlined text-[#6C482D] dark:text-[#D5C3B8] p-2 hover:bg-[#F3EDE7]/50 rounded-full transition-colors active:scale-95 duration-200">notifications</button>
+</nav>
+<main class="pt-24 pb-32 px-6 max-w-lg mx-auto">
+<!-- Primary Focus: Daily Insight Card -->
+<section class="mb-10">
+<div class="insight-gradient rounded-3xl text-on-primary shadow-[0px_20px_40px_rgba(107,72,45,0.06)] relative overflow-hidden group py-5 px-8">
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<svg height="100%" preserveaspectratio="none" viewbox="0 0 100 100" width="100%">
+<path d="M0 100 C 20 0, 50 0, 100 100" fill="transparent" stroke="white" stroke-width="0.5"></path>
+<path d="M0 80 C 30 20, 70 20, 100 80" fill="transparent" stroke="white" stroke-width="0.5"></path>
+</svg>
+</div>
+<header class="mb-6">
+<span class="label-md uppercase tracking-[0.15em] text-on-primary/60 font-medium text-[10px]"></span>
+</header>
+<div class="space-y-4">
+<h1 class="font-headline text-3xl font-bold leading-tight tracking-tight">Today was a comfort spending day.</h1>
+<p class="text-on-primary/80 text-lg leading-relaxed font-light">You spent more on food than usual.</p>
+</div>
+<div class="flex items-center justify-between mt-8">
+<span class="text-sm font-medium opacity-70">Tap to see why</span>
+<div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform group-active:scale-90">
+<span class="material-symbols-outlined text-white">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Micro Data Section A: Today's Spending / Average -->
+<section class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-lowest rounded-2xl p-5 shadow-[0px_20px_40px_rgba(107,72,45,0.03)] border border-outline-variant/5">
+<span class="block text-[10px] uppercase tracking-widest text-outline font-semibold mb-3">Today</span>
+<div class="flex items-baseline gap-1"><span class="text-2xl font-headline font-bold text-on-surface">₹1420</span></div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-5 shadow-[0px_20px_40px_rgba(107,72,45,0.03)] border border-outline-variant/5">
+<span class="block text-[10px] uppercase tracking-widest text-outline font-semibold mb-3">Average</span>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-headline font-bold text-on-surface">₹1750</span>
+<span class="text-xs text-outline font-medium">/day</span>
+</div>
+</div>
+</section>
+<!-- Section B: Top Category / Vs Last Month -->
+<section class="grid grid-cols-2 gap-4 mb-10">
+<div class="bg-surface-container-low rounded-2xl p-5 flex items-center justify-between">
+<div>
+<span class="block text-[10px] uppercase tracking-widest text-outline font-semibold mb-1">Top Focus</span>
+<span class="text-sm font-semibold text-primary">Dining</span>
+</div>
+<span class="material-symbols-outlined text-primary-container" style='font-variation-settings: "FILL" 1;'>restaurant</span>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-5 flex items-center justify-between">
+<div>
+<span class="block text-[10px] uppercase tracking-widest text-outline font-semibold mb-1">vs Last Month</span>
+<span class="text-sm font-semibold text-error">+12%</span>
+</div>
+<span class="material-symbols-outlined text-error/60">trending_up</span>
+</div>
+</section>
+<!-- Section C: Goals Progress -->
+<section class="bg-surface-container-lowest rounded-3xl p-8 mb-6 shadow-[0px_20px_40px_rgba(107,72,45,0.03)] space-y-8">
+<div>
+<div class="flex justify-between items-end mb-3">
+<span class="text-[10px] uppercase tracking-widest text-outline font-semibold">Monthly Saving Target</span>
+<span class="text-sm font-bold text-on-surface">65%</span>
+</div>
+<div class="w-full h-[12px] bg-outline-variant/20 rounded-full overflow-hidden">
+<div class="h-full bg-[#8B5E3C] rounded-full" style="width: 65%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-3">
+<span class="text-[10px] uppercase tracking-widest text-outline font-semibold">Investment Goal</span>
+<span class="text-sm font-bold text-on-surface">42%</span>
+</div>
+<div class="w-full h-[12px] bg-outline-variant/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 42%;"></div>
+</div>
+</div>
+<div class="pt-4 flex justify-between items-center border-t border-surface-container">
+<span class="text-[11px] font-medium text-outline">Remaining Budget</span>
+<span class="text-xl font-headline font-bold text-on-surface">₹1,240.00</span>
+</div>
+</section>
+<!-- Section D: Behavior Signal -->
+<section>
+<div class="bg-tertiary-container/10 border border-tertiary-container/20 rounded-2xl p-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style='font-variation-settings: "FILL" 1;'>bolt</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-tertiary">3 days of controlled spending</p>
+<p class="text-[11px] text-tertiary/70">You're building a healthy rhythm.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Updated from COMPONENTS_49 with Dashboard, Budget, Home, Assets, Goals -->
+<nav class="fixed bottom-0 w-full z-50 bg-[#FFFFFF]/80 dark:bg-[#1D1B18]/80 backdrop-blur-xl rounded-t-[24px] border-t border-[#D5C3B8]/15 shadow-[0px_-10px_30px_rgba(107,72,45,0.04)] flex justify-around items-center px-4 pt-3 pb-6">
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] hover:text-[#6C482D] transition-all active:scale-90 duration-300 ease-out flex-1 w-0" href="#">
+<span class="material-symbols-outlined">savings</span>
+<span class="font-['Public_Sans'] text-[11px] font-medium tracking-wide uppercase mt-1">Budget &amp; Goals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] hover:text-[#6C482D] transition-all active:scale-90 duration-300 ease-out flex-1 w-0" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-['Public_Sans'] text-[11px] font-medium tracking-wide uppercase mt-1">Expenses</span>
+</a>
+<!-- Active Item: Home (Center) -->
+<a class="flex flex-col items-center justify-center text-[#8B5E3C] dark:text-[#EDE7E1] bg-[#F3EDE7] dark:bg-[#2B2B2B] rounded-xl py-1 hover:text-[#6C482D] transition-all active:scale-90 duration-300 ease-out flex-1 w-0 mx-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-['Public_Sans'] text-[11px] font-medium tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] hover:text-[#6C482D] transition-all active:scale-90 duration-300 ease-out flex-1 w-0" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Public_Sans'] text-[11px] font-medium tracking-wide uppercase mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] dark:text-[#8A8A8A] hover:text-[#6C482D] transition-all active:scale-90 duration-300 ease-out flex-1 w-0" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-['Public_Sans'] text-[11px] font-medium tracking-wide uppercase mt-1">Grow</span>
+</a>
+</nav>
+<button class="fixed bottom-28 right-6 z-50 w-14 h-14 bg-[#8B5E3C] text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95">
+<span class="material-symbols-outlined" style='font-variation-settings: "FILL" 1;'>chat_bubble</span>
+</button></body></html>

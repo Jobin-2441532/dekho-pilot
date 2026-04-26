@@ -1,0 +1,174 @@
+﻿--- PAGE 1 ---
+Dekho | Updated Product Definition
+Dekho
+Updated Product Definition Document
+Consumer Fintech | Personal Finance | Behavioral Finance
+Refresh the original product definition with the redesigned feature set
+Document purpose
+while keeping Dekho's habit-first, behavior-first positioning intact.
+Add budgeting and savings goals, a simplified financial behavior
+Main update dashboard, and a clearer investment / asset opportunity layer based on
+the user's financial profile.
+1. Product Overview
+Product Name: Dekho
+Category: Consumer Fintech / Personal Finance / Behavioral Finance
+Type: Habit-first personal finance companion
+One-line definition: Dekho is a habit-first personal finance companion that helps users understand
+their relationship with money, build better financial habits, plan money goals, and gradually
+create assets.
+2. Core Problem
+Most people use digital payments every day, but they still do not clearly understand where their
+money goes, how they behave financially, or what they should do next.
+ΓÇó Traditional finance apps are often too transactional: they track, budget, and push products, but
+they do not explain the user's behavior in a simple way.
+ΓÇó Many users want clarity, not pressure. They need a calm system that helps them see their
+money patterns before they are pushed into complex decisions.
+ΓÇó The real gap is not only financial tools. It is financial awareness, clarity, confidence, and habit
+formation.
+3. Product Philosophy
+Principle What it means in Dekho
+Understanding before advice Observe first, explain second, guide third.
+Build everyday awareness before demanding perfect budgeting or
+Habit before optimization
+investing behavior.
+Personalization before rules Shape the experience around goals, behavior, and financial stage.
+Confidential working draft | Page 1
+--- PAGE 2 ---
+Dekho | Updated Product Definition
+Principle What it means in Dekho
+Emotional safety before Reduce confusion, anxiety, and guilt rather than overwhelming users
+numbers with charts.
+4. Product Vision
+Dekho is designed to move the user through a clear journey: Clarity ΓåÆ Awareness ΓåÆ Habits ΓåÆ
+Confidence ΓåÆ Asset Creation.
+The product should feel like a calm financial companion that helps users understand their money,
+not a noisy dashboard that demands action too early.
+5. Target Users
+ΓÇó Young earning individuals aged 18 to 35 in India who use UPI heavily and want to improve their
+money habits.
+ΓÇó First-time earners, students starting to earn, and working professionals who are still building
+financial confidence.
+ΓÇó Users who want a simple, personalized view of their spending, savings, assets, and next-best
+actions.
+6. Core Value Proposition
+ΓÇó Automatically track expenses and categorize them in a way that feels effortless.
+ΓÇó Show a simple financial overview of spending, savings, assets, and investments.
+ΓÇó Explain financial behavior in plain language so users can understand patterns, triggers, and
+progress.
+ΓÇó Help users plan budgeting and savings goals without making the product feel rigid.
+ΓÇó Suggest suitable investment and asset creation opportunities based on the user's financial
+profile and stage.
+7. Updated Feature Set
+The redesigned product keeps the original foundation and adds a stronger planning and
+recommendation layer.
+Module Core capability Why it matters
+Auto tracking, auto categorization, Removes manual effort and keeps the
+Expenses
+history, spending breakdown user's day-to-day behavior visible.
+A simple personalized overview of Makes the app feel easier to understand
+Home dashboard
+spending, savings, assets, and trends and more useful at a glance.
+Pattern insights, emotional triggers, Turns transactions into usable self-
+Behavior
+and time-based analysis awareness.
+Savings, investments, net worth, Helps the user track wealth, not only
+Assets
+growth trends spending.
+Confidential working draft | Page 2
+--- PAGE 3 ---
+Dekho | Updated Product Definition
+Module Core capability Why it matters
+Investment and asset creation ideas Moves the product from tracking into
+Opportunities
+based on the user's profile guided progress.
+AI chatbot for finance questions and Gives the user a direct conversational way
+Ask Dekho
+personal guidance to explore their finances.
+Budget planning, savings targets, and Adds an intentional planning layer to the
+Budgeting and goals
+progress nudges product.
+8. Relationship With Money Framework
+ΓÇó Spending awareness
+ΓÇó Emotional spending triggers
+ΓÇó Spending identity
+ΓÇó Impulse vs intentional spending
+ΓÇó Saving behavior
+ΓÇó Risk attitude
+ΓÇó Financial confidence
+9. Emotional Goal
+"Manage your money in a way that helps you sleep at night."
+Dekho should create financial clarity, stability, confidence, and peace of mind.
+10. App Structure
+Dekho can keep a bottom navigation model, with a persistent Ask Dekho assistant available across
+the product.
+Tab / entry point Purpose Primary content
+Behavior Explain financial behavior Spending patterns, emotional signals, weekly insights
+Expenses Auto expense tracking Auto tracking, categorization, transaction history
+Simple personalized TodayΓÇÖs spending, AI insights, savings potential,
+Home
+overview financial summary
+Assets Track wealth and growth Net worth, savings, investments, growth trends
+Investment suggestions, savings opportunities, asset
+Opportunities Show next steps
+recommendations
+Ask Dekho AI financial companion Floating chatbot for questions and guidance
+11. Onboarding Flow
+ΓÇó Consent screen for financial data, SMS access, and bank access.
+ΓÇó Purpose selection so the user can choose what they want Dekho to help with: saving, expense
+tracking, asset creation, spending understanding, budgeting, or goal planning.
+Confidential working draft | Page 3
+--- PAGE 4 ---
+Dekho | Updated Product Definition
+ΓÇó Personalization setup so the home screen and recommendations adapt to the user's goals and
+financial stage.
+12. AI Chatbot: Ask Dekho
+Ask Dekho is the user's always-available finance companion.
+ΓÇó Where did I spend the most?
+ΓÇó How much can I save this month?
+ΓÇó What patterns do I keep repeating?
+ΓÇó Which investment or asset-building options fit my profile?
+The chatbot should feel practical, contextual, and tied to the user's own data rather than generic
+finance advice.
+13. Personalization Strategy
+ΓÇó User goals
+ΓÇó User behavior
+ΓÇó Financial stage
+ΓÇó Usage patterns
+ΓÇó Comfort level with finance
+Personalization should affect the dashboard layout, insight wording, recommendations, and the
+type of nudges shown to the user.
+14. Differentiation
+Traditional finance apps usually stop at tracking, budgeting, or product pushes. Dekho combines
+behavior understanding, habit-building, personal planning, and guided asset creation in one
+experience.
+ΓÇó It explains money behavior instead of only recording transactions.
+ΓÇó It supports planning instead of only showing numbers.
+ΓÇó It suggests next steps based on the user's financial profile instead of sending generic
+recommendations.
+15. End Goal
+ΓÇó Help users understand their money.
+ΓÇó Help users build better financial habits.
+ΓÇó Help users gain confidence.
+ΓÇó Help users create assets over time.
+16. MVP Scope
+ΓÇó Onboarding
+ΓÇó Home dashboard
+Confidential working draft | Page 4
+--- PAGE 5 ---
+Dekho | Updated Product Definition
+ΓÇó Behavior screen
+ΓÇó Expense screen
+ΓÇó Assets screen
+ΓÇó Opportunities screen
+ΓÇó Budgeting and savings goals
+ΓÇó Ask Dekho chatbot
+17. Final Product Statement
+Dekho helps people understand their relationship with money, build better financial habits, plan
+savings and budgets, and gradually create assets while giving them peace of mind.
+18. Summary of Changes in This Revision
+ΓÇó Kept the original habit-first, behavior-first identity.
+ΓÇó Added explicit budgeting and savings goal planning.
+ΓÇó Strengthened the asset and investment dashboard.
+ΓÇó Made the recommendation layer more clearly tied to the user's financial profile.
+ΓÇó Reframed the home experience as a simple, personalized financial overview.
+Confidential working draft | Page 5

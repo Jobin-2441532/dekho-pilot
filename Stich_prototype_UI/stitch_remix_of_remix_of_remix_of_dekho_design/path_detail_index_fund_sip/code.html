@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public_Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#EEBC9A",
+                    "outline-variant": "#D5C3B8",
+                    "on-primary-container": "#FFE3D1",
+                    "on-secondary-fixed": "#301400",
+                    "on-tertiary-fixed": "#2E1500",
+                    "tertiary": "#6E4726",
+                    "surface": "#FEF8F2",
+                    "on-error-container": "#93000A",
+                    "surface-bright": "#FEF8F2",
+                    "inverse-surface": "#32302C",
+                    "surface-container-low": "#F9F3ED",
+                    "on-tertiary": "#FFFFFF",
+                    "surface-container-high": "#EDE7E1",
+                    "on-secondary": "#FFFFFF",
+                    "surface-variant": "#E7E2DC",
+                    "inverse-on-surface": "#F6F0EA",
+                    "on-primary-fixed-variant": "#613F25",
+                    "tertiary-container": "#895F3C",
+                    "outline": "#83746B",
+                    "on-tertiary-container": "#FFE3CF",
+                    "tertiary-fixed": "#FFDCC2",
+                    "surface-tint": "#7C563A",
+                    "error": "#BA1A1A",
+                    "on-primary": "#FFFFFF",
+                    "secondary-fixed-dim": "#F4BB92",
+                    "on-secondary-fixed-variant": "#653D1E",
+                    "on-surface-variant": "#51443C",
+                    "primary-fixed": "#FFDCC5",
+                    "on-surface": "#1D1B18",
+                    "tertiary-fixed-dim": "#F1BC92",
+                    "surface-container": "#F3EDE7",
+                    "error-container": "#FFDAD6",
+                    "secondary-fixed": "#FFDCC5",
+                    "secondary-container": "#FDC39A",
+                    "surface-dim": "#DFD9D3",
+                    "secondary": "#805533",
+                    "surface-container-lowest": "#FFFFFF",
+                    "on-primary-fixed": "#2F1501",
+                    "on-tertiary-fixed-variant": "#633E1E",
+                    "background": "#FEF8F2",
+                    "primary": "#6C482D",
+                    "on-error": "#FFFFFF",
+                    "inverse-primary": "#EEBC9A",
+                    "surface-container-highest": "#E7E2DC",
+                    "on-background": "#1D1B18",
+                    "on-secondary-container": "#794E2E",
+                    "primary-container": "#876043"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Public Sans"],
+                    "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-header {
+            background: rgba(254, 248, 242, 0.8);
+            backdrop-filter: blur(24px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .brushed-leather {
+            background: linear-gradient(135deg, #6C482D 0%, #876043 100%);
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #FEF8F2;
+            color: #1D1B18;
+        }
+        h1, h2, h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-stone-900 p-2 hover:bg-stone-200/50 rounded-full transition-colors">arrow_back</button>
+<span class="font-headline font-extrabold tracking-tight text-xl text-[#8B5E3C]">Grow</span>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a person with warm studio lighting and soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRnQ97azWGa5034u2GEEuBd5J_QlWsNSEAjeU_Fo2BlRHz2M_gomSgXWPwcg7kRKu9oAlyvSPHckma4trTED1UKntVq4K_Kqgua7al5klJ_K-4JteZAcUjqIAQYnzlBnt6EIKaXuABckPZ5vCqvHl2lq9pLaXm_GtoYioEsb5sf65dqT3JMlyB2B4WLCSb8cOQ5npbzWmBrKQFPn7vRxEYGJtbZ1zAnUR_xH0JIFUXPaLMAKNIJMAx5YV6F1loWy41-Od6u7zjhf92"/>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-8">
+<!-- Hero Section -->
+<section class="space-y-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold text-on-surface-variant">Recommended Strategy</span>
+</div>
+<h1 class="text-[2.25rem] font-headline font-extrabold tracking-tight leading-tight text-on-surface">Index Fund SIP</h1>
+<p class="text-body text-on-surface-variant leading-relaxed">A simple way to grow your wealth by owning a piece of the entire stock market, one month at a time.</p>
+</section>
+<!-- Bento Grid Stats -->
+<section class="grid grid-cols-2 gap-4">
+<div class="col-span-2 brushed-leather p-8 rounded-lg shadow-lg relative overflow-hidden">
+<div class="relative z-10 flex flex-col justify-between h-full">
+<span class="font-label text-white/70 uppercase tracking-[0.15em] font-bold">Monthly Commitment</span>
+<div class="flex items-baseline gap-2 mt-4">
+<span class="text-white font-headline text-[2.25rem] font-extrabold">₹2,500</span>
+<span class="text-white/60 font-body">/ month</span>
+</div>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10">
+<span class="material-symbols-outlined text-[120px]">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg flex flex-col justify-center gap-1">
+<span class="font-label text-outline uppercase tracking-[0.15em] font-bold">Risk Level</span>
+<span class="text-on-surface font-headline text-xl font-bold">Moderate</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg flex flex-col justify-center gap-1">
+<span class="font-label text-outline uppercase tracking-[0.15em] font-bold">Horizon</span>
+<span class="text-on-surface font-headline text-xl font-bold">5+ Years</span>
+</div>
+<div class="col-span-2 bg-surface-container-low p-6 rounded-lg flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-label text-outline uppercase tracking-[0.15em] font-bold">Liquidity</span>
+<span class="text-on-surface font-headline text-xl font-bold">High</span>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+</div>
+</section>
+<!-- Educational Insight -->
+<section class="bg-surface-container-high rounded-xl p-8 space-y-6">
+<div class="space-y-4">
+<h2 class="text-headline text-xl font-bold text-on-surface">Why this was recommended</h2>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">savings</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-headline font-bold text-on-surface">Low cost efficiency</h3>
+<p class="text-body text-sm text-on-surface-variant">By tracking the market index directly, this fund keeps fees low, ensuring more of your money stays invested for growth.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-headline font-bold text-on-surface">Long-term habit</h3>
+<p class="text-body text-sm text-on-surface-variant">SIPs take the guesswork out of investing. By investing regularly, you benefit from 'rupee cost averaging' through all market cycles.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Transparency Note -->
+<section class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-8 space-y-3">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-lg">info</span>
+<span class="font-headline font-bold">What can go wrong</span>
+</div>
+<p class="text-body text-sm text-on-surface-variant leading-relaxed">
+                Stock markets don't always go up in a straight line. Sometimes they go down due to global news or economic shifts. While index funds are safer than picking single stocks, your investment value will fluctuate. It's best to stay invested for the long run to ride out these temporary waves.
+            </p>
+</section>
+<!-- CTAs -->
+<section class="flex flex-col gap-4 pt-4">
+<button class="w-full bg-primary text-on-primary font-headline font-bold py-5 rounded-full shadow-lg active:scale-[0.98] transition-all">
+                Continue with Groww
+            </button>
+<button class="w-full flex items-center justify-center gap-2 text-primary font-headline font-bold py-4 hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-xl">psychology</span>
+                Ask Dekho why
+            </button>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-4 pb-8 z-50">
+<div class="bg-[#FEF8F2]/80 dark:bg-stone-900/80 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] rounded-full border border-stone-200/20 shadow-lg shadow-stone-900/10 flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Behavior</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Expenses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-[#8B5E3C] transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] font-bold mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#8B5E3C] text-[#FEF8F2] rounded-full w-14 h-14 -mt-4 shadow-md scale-110 transition-all" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label text-[8px] uppercase tracking-[0.1em] font-bold mt-0.5">Grow</span>
+</a>
+</div>
+</nav>
+</body></html>

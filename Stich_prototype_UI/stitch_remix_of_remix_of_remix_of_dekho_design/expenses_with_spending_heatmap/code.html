@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dekho - Expenses</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#d5c3b8",
+                        "on-primary-fixed": "#2f1501",
+                        "surface-tint": "#7c563a",
+                        "outline": "#83746b",
+                        "secondary-container": "#fdc39a",
+                        "on-background": "#1d1b18",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#653d1e",
+                        "surface-container-low": "#f9f3ed",
+                        "tertiary-fixed-dim": "#f1bc92",
+                        "on-surface": "#1d1b18",
+                        "surface-bright": "#fef8f2",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#ffdcc5",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dfd9d3",
+                        "primary-fixed-dim": "#eebc9a",
+                        "secondary-fixed-dim": "#f4bb92",
+                        "on-secondary-container": "#794e2e",
+                        "on-primary-fixed-variant": "#613f25",
+                        "secondary-fixed": "#ffdcc5",
+                        "on-secondary-fixed": "#301400",
+                        "tertiary": "#6e4726",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#633e1e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#fef8f2",
+                        "background": "#fef8f2",
+                        "secondary": "#805533",
+                        "on-surface-variant": "#51443c",
+                        "surface-container-highest": "#e7e2dc",
+                        "inverse-surface": "#32302c",
+                        "inverse-on-surface": "#f6f0ea",
+                        "inverse-primary": "#eebc9a",
+                        "tertiary-fixed": "#ffdcc2",
+                        "tertiary-container": "#895f3c",
+                        "on-primary-container": "#ffe3d1",
+                        "on-tertiary-fixed": "#2e1500",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e7e2dc",
+                        "surface-container-high": "#ede7e1",
+                        "primary-container": "#876043",
+                        "on-tertiary-container": "#ffe3cf",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f3ede7",
+                        "primary": "#6c482d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Public Sans"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Public Sans', sans-serif; background-color: #fef8f2; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#FEF8F2]/80 dark:bg-[#1D1B18]/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#6C482D] dark:text-[#D5C3B8]" data-icon="menu">menu</span>
+<h1 class="text-2xl font-headline font-extrabold tracking-tighter text-[#1D1B18] dark:text-[#FEF8F2]">Expenses</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant text-sm font-medium">
+            June 2024
+            <span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<span class="material-symbols-outlined text-[#6C482D]" data-icon="search">search</span>
+<span class="material-symbols-outlined text-[#6C482D]" data-icon="filter_list">filter_list</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-4 space-y-6 max-w-md mx-auto">
+<!-- Total Expenses Section -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0px_20px_40px_rgba(107,72,45,0.06)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-widest font-bold text-[10px]">Total Outflow</span>
+<span class="text-error text-xs font-semibold flex items-center bg-error-container/30 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="trending_up">trending_up</span>
+                12% higher
+            </span>
+</div>
+<div class="mb-6">
+<h2 class="text-4xl font-headline font-extrabold tracking-tight text-on-background">₹24,500</h2>
+<p class="text-body-sm text-on-surface-variant mt-1 italic">Spent this month</p>
+</div>
+<div class="h-12 w-full flex items-end gap-1 px-1 relative">
+<div class="absolute inset-0 flex flex-col justify-between py-1 px-1 pointer-events-none">
+<div class="border-b border-outline-variant/10 w-full h-0"></div>
+<div class="border-b border-outline-variant/10 w-full h-0"></div>
+<div class="border-b border-outline-variant/10 w-full h-0"></div>
+</div>
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-10" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M 8,85 Q 25,65 42,70 T 75,45 T 92,15" fill="none" opacity="0.3" stroke="#8B5E3C" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[40%] relative z-0"></div>
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[60%] relative z-0"></div>
+<div class="flex-1 bg-primary/15 rounded-t-sm h-[55%] relative z-0"></div>
+<div class="flex-1 bg-primary/30 rounded-t-sm h-[75%] relative z-0"></div>
+<div class="flex-1 bg-primary/25 rounded-t-sm h-[65%] relative z-0"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-full relative z-0 shadow-sm"></div>
+</div>
+<div class="flex text-[10px] text-on-surface-variant font-bold mt-2 uppercase tracking-tighter opacity-50">
+<span class="flex-1 text-center">JAN</span>
+<span class="flex-1 text-center">FEB</span>
+<span class="flex-1 text-center">MAR</span>
+<span class="flex-1 text-center">APR</span>
+<span class="flex-1 text-center">MAY</span>
+<span class="flex-1 text-center text-primary font-extrabold">JUN</span>
+</div>
+</section>
+<!-- Spending Insights Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-headline font-bold text-on-background">Spending Insights</h3>
+<span class="material-symbols-outlined text-primary" data-icon="insights">insights</span>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+<button class="whitespace-nowrap px-5 py-2 rounded-full bg-primary text-on-primary text-xs font-bold shadow-sm transition-all active:scale-95">Month</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">By Category</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">vs Prev Period</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">Yearly</button>
+</div>
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0px_20px_40px_rgba(107,72,45,0.06)] space-y-6">
+<div class="relative space-y-8">
+<div class="absolute inset-0 flex justify-between pointer-events-none px-1">
+<div class="h-full border-l border-outline-variant/10"></div>
+<div class="h-full border-l border-outline-variant/10"></div>
+<div class="h-full border-l border-outline-variant/10"></div>
+<div class="h-full border-l border-outline-variant/10"></div>
+<div class="h-full border-l border-outline-variant/10"></div>
+</div>
+<div class="relative space-y-8">
+<div class="space-y-3">
+<div class="flex justify-between items-baseline">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs font-bold text-on-surface">Food &amp; Dining <span class="text-on-surface-variant font-medium ml-1 text-[10px]">• 45%</span></span>
+</div>
+<span class="text-xs font-bold text-on-surface">₹8,400</span>
+</div>
+<div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-baseline">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="text-xs font-bold text-on-surface">Transport <span class="text-on-surface-variant font-medium ml-1 text-[10px]">• 28%</span></span>
+</div>
+<span class="text-xs font-bold text-on-surface">₹5,200</span>
+</div>
+<div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-baseline">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span class="text-xs font-bold text-on-surface">Shopping <span class="text-on-surface-variant font-medium ml-1 text-[10px]">• 27%</span></span>
+</div>
+<span class="text-xs font-bold text-on-surface">₹4,900</span>
+</div>
+<div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full rounded-full" style="width: 27%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Committed Spend & Alert -->
+<div class="grid grid-cols-1 gap-4">
+<div class="bg-surface-container-high rounded-[1.5rem] p-5 flex gap-4 items-start">
+<div class="bg-surface-container-lowest p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary" data-icon="event_repeat">event_repeat</span>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-[0.15em] font-extrabold text-on-surface-variant/70">Committed Spend</p>
+<h4 class="text-2xl font-headline font-extrabold text-on-background mt-0.5">₹12,500</h4>
+<div class="mt-4 space-y-3">
+<div class="space-y-1.5">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant">
+<span>Subscriptions</span>
+<span class="text-on-surface">₹4,500</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 36%"></div>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant">
+<span>EMI / Bills</span>
+<span class="text-on-surface">₹8,000</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full rounded-full" style="width: 64%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert Card -->
+<div class="bg-surface-container border border-outline-variant/20 rounded-[1.5rem] p-5 flex items-center justify-between shadow-sm active:scale-[0.98] transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="bg-on-tertiary-fixed-variant/10 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[#B45309] text-[20px]" data-icon="pending_actions">pending_actions</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5 mb-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+</div>
+<p class="text-sm font-bold text-[#92400E]">3 transactions need review</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#B45309]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Top Spending Insight -->
+<div class="bg-tertiary-container text-on-tertiary-container rounded-[1.5rem] p-6 relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-widest font-bold opacity-80">Insight</p>
+<h4 class="text-md font-bold mt-1">Food is your highest expense (₹8,400) <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold text-white">+12%</span></h4>
+<p class="text-xs mt-2 opacity-90">Try reducing Swiggy orders by 15% to save ₹1,200 this month.</p>
+<div class="mt-3 w-3/4">
+<div class="flex justify-between items-center mb-1 text-[8px] font-bold uppercase tracking-wider opacity-70">
+<span>Target Savings</span>
+<span>₹1,200</span>
+</div>
+<div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+<div class="bg-white/40 h-full rounded-full" style="width: 35%"></div>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10" data-icon="restaurant">restaurant</span>
+</div>
+<!-- Spending Pattern Section -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0px_20px_40px_rgba(107,72,45,0.06)] space-y-5">
+<div class="flex flex-col">
+<h3 class="text-lg font-headline font-bold text-on-background">Spending Pattern</h3>
+<span class="text-[10px] font-medium text-on-surface-variant/70 uppercase tracking-widest">Darker days mean higher spending</span>
+</div>
+<div class="grid grid-cols-7 gap-1.5">
+<!-- Heatmap grid (30 squares representing 30 days) -->
+<!-- Level 0: bg-surface-container-low -->
+<!-- Level 1: bg-primary/20 -->
+<!-- Level 2: bg-primary/40 -->
+<!-- Level 3: bg-primary/70 -->
+<!-- Level 4: bg-primary (Deep Brown) -->
+<!-- Week 1 -->
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/40"></div>
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary"></div> <!-- Sat -->
+<div class="aspect-square rounded-[4px] bg-primary/70"></div> <!-- Sun -->
+<!-- Week 2 -->
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/40"></div>
+<div class="aspect-square rounded-[4px] bg-primary/70"></div> <!-- Sat -->
+<div class="aspect-square rounded-[4px] bg-primary"></div> <!-- Sun -->
+<!-- Week 3 -->
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/40"></div>
+<div class="aspect-square rounded-[4px] bg-primary/40"></div>
+<div class="aspect-square rounded-[4px] bg-primary"></div> <!-- Sat -->
+<div class="aspect-square rounded-[4px] bg-primary/70"></div> <!-- Sun -->
+<!-- Week 4 -->
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/40"></div>
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<div class="aspect-square rounded-[4px] bg-primary/70"></div> <!-- Sat -->
+<div class="aspect-square rounded-[4px] bg-primary"></div> <!-- Sun -->
+<!-- Week 5 (Last 2 days) -->
+<div class="aspect-square rounded-[4px] bg-surface-container-low"></div>
+<div class="aspect-square rounded-[4px] bg-primary/20"></div>
+<!-- Empty placeholders to maintain grid if needed, or just let it be -->
+</div>
+<div class="flex items-center gap-2 pt-1">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="event_note">event_note</span>
+<p class="text-xs font-medium text-on-surface-variant">You tend to spend more on weekends</p>
+</div>
+</section>
+<!-- Transaction List -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-headline font-bold text-on-background">Transactions</h3>
+<span class="text-primary text-xs font-bold cursor-pointer">See All</span>
+</div>
+<!-- Sorting Pills -->
+<div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+<button class="whitespace-nowrap px-5 py-2 rounded-full bg-primary text-on-primary text-xs font-bold shadow-sm transition-all active:scale-95">Month</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">By Category</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">vs Prev Period</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant text-xs font-bold transition-all hover:bg-surface-container-high active:scale-95">Yearly</button>
+</div>
+<!-- Refined List Items -->
+<div class="space-y-3">
+<!-- Blue Tokai Coffee -->
+<div class="flex items-center justify-between p-5 bg-surface-container-lowest rounded-[1.5rem] shadow-sm transition-all hover:bg-surface-container-low relative overflow-hidden group">
+<!-- Category Indicator -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#8B5E3C]"></div>
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-2xl bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#8B5E3C] text-[22px]" data-icon="coffee">coffee</span>
+</div>
+<div>
+<h5 class="text-[15px] font-bold text-on-background leading-tight">Blue Tokai Coffee</h5>
+<p class="text-[11px] text-[#8A8A8A] font-medium mt-0.5">Food &amp; Dining • Today</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[15px] font-bold text-on-background">- ₹340</p>
+</div>
+</div>
+<!-- ZARA India -->
+<div class="flex items-center justify-between p-5 bg-surface-container-lowest rounded-[1.5rem] shadow-sm transition-all hover:bg-surface-container-low relative overflow-hidden">
+<!-- Category Indicator -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#D1D5DB]"></div>
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-2xl bg-outline-variant/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-[22px]" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<div>
+<h5 class="text-[15px] font-bold text-on-background leading-tight">ZARA India</h5>
+<p class="text-[11px] text-[#8A8A8A] font-medium mt-0.5">Shopping • Yesterday</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[15px] font-bold text-on-background">- ₹4,290</p>
+</div>
+</div>
+<!-- BESCOM Utility -->
+<div class="flex items-center justify-between p-5 bg-surface-container-lowest rounded-[1.5rem] shadow-sm transition-all hover:bg-surface-container-low relative overflow-hidden">
+<!-- Category Indicator -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#F59E0B]"></div>
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-2xl bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#B45309] text-[22px]" data-icon="bolt">bolt</span>
+</div>
+<div>
+<h5 class="text-[15px] font-bold text-on-background leading-tight">BESCOM Utility</h5>
+<p class="text-[11px] text-[#8A8A8A] font-medium mt-0.5">Bills • 2 days ago</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[15px] font-bold text-on-background">- ₹1,850</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center pb-8 px-4 bg-[#FEF8F2]/80 dark:bg-[#1D1B18]/80 backdrop-blur-xl">
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] rounded-3xl border border-[#D5C3B8]/15 bg-white/40 backdrop-blur-md flex justify-around items-center py-2 px-1 shadow-[0px_20px_40px_rgba(107,72,45,0.06)]">
+<a class="flex flex-col items-center justify-center text-[#B0A79F] py-2 px-4 hover:text-[#6C482D] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="insights">insights</span>
+<span class="font-public-sans text-[10px] uppercase tracking-widest font-bold">Behavior</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#8B5E3C] text-[#FFFFFF] rounded-2xl py-2 px-4 active:scale-90 transition-transform shadow-lg shadow-[#8B5E3C]/20" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-public-sans text-[10px] uppercase tracking-widest font-bold">Expenses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] py-2 px-4 hover:text-[#6C482D] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-public-sans text-[10px] uppercase tracking-widest font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] py-2 px-4 hover:text-[#6C482D] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-public-sans text-[10px] uppercase tracking-widest font-bold">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B0A79F] py-2 px-4 hover:text-[#6C482D] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="trending_up">trending_up</span>
+<span class="font-public-sans text-[10px] uppercase tracking-widest font-bold">Grow</span>
+</a>
+</div>
+</nav>
+</body></html>
