@@ -14,6 +14,3 @@ def get_db():
     finally:
         db.close()
 
-def get_db_connection():
-    """Deprecated: Use get_db() with SQLAlchemy instead."""
-    raise NotImplementedError("Legacy SQLite connection is no longer supported.")

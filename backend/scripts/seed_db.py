@@ -1,114 +1,157 @@
-import sqlite3
-import json
-import csv
 import sys
 from pathlib import Path
-from dateutil import parser
+import json
+import csv
 
 # Add project backend root to pythonpath
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.core.config import settings
-from app.core.database import init_db, get_db_connection
+from app.core.database import SessionLocal, Base, engine
+from app.models import User, Transaction, SavingsGoal, Budget, Asset, Recommendation
 
 def seed_db():
     print("Initializing Database Schema...")
-    init_db()
+    Base.metadata.create_all(bind=engine)
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    db = SessionLocal()
     
-    # 1. Profile -> User
-    print("Seeding Users...")
-    profile_path = Path(settings.DATA_DIR) / 'profiles' / 'user_profile.json'
-    if profile_path.exists():
-        with open(profile_path, 'r', encoding='utf-8') as f:
-            profile = json.load(f)
-            
-        cursor.execute("SELECT id FROM users WHERE email = ?", (profile.get('email', 'arjun@dekho.app'),))
-        user_row = cursor.fetchone()
+    try:
+        # 1. Profile -> User
+        print("Seeding Users...")
+        profile_path = Path(settings.DATA_DIR) / 'profiles' / 'user_profile.json'
         
-        if not user_row:
-            cursor.execute("""
-                INSERT INTO users (name, email, income_range, goal_type, risk_comfort, monthly_budget, financial_stage)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                profile.get('name', 'Arjun Sharma'),
-                profile.get('email', 'arjun@dekho.app'),
-                profile.get('income_range', '5-10L'),
-                ",".join(profile.get('purposes', [])),
-                profile.get('risk_comfort', 'Moderate'),
-                profile.get('monthly_budget', 50000),
-                profile.get('financial_stage', 'Early Career')
-            ))
-            user_id = cursor.lastrowid
-        else:
-            user_id = user_row['id']
-            
-    else:
-        print(f"Warning: {profile_path} not found. Skipping user seeding.")
         user_id = 1
-        
-    # 2. Transactions
-    print("Seeding Transactions...")
-    tx_path = Path(settings.DATA_DIR) / 'transactions' / 'transactions.csv'
-    if tx_path.exists():
-        cursor.execute("DELETE FROM transactions") # reset
-        with open(tx_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                cursor.execute("""
-                    INSERT INTO transactions (user_id, date, merchant, amount, category, payment_mode, notes)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    user_id,
-                    row['date'],
-                    row['merchant'],
-                    float(row['amount']),
-                    row['category'],
-                    row['payment_mode'],
-                    row.get('notes', '')
-                ))
-
-    # 3. Savings Goals
-    print("Seeding Goals...")
-    goals_path = Path(settings.DATA_DIR) / 'goals' / 'savings_goals.json'
-    if goals_path.exists():
-        cursor.execute("DELETE FROM savings_goals") # reset
-        with open(goals_path, 'r', encoding='utf-8') as f:
-            goals = json.load(f)
-            for g in goals:
-                cursor.execute("""
-                    INSERT INTO savings_goals (user_id, name, target_amount, current_amount, deadline, status)
-                    VALUES (?, ?, ?, ?, ?, 'active')
-                """, (
-                    user_id,
-                    g['name'],
-                    float(g['target_amount']),
-                    float(g['current_amount']),
-                    g.get('deadline', '')
-                ))
-
-    # 4. Budgets
-    print("Seeding Budgets...")
-    budgets_path = Path(settings.DATA_DIR) / 'goals' / 'budgets.json'
-    if budgets_path.exists():
-        cursor.execute("DELETE FROM budgets") # reset
-        with open(budgets_path, 'r', encoding='utf-8') as f:
-            budgets = json.load(f)
-            for b in budgets:
-                cursor.execute("""
-                    INSERT INTO budgets (user_id, category, monthly_limit, month)
-                    VALUES (?, ?, ?, '2026-04')
-                """, (
-                    user_id,
-                    b['category'],
-                    float(b['monthly_limit'])
-                ))
+        if profile_path.exists():
+            with open(profile_path, 'r', encoding='utf-8') as f:
+                profile = json.load(f)
                 
-    conn.commit()
-    conn.close()
-    print("Seeding complete.")
+            user = db.query(User).filter(User.email == profile.get('email', 'arjun@dekho.app')).first()
+            if not user:
+                user = User(
+                    name=profile.get('name', 'Arjun Sharma'),
+                    email=profile.get('email', 'arjun@dekho.app'),
+                    income_range=profile.get('income_range', '5-10L'),
+                    goal_type=",".join(profile.get('purposes', [])),
+                    risk_comfort=profile.get('risk_comfort', 'Moderate'),
+                    monthly_budget=float(profile.get('monthly_budget', 50000)),
+                    financial_stage=profile.get('financial_stage', 'Early Career')
+                )
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+            user_id = user.id
+        else:
+            print(f"Warning: {profile_path} not found. Skipping user seeding.")
+            
+        # 2. Transactions
+        print("Seeding Transactions...")
+        tx_path = Path(settings.DATA_DIR) / 'transactions' / 'transactions.csv'
+        if tx_path.exists():
+            db.query(Transaction).delete()
+            with open(tx_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                transactions = []
+                for row in reader:
+                    transactions.append(Transaction(
+                        user_id=user_id,
+                        date=row['date'],
+                        merchant=row['merchant'],
+                        amount=float(row['amount']),
+                        category=row['category'],
+                        payment_mode=row.get('payment_mode', ''),
+                        notes=row.get('notes', ''),
+                        direction='debit' if float(row['amount']) < 0 else 'credit',
+                        source_type='csv'
+                    ))
+                db.add_all(transactions)
+
+        # 3. Savings Goals
+        print("Seeding Goals...")
+        goals_path = Path(settings.DATA_DIR) / 'goals' / 'savings_goals.json'
+        if goals_path.exists():
+            db.query(SavingsGoal).delete()
+            with open(goals_path, 'r', encoding='utf-8') as f:
+                goals = json.load(f)
+                db.add_all([
+                    SavingsGoal(
+                        user_id=user_id,
+                        name=g['name'],
+                        target_amount=float(g['target_amount']),
+                        current_amount=float(g['current_amount']),
+                        deadline=g.get('deadline', ''),
+                        status='active'
+                    ) for g in goals
+                ])
+
+        # 4. Budgets
+        print("Seeding Budgets...")
+        budgets_path = Path(settings.DATA_DIR) / 'goals' / 'budgets.json'
+        if budgets_path.exists():
+            db.query(Budget).delete()
+            with open(budgets_path, 'r', encoding='utf-8') as f:
+                budgets = json.load(f)
+                db.add_all([
+                    Budget(
+                        user_id=user_id,
+                        category=b['category'],
+                        monthly_limit=float(b['monthly_limit']),
+                        month='2026-04'
+                    ) for b in budgets
+                ])
+                
+        # 5. Assets (Quick Win)
+        print("Seeding Assets...")
+        db.query(Asset).delete()
+        db.add_all([
+            Asset(user_id=user_id, name="HDFC Savings", type="Cash", value=45000),
+            Asset(user_id=user_id, name="Axis Mutual Fund", type="Investment", value=120500),
+            Asset(user_id=user_id, name="PF Account", type="Retirement", value=240000),
+            Asset(user_id=user_id, name="Gold ETF", type="Investment", value=35000)
+        ])
+        
+        # 6. Recommendations (Quick Win)
+        print("Seeding Recommendations...")
+        db.query(Recommendation).delete()
+        db.add_all([
+            Recommendation(
+                user_id=user_id,
+                title="Top up Emergency Fund",
+                description="You have ₹45,000 in savings, which covers about 1.2 months of spending (₹35k/mo average).",
+                cta="Set a top-up goal",
+                tag="Safety first"
+            ),
+            Recommendation(
+                user_id=user_id,
+                title="Start a small SIP",
+                description="Even ₹1,000/month in a diversified index fund builds wealth quietly over time.",
+                cta="Learn about SIPs",
+                tag="Wealth building"
+            ),
+            Recommendation(
+                user_id=user_id,
+                title="Review your subscriptions",
+                description="You're spending ₹957/month on subscriptions. That's ₹11,484 a year.",
+                cta="See subscriptions",
+                tag="Quick saving"
+            ),
+            Recommendation(
+                user_id=user_id,
+                title="Track your rent-to-income ratio",
+                description="Your rent is 24% of monthly income. Financial guides suggest keeping it under 30%.",
+                cta="See full breakdown",
+                tag="You're on track"
+            )
+        ])
+                
+        db.commit()
+        print("Seeding complete.")
+        
+    except Exception as e:
+        print(f"Error seeding DB: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     seed_db()

@@ -8,7 +8,7 @@ import traceback
 from app.api.schemas import ChatRequest, ChatResponse, ChatMessage, SourceItem
 from app.services.retriever import retriever
 from app.services.gemini_service import generate_chat_response
-from app.core.database import get_db_connection
+
 
 router = APIRouter()
 
@@ -46,54 +46,49 @@ Guidelines:
 Always strictly follow the 3-zone structure.
 """
 
+from app.core.database import SessionLocal
+from app.models import User, Transaction, SavingsGoal
+from sqlalchemy.sql import func
+
 def extract_global_context():
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        db = SessionLocal()
         
         # User profile
-        cursor.execute("SELECT id, name, income_range, monthly_budget, goal_type FROM users LIMIT 1")
-        user = cursor.fetchone()
+        user = db.query(User).first()
         
         if not user:
-            conn.close()
+            db.close()
             return "No active user footprint found."
             
-        uid = user['id']
+        uid = user.id
         
         # Exact mathematical aggregates for accuracy
-        cursor.execute("SELECT SUM(amount) as total FROM transactions WHERE user_id = ?", (uid,))
-        total_spent_row = cursor.fetchone()
-        total_spent = total_spent_row['total'] if total_spent_row and total_spent_row['total'] else 0
+        total_spent = db.query(func.sum(Transaction.amount)).filter(Transaction.user_id == uid).scalar() or 0
         
-        cursor.execute("""
-            SELECT category, SUM(amount) as total
-            FROM transactions 
-            WHERE user_id = ?
-            GROUP BY category
-            ORDER BY total DESC
-        """, (uid,))
-        categories = cursor.fetchall()
+        categories = db.query(
+            Transaction.category, 
+            func.sum(Transaction.amount).label("total")
+        ).filter(Transaction.user_id == uid).group_by(Transaction.category).order_by(func.sum(Transaction.amount).desc()).all()
         
         # Goals
-        cursor.execute("SELECT name, target_amount, current_amount, deadline FROM savings_goals WHERE user_id = ?", (uid,))
-        goals = cursor.fetchall()
+        goals = db.query(SavingsGoal).filter(SavingsGoal.user_id == uid).all()
         
-        conn.close()
+        db.close()
         
-        ctx = f"User Name: {user['name'].split()[0]}\n"
-        ctx += f"Monthly Budget: ₹{user['monthly_budget']}\n"
-        ctx += f"Life Goals Context: {user['goal_type']}\n\n"
+        ctx = f"User Name: {user.name.split()[0]}\n"
+        ctx += f"Monthly Budget: ₹{user.monthly_budget}\n"
+        ctx += f"Life Goals Context: {user.goal_type}\n\n"
         
         ctx += "--- PRECISE AGGREGATES ---\n"
         ctx += f"Total Spend Overall: ₹{total_spent}\n"
         ctx += "Category Breakdown:\n"
         for c in categories:
-            ctx += f"- {c['category']}: ₹{c['total']}\n"
+            ctx += f"- {c.category}: ₹{c.total}\n"
             
         ctx += "\n--- ACTIVE GOALS ---\n"
         for g in goals:
-            ctx += f"- {g['name']}: ₹{g['current_amount']} / ₹{g['target_amount']} (Deadline: {g['deadline']})\n"
+            ctx += f"- {g.name}: ₹{g.current_amount} / ₹{g.target_amount} (Deadline: {g.deadline})\n"
             
         return ctx
     except Exception as e:
@@ -109,19 +104,20 @@ def process_action_tags(response_text: str) -> str:
             amount_str = action_match.group(2).replace(',', '').replace('₹', '').strip()
             amount = float(amount_str)
             
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            # Fetch user 1
-            cursor.execute("SELECT id FROM users LIMIT 1")
-            u = cursor.fetchone()
-            uid = u['id'] if u else 1
+            db = SessionLocal()
+            u = db.query(User).first()
+            uid = u.id if u else 1
             
-            cursor.execute(
-                "INSERT INTO savings_goals (user_id, name, target_amount, current_amount, status) VALUES (?, ?, ?, ?, ?)",
-                (uid, title, amount, 0, 'active')
+            new_goal = SavingsGoal(
+                user_id=uid,
+                name=title,
+                target_amount=amount,
+                current_amount=0,
+                status='active'
             )
-            conn.commit()
-            conn.close()
+            db.add(new_goal)
+            db.commit()
+            db.close()
             print(f"✅ DB MUTATION: Successfully created goal '{title}' for ₹{amount}")
         except Exception as e:
             print(f"❌ DB MUTATION FAILED: {str(e)}")
