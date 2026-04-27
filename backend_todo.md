@@ -157,15 +157,15 @@
 
 ## Phase 6 — Background Job Infrastructure
 
-- `[ ]` Install `Celery` and `Redis`, add to `requirements.txt`
-- `[ ]` Create `celery_app.py` with broker configuration
-- `[ ]` Move parsing tasks to Celery background jobs:
-  - `[ ]` PDF/CSV parsing task
-  - `[ ]` SMS parsing task
-  - `[ ]` Feature recomputation task
-  - `[ ]` ML inference task
-- `[ ]` Add job status tracking (PENDING, RUNNING, DONE, FAILED)
-- `[ ]` Expose `GET /jobs/{job_id}/status` endpoint for frontend polling
+- `[x]` Install `Celery` and `Redis`, add to `requirements.txt`
+- `[x]` Create `celery_app.py` with broker configuration
+- `[x]` Move parsing tasks to Celery background jobs:
+  - `[x]` PDF/CSV parsing task
+  - `[x]` SMS parsing task
+  - `[x]` Feature recomputation task
+  - `[ ]` ML inference task (deferred — Phase 5)
+- `[x]` Add job status tracking (PENDING, RUNNING, DONE, FAILED)
+- `[x]` Expose `GET /jobs/{job_id}/status` endpoint for frontend polling
 
 ---
 
@@ -182,13 +182,13 @@
 
 ## Phase 8 — Chatbot Integration
 
-- `[ ]` Refactor `chat.py` to pull data from `chat_context` table (not isolated mock)
-- `[ ]` Build `ChatContextService`:
-  - `[ ]` Pull user's financial profile from feature layer
-  - `[ ]` Attach recent insights and recommendations
-  - `[ ]` Include recent transaction summary
-- `[ ]` Pass enriched context to Gemini/Ollama in the system prompt
-- `[ ]` Ensure chatbot only accesses the requesting user's data
+- `[x]` Refactor `chat.py` to pull data from feature layer (not isolated mock)
+- `[x]` Build `ChatContextService`:
+  - `[x]` Pull user's financial profile from feature layer
+  - `[x]` Attach recent insights and recommendations
+  - `[x]` Include recent transaction summary
+- `[x]` Pass enriched context to Gemini in the system prompt
+- `[ ]` Ensure chatbot only accesses the requesting user's data (blocked on Phase 10)
 - `[ ]` Store each chat session's context snapshot in `chat_context` table
 
 ---
@@ -217,14 +217,14 @@
 
 ## Phase 10 — Authentication & Authorization
 
-- `[ ]` Install `python-jose` and `passlib`, add to `requirements.txt`
-- `[ ]` Implement JWT-based auth:
-  - `[ ]` `POST /auth/register`
-  - `[ ]` `POST /auth/login` — returns access token
-  - `[ ]` `POST /auth/refresh`
-- `[ ]` Create `get_current_user` dependency for protected routes
-- `[ ]` Enforce `user_id` filtering on ALL data endpoints (no cross-user data leaks)
-- `[ ]` Hash passwords with bcrypt before storing
+- `[x]` Install `python-jose` and `passlib`, add to `requirements.txt`
+- `[x]` Implement JWT-based auth:
+  - `[x]` `POST /auth/register`
+  - `[x]` `POST /auth/login` — returns access token
+  - `[x]` `POST /auth/refresh`
+- `[x]` Create `get_current_user` dependency for protected routes
+- `[ ]` Enforce `user_id` filtering on ALL data endpoints (next step)
+- `[x]` Hash passwords with bcrypt before storing
 
 ---
 
@@ -242,12 +242,12 @@
 
 ## Phase 12 — Audit & Monitoring
 
-- `[ ]` Create structured logging with `structlog` or Python `logging`
-- `[ ]` Log upload events (user_id, file_id, timestamp, status)
-- `[ ]` Log parsing success/failure (file_id, rows extracted, errors)
-- `[ ]` Log ML model execution (model_name, input_size, latency, output_preview)
-- `[ ]` Log access to sensitive endpoints (chat, transactions, profile)
-- `[ ]` Add a `GET /health` endpoint for backend status
+- `[x]` Create structured logging with Python `logging`
+- `[x]` Log upload events (user_id, file_id, timestamp, status)
+- `[x]` Log parsing success/failure (file_id, rows extracted, errors)
+- `[ ]` Log ML model execution (deferred — Phase 5)
+- `[x]` Log access to sensitive endpoints (chat, transactions, profile)
+- `[x]` Add a `GET /health` endpoint for backend status (with MinIO check)
 
 ---
 

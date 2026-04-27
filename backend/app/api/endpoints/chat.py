@@ -1,13 +1,19 @@
 import re
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from uuid import uuid4
 from datetime import datetime, timezone
 import traceback
 
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
+
 from app.api.schemas import ChatRequest, ChatResponse, ChatMessage, SourceItem
 from app.services.retriever import retriever
 from app.services.gemini_service import generate_chat_response
+from app.core.database import get_db, SessionLocal
+from app.models import User, Transaction, SavingsGoal
+from app.services.chat_context import build_chat_context
 
 
 router = APIRouter()
@@ -46,53 +52,17 @@ Guidelines:
 Always strictly follow the 3-zone structure.
 """
 
-from app.core.database import SessionLocal
-from app.models import User, Transaction, SavingsGoal
-from sqlalchemy.sql import func
 
-def extract_global_context():
+def _get_global_context(db: Session) -> str:
+    """Wraps ChatContextService for use in the chat endpoint."""
     try:
-        db = SessionLocal()
-        
-        # User profile
         user = db.query(User).first()
-        
         if not user:
-            db.close()
             return "No active user footprint found."
-            
-        uid = user.id
-        
-        # Exact mathematical aggregates for accuracy
-        total_spent = db.query(func.sum(Transaction.amount)).filter(Transaction.user_id == uid).scalar() or 0
-        
-        categories = db.query(
-            Transaction.category, 
-            func.sum(Transaction.amount).label("total")
-        ).filter(Transaction.user_id == uid).group_by(Transaction.category).order_by(func.sum(Transaction.amount).desc()).all()
-        
-        # Goals
-        goals = db.query(SavingsGoal).filter(SavingsGoal.user_id == uid).all()
-        
-        db.close()
-        
-        ctx = f"User Name: {user.name.split()[0]}\n"
-        ctx += f"Monthly Budget: ₹{user.monthly_budget}\n"
-        ctx += f"Life Goals Context: {user.goal_type}\n\n"
-        
-        ctx += "--- PRECISE AGGREGATES ---\n"
-        ctx += f"Total Spend Overall: ₹{total_spent}\n"
-        ctx += "Category Breakdown:\n"
-        for c in categories:
-            ctx += f"- {c.category}: ₹{c.total}\n"
-            
-        ctx += "\n--- ACTIVE GOALS ---\n"
-        for g in goals:
-            ctx += f"- {g.name}: ₹{g.current_amount} / ₹{g.target_amount} (Deadline: {g.deadline})\n"
-            
-        return ctx
+        return build_chat_context(db, user.id)
     except Exception as e:
-        return f"Error loading global context: {str(e)}"
+        return f"Error loading context: {str(e)}"
+
 
 def process_action_tags(response_text: str) -> str:
     """Detects backend tags like [ACTION: ADD_GOAL | Title | Amount], strips them, and mutates DB."""
@@ -130,7 +100,7 @@ def process_action_tags(response_text: str) -> str:
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     if not request.messages:
         raise HTTPException(status_code=400, detail="Messages array cannot be empty")
         
@@ -152,7 +122,7 @@ async def chat_endpoint(request: ChatRequest):
         
         data_text = "\n---\n".join([c.get('text', '') for c in data_chunks])
         knowledge_text = "\n---\n".join([c.get('text', '') for c in knowledge_chunks])
-        global_text = extract_global_context()
+        global_text = _get_global_context(db)  # Now uses FeatureService
         
         system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
             global_context=global_text,
