@@ -13,6 +13,7 @@ from app.services.parsers.pdf_parser import parse_pdf
 from app.services.parsers.csv_parser import parse_csv
 from app.services.parsers.sms_parser import parse_sms
 from app.services.normalization import normalization_service
+from app.services.storage import storage_service
 
 router = APIRouter()
 
@@ -54,13 +55,27 @@ async def upload_file(
     uploaded_file = UploadedFile(
         user_id=uid,
         filename=file.filename,
-        s3_key=str(file_path),
+        s3_key=str(file_path),  # Will be updated to MinIO key below
         file_type="pdf" if ext == ".pdf" else "csv",
         status="parsing"
     )
     db.add(uploaded_file)
     db.commit()
     db.refresh(uploaded_file)
+
+    # Upload to MinIO (non-blocking — fall back to local path if unavailable)
+    content_type = "application/pdf" if ext == ".pdf" else "text/csv"
+    try:
+        minio_key = storage_service.upload_file(
+            user_id=uid,
+            file_id=file_id,
+            local_path=file_path,
+            content_type=content_type,
+        )
+        uploaded_file.s3_key = minio_key
+        db.commit()
+    except Exception as minio_err:
+        print(f"⚠️  MinIO upload skipped (using local path): {minio_err}")
 
     # Parse the file
     try:

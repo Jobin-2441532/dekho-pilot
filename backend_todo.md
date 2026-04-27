@@ -171,12 +171,12 @@
 
 ## Phase 7 — File Storage (MinIO)
 
-- `[ ]` Install and run MinIO locally (Docker or binary)
-- `[ ]` Install `boto3` or `minio` Python SDK, add to `requirements.txt`
-- `[ ]` Create `FileStorageService` to handle upload/download/delete
-- `[ ]` Store all uploaded PDFs/CSVs in MinIO, not the filesystem
-- `[ ]` Never expose raw file URLs publicly — generate signed URLs with expiry
-- `[ ]` Design storage path: `user_{id}/uploads/{file_id}.pdf`
+- `[x]` Install and run MinIO locally (Docker)
+- `[x]` Install `minio` Python SDK, add to `requirements.txt`
+- `[x]` Create `FileStorageService` to handle upload/download/delete
+- `[x]` Store all uploaded PDFs/CSVs in MinIO (with local filesystem fallback)
+- `[x]` Never expose raw file URLs publicly — generate signed URLs with expiry
+- `[x]` Design storage path: `user_{id}/uploads/{file_id}.pdf`
 
 ---
 
@@ -195,23 +195,23 @@
 
 ## Phase 9 — API Layer Completion
 
-- `[ ]` Review all existing endpoints for hardcoded mock data and replace with DB queries:
-  - `[ ]` `/assets` — currently fully hardcoded
-  - `[ ]` `/opportunities` — currently fully hardcoded
-  - `[ ]` `/profile` — `monthlyIncome` is hardcoded to 75000
-- `[ ]` Add missing endpoints per architecture spec:
-  - `[ ]` `GET /files` — list uploaded files for a user
-  - `[ ]` `GET /transactions/summary` — period-based aggregate
-  - `[ ]` `GET /features/monthly`
-  - `[ ]` `GET /features/profile`
-  - `[ ]` `POST /ml/categorize`
-  - `[ ]` `POST /ml/behavior`
-  - `[ ]` `POST /ml/recommend`
-  - `[ ]` `POST /sms/paste`
-  - `[ ]` `GET /sms/history`
-  - `[ ]` `POST /sms/parse`
-- `[ ]` Add pagination to `GET /transactions`
-- `[ ]` Add date range filtering to `GET /transactions`
+- `[x]` Review all existing endpoints for hardcoded mock data and replace with DB queries:
+  - `[x]` `/assets` — DB-backed
+  - `[x]` `/opportunities` — DB-backed
+  - `[x]` `/profile` — `monthlyIncome` derived from `income_range` band
+- `[x]` Add missing endpoints per architecture spec:
+  - `[x]` `GET /files` — list uploaded files for a user
+  - `[x]` `GET /transactions/summary` — period-based aggregate
+  - `[x]` `GET /features/monthly`
+  - `[x]` `GET /features/profile`
+  - `[ ]` `POST /ml/categorize` — deferred (Phase 5)
+  - `[ ]` `POST /ml/behavior` — deferred (Phase 5)
+  - `[ ]` `POST /ml/recommend` — deferred (Phase 5)
+  - `[x]` `POST /sms/paste`
+  - `[x]` `GET /sms/history`
+  - `[x]` `POST /sms/parse`
+- `[x]` Add pagination to `GET /transactions`
+- `[x]` Add date range filtering to `GET /transactions`
 
 ---
 
