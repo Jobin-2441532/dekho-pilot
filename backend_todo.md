@@ -308,13 +308,15 @@
 
 ## Phase 11 — Security Hardening
 
-- `[ ]` Add input validation for all upload endpoints (file type, size limit)
-- `[ ]` Sanitize SMS text before parsing (strip scripts, special chars)
-- `[ ]` Mask sensitive identifiers in API responses (e.g., account numbers → `XXXX1234`)
-- `[ ]` Rate-limit upload and parsing endpoints (e.g., 5 uploads/minute per user)
-- `[ ]` Add CORS policy — restrict to frontend origin only
-- `[ ]` Never return raw file paths or MinIO bucket info in API responses
-- `[ ]` Pass only minimal required fields to ML services (enforce feature contracts)
+- `[x]` Add input validation for all upload endpoints (file type whitelist: PDF/CSV only, 10 MB size limit)
+- `[x]` Sanitize SMS text before parsing (strips HTML tags, scripts, control characters, truncates to 2000 chars)
+- `[x]` Mask sensitive identifiers in API responses (account numbers → `XXXX1234`, VPAs → `j*****e@okaxis`)
+- `[x]` Rate-limit upload and parsing endpoints (10 uploads/min, 20 SMS/min per IP via `slowapi`)
+- `[x]` Tighten CORS policy — explicit origin whitelist, explicit method and header lists
+- `[x]` Never return raw file paths or MinIO bucket keys in API responses
+- `[x]` Feature contract enforcement utility (`build_ml_payload`) strips internal fields before ML consumption
+- `[x]` Wire JWT `get_current_user` into all ingestion endpoints (upload, SMS paste/parse/history)
+- `[x]` JSON 429 error handler — rate limit errors return JSON (not raw HTML)
 
 ---
 

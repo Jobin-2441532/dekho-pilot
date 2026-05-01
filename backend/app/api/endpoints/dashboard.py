@@ -292,3 +292,36 @@ def get_review_queue(db: Session = Depends(get_db), current_user: User = Depends
     ]
 
 
+
+# ---------------------------------------------------------------------------
+# Delete transaction (JWT-scoped)
+# ---------------------------------------------------------------------------
+@router.delete("/transactions/{transaction_id}", status_code=204)
+def delete_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from fastapi import HTTPException as _HE
+    tx = db.query(Transaction).filter(Transaction.id == transaction_id, Transaction.user_id == current_user.id).first()
+    if not tx:
+        raise _HE(status_code=404, detail="Transaction not found")
+    db.delete(tx); db.commit()
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Delete goal (JWT-scoped)
+# ---------------------------------------------------------------------------
+@router.delete("/goals/{goal_id}", status_code=204)
+def delete_goal(
+    goal_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from fastapi import HTTPException as _HE
+    goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id, SavingsGoal.user_id == current_user.id).first()
+    if not goal:
+        raise _HE(status_code=404, detail="Goal not found")
+    db.delete(goal); db.commit()
+    return None

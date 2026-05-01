@@ -1,22 +1,28 @@
 import os
 import uuid
 import shutil
+import logging
 from pathlib import Path
-from fastapi import APIRouter, Depends, Request, UploadFile, File, HTTPException
+from typing import List
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+import httpx
 
-from app.core.database import get_db
+from app.core.database import get_db, SessionLocal
 from app.core.config import settings
 from app.core.security import validate_upload, sanitise_sms
 from app.core.rate_limit import limiter
-from app.models import UploadedFile, RawRecord, User
+from app.models import UploadedFile, RawRecord, User, Transaction
 from app.services.parsers.pdf_parser import parse_pdf
 from app.services.parsers.csv_parser import parse_csv
 from app.services.parsers.sms_parser import parse_sms
 from app.services.normalization import normalization_service
 from app.services.storage import storage_service
 from app.api.endpoints.auth import get_current_user
+
+logger = logging.getLogger("dekho.ingestion")
+ML_SERVICE_URL = os.getenv("ML_SERVICE_URL", "http://localhost:8001")
 
 router = APIRouter()
 
@@ -30,6 +36,57 @@ class SMSPasteRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# ML enrichment background task
+# ---------------------------------------------------------------------------
+async def _enrich_with_ml(transaction_ids: List[int], user_id: int) -> None:
+    """
+    Fire-and-forget: calls ML sidecar to reclassify newly created transactions.
+    Runs in background — main upload response is not blocked.
+    Updates category/confidence in place if ML returns a better classification.
+    """
+    db = SessionLocal()
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            for tx_id in transaction_ids:
+                tx = db.query(Transaction).filter(
+                    Transaction.id == tx_id,
+                    Transaction.user_id == user_id,
+                ).first()
+                if not tx:
+                    continue
+
+                # Build SMS-like text for the classifier
+                desc = tx.merchant or ""
+                sms_text = (
+                    f"{tx.direction.upper() if tx.direction else 'DEBIT'}: "
+                    f"Rs {tx.amount} to {desc} via {tx.payment_mode or 'UPI'}"
+                )
+
+                try:
+                    r = await client.post(
+                        f"{ML_SERVICE_URL}/api/sms/ingest",
+                        json={"user_id": user_id, "sms_text": sms_text},
+                    )
+                    if r.status_code == 200:
+                        ml_result = r.json()
+                        # Only update if ML has higher confidence than existing
+                        ml_confidence = ml_result.get("confidence", 0.0)
+                        if ml_confidence > (tx.confidence or 0.0):
+                            tx.category = ml_result.get("category", tx.category)
+                            tx.sub_category = ml_result.get("sub_category", tx.sub_category)
+                            tx.confidence = ml_confidence
+                            if ml_result.get("merchant"):
+                                tx.merchant = ml_result["merchant"]
+                        db.commit()
+                except Exception:
+                    pass  # Non-fatal — keep original classification
+    except Exception as e:
+        logger.warning(f"ML enrichment background task failed: {e}")
+    finally:
+        db.close()
+
+
+# ---------------------------------------------------------------------------
 # POST /upload  — rate limited: 10 uploads/minute per IP
 # ---------------------------------------------------------------------------
 @router.post("/upload")
@@ -37,6 +94,7 @@ class SMSPasteRequest(BaseModel):
 async def upload_file(
     request: Request,
     file: UploadFile = File(...),
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -110,12 +168,21 @@ async def upload_file(
         uploaded_file.status = "completed"
         db.commit()
 
+        # ── ML Enrichment (background, non-blocking) ──
+        # Fire-and-forget: re-classifies transactions via ML sidecar.
+        # Only updates if ML confidence > normalization confidence.
+        if created and background_tasks is not None:
+            tx_ids = [tx.id for tx in created if hasattr(tx, "id")]
+            if tx_ids:
+                background_tasks.add_task(_enrich_with_ml, tx_ids, current_user.id)
+
         return {
             "message": "File uploaded and parsed successfully",
             "file_id": uploaded_file.id,
             "filename": uploaded_file.filename,
             "transactions_created": len(created),
             "status": "completed",
+            "ml_enrichment": "queued" if created else "skipped",
             # NOTE: no s3_key, no storage_path, no local file path in response
         }
 

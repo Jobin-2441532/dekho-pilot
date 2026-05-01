@@ -224,8 +224,10 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100dvh;           /* lock body to viewport */
-  overflow: hidden;         /* prevent body-level scroll — only .content scrolls */
+  min-height: 100dvh;
+  /* Fixed: Allow body to scroll normally on mobile */
+  overflow-x: hidden;
+  overflow-y: auto;
   transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
@@ -276,19 +278,22 @@ a:hover { color: var(--color-primary-mid); }
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  width: 100%;
   max-width: var(--screen-max);
   margin: 0 auto;
   position: relative;
   background-color: var(--bg-base);
+  /* Fixed: Ensure it takes full width on mobile */
 }
 
 /* ─── PAGE CONTAINER ─── */
 .page {
   flex: 1;
+  width: 100%;
   padding: var(--space-4) var(--page-padding-x);
   padding-bottom: calc(var(--dock-height) + var(--space-8));
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
+  /* Fixed: Natural scrolling */
+  overflow-y: visible;
 }
 
 /* ─── GLASSMORPHISM UTILITY ─── */

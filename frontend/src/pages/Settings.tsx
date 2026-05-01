@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Moon, Sun, ChevronRight, User } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ChevronRight, User, LogOut } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
 import styles from './Settings.module.css'
 
@@ -54,6 +54,20 @@ export default function Settings() {
                 <span>Monthly Wrap</span>
               </div>
               <ChevronRight size={20} className={styles.chevron} />
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.section} style={{ marginTop: 'var(--space-6)' }}>
+          <div className={styles.card}>
+            <button className={styles.rowBtn} onClick={() => {
+              localStorage.clear();
+              navigate('/login');
+            }} style={{ color: 'var(--color-negative)' }}>
+              <div className={styles.rowLeft}>
+                <LogOut size={20} />
+                <span>Sign Out</span>
+              </div>
             </button>
           </div>
         </div>

@@ -1,42 +1,64 @@
 /* ── Expenses Page — Stitch "Expenses with Spending Heatmap" ── */
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Filter, Search } from 'lucide-react'
+import { Filter, Search, Edit2, Trash2, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import api from '../lib/api'
 import styles from './Expenses.module.css'
-
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
 type InsightTab = 'Total' | 'By Category' | 'Ad hoc Period' | 'None'
 
 const CATEGORY_EMOJI: Record<string, string> = {
   'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
   'Entertainment': '🎬', 'Bills': '⚡', 'Health': '💊',
-  'Housing': '🏠', 'Travel': '✈️', 'Others': '💰',
+  'Housing': '🏠', 'Travel': '✈️', 'Others': '💰', 'Uncategorised': '❓'
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
   'Food & Dining': '#8B6347', 'Shopping': '#6C482D', 'Transport': '#A0785A',
   'Entertainment': '#C49478', 'Bills': '#D4B8A0', 'Health': '#B89070',
-  'Housing': '#9E7355', 'Travel': '#7A5840', 'Others': '#E8D5C4',
+  'Housing': '#9E7355', 'Travel': '#7A5840', 'Others': '#E8D5C4', 'Uncategorised': '#A0A0A0'
 }
 
-/* Heatmap — 5 weeks × 7 days grid */
-function SpendingHeatmap({ data }: { data: number[][] }) {
-  const max = Math.max(...data.flat().filter(Boolean))
+const CATEGORIES = [
+  "Food & Dining","Transport","Shopping","Groceries","Entertainment",
+  "Travel","Health","Utilities","Telecom","Insurance","Investment",
+  "Loan EMI","Credit Card","Income","Refund","Cash Withdrawal",
+  "Wallet","Personal Transfer","Personal Care","Household","Services","Uncategorised",
+];
+
+const PIE_COLORS = [
+  '#8B6347', '#C49478', '#6C482D', '#A0785A',
+  '#D4B8A0', '#9E7355', '#B89070', '#E8D5C4'
+]
+
+const PM_COLORS: Record<string, string> = {
+  UPI: '#8B6347', CARD: '#A0785A', ATM: '#D4B8A0',
+  WALLET: '#C49478', NEFT: '#6C482D', IMPS: '#9E7355',
+  UNKNOWN: '#E8D5C4',
+}
+
+type HeatmapCell = { date: number | null, amount: number }
+
+/* Heatmap — Dynamic grid based on calendar */
+function SpendingHeatmap({ data }: { data: HeatmapCell[][] }) {
+  const allAmounts = data.flat().map(c => c.amount).filter(Boolean)
+  const max = allAmounts.length > 0 ? Math.max(...allAmounts) : 0
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
   return (
     <div className={styles.heatmap}>
       <div className={styles.heatmapDays}>
         {days.map((d, i) => <span key={i} className={styles.heatmapDay}>{d}</span>)}
       </div>
-      <div className={styles.heatmapGrid}>
+      <div className={styles.heatmapGrid} style={{ gridTemplateRows: `repeat(${data.length}, 1fr)` }}>
         {data.map((week, wi) =>
-          week.map((val, di) => {
-            const cellDate = (wi * 7) + di + 1
-            if (cellDate > 30) {
+          week.map((cell, di) => {
+            if (!cell.date) {
                return <div key={`${wi}-${di}`} className={styles.heatmapCellEmpty} />
             }
+            const val = cell.amount
             const intensity = max > 0 ? val / max : 0
             return (
               <div
@@ -50,7 +72,12 @@ function SpendingHeatmap({ data }: { data: number[][] }) {
                   color: intensity > 0.5 ? '#FFFFFF' : 'var(--color-muted)'
                 }}
               >
-                <span className={styles.heatmapDate}>{cellDate}</span>
+                <span className={styles.heatmapDate}>{cell.date}</span>
+                {val > 0 && (
+                  <span className={styles.heatmapAmount}>
+                    {val >= 1000 ? `₹${(val / 1000).toFixed(val % 1000 === 0 ? 0 : 1)}k` : `₹${Math.round(val)}`}
+                  </span>
+                )}
               </div>
             )
           })
@@ -83,47 +110,150 @@ function CategoryBar({ label, amount, total, emoji }: { label: string; amount: n
 }
 
 export default function Expenses() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [insightTab, setInsightTab] = useState<InsightTab>('Total')
   const [transactions, setTransactions] = useState<any[]>([])
-  const [summary, setSummary] = useState<any[]>([])
-  const [monthTotal, setMonthTotal] = useState(24500)
+  
+  // New ML analytics state
+  const [dashboardSummary, setDashboardSummary] = useState<any>(null)
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([])
+  const [reviewCount, setReviewCount] = useState(0)
 
-  // 5×7 heatmap data (5 weeks, Mon-Sun)
-  const heatmapData: number[][] = [
-    [800, 1200, 0, 600, 2100, 3400, 1800],
-    [400, 0, 900, 1100, 700, 4290, 2200],
-    [1200, 600, 0, 1850, 800, 1600, 900],
-    [0, 1100, 800, 0, 1400, 2800, 1200],
-    [340, 0, 0, 0, 0, 0, 0],
-  ]
+  const [monthTotal, setMonthTotal] = useState(0)
+  
+  // Transaction editing state
+  const [editTx, setEditTx] = useState<any>(null)
+  const [newCat, setNewCat] = useState("")
+  const [isReimbursement, setIsReimbursement] = useState(false)
+
+  // Dynamic heatmap data
+  const [heatmapData, setHeatmapData] = useState<HeatmapCell[][]>([])
+
+  const loadData = () => {
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+    const today = now.toISOString().slice(0, 10)
+
+    Promise.all([
+      // Real transactions from our JWT-authenticated backend
+      api.get<any>('/api/v1/dashboard/transactions', { limit: 100, from_date: monthStart, direction: 'debit' }).catch(() => ({ data: [] })),
+      // Category summary this month
+      api.get<any>('/api/v1/dashboard/transactions/summary', { from_date: monthStart, to_date: today }).catch(() => null),
+      // Review queue count
+      api.get<any>('/api/v1/dashboard/review/queue').catch(() => []),
+    ]).then(([txRes, sumData, revData]) => {
+      const txList: any[] = txRes?.data || []
+
+      if (Array.isArray(txList)) {
+        setTransactions(txList.slice(0, 15))
+        const total = txList.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+        if (total > 0) setMonthTotal(total)
+
+        // Build heatmap from real transaction dates
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay()
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+        const numWeeks = Math.ceil((firstDayOfMonth + daysInMonth) / 7)
+
+        const newHeatmap: HeatmapCell[][] = Array.from({ length: numWeeks }, () =>
+          Array(7).fill(null).map(() => ({ date: null, amount: 0 }))
+        )
+        let currentDay = 1
+        for (let w = 0; w < numWeeks; w++) {
+          for (let d = 0; d < 7; d++) {
+            if (w === 0 && d < firstDayOfMonth) {
+              newHeatmap[w][d] = { date: null, amount: 0 }
+            } else if (currentDay <= daysInMonth) {
+              newHeatmap[w][d] = { date: currentDay, amount: 0 }
+              currentDay++
+            } else {
+              newHeatmap[w][d] = { date: null, amount: 0 }
+            }
+          }
+        }
+        txList.forEach((tx: any) => {
+          const txDate = new Date(tx.date)
+          if (txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
+            const dateObj = txDate.getDate()
+            const week = Math.floor((firstDayOfMonth + dateObj - 1) / 7)
+            const day = (firstDayOfMonth + dateObj - 1) % 7
+            if (week < numWeeks && day < 7) {
+              newHeatmap[week][day].amount += (tx.amount || 0)
+            }
+          }
+        })
+        setHeatmapData(newHeatmap)
+      }
+
+      // Category breakdown — dashboard returns { category, total }, ML insight uses { category, amount }
+      if (sumData?.category_breakdown) {
+        const normalized = sumData.category_breakdown.map((c: any) => ({
+          category: c.category,
+          amount: c.total ?? c.amount ?? 0,
+        }))
+        setDashboardSummary({ ...sumData, category_breakdown: normalized })
+
+        // Compute income/expense/savings from summary totals
+        const totalExpense = sumData.total_spend ?? 0
+        const totalIncome  = sumData.total_credit ?? 0
+        setDashboardSummary({
+          ...sumData,
+          category_breakdown: normalized,
+          total_income:  totalIncome,
+          total_expense: totalExpense,
+          net_savings:   totalIncome - totalExpense,
+          savings_rate_pct: totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0,
+        })
+      }
+
+      // Review queue count from dashboard (already JWT-scoped)
+      if (Array.isArray(revData)) setReviewCount(revData.length)
+    }).finally(() => setLoading(false))
+  }
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API}/api/transactions`).then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch(`${API}/api/summary`).then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([txList, sumList]) => {
-      if (Array.isArray(txList)) {
-        const thisMon = txList.filter((t: any) => t.date?.startsWith('2026-04'))
-        setTransactions(thisMon.slice(0, 10))
-        const total = thisMon.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
-        if (total > 0) setMonthTotal(total)
-      }
-      if (Array.isArray(sumList) && sumList.length > 0) setSummary(sumList)
-    }).finally(() => setLoading(false))
+    loadData()
   }, [])
 
-  const topCategories = summary.length > 0
-    ? summary.sort((a, b) => b.total - a.total).slice(0, 3)
-    : [
-        { category: 'Food & Dining', total: 8400 },
-        { category: 'Transport', total: 3500 },
-        { category: 'Housing', total: 3500 },
-      ]
+  const handleCorrect = async () => {
+    if (!newCat || !editTx) return
+    // Get numeric id (strip leading 't' if present from dashboard format)
+    const rawId = String(editTx.id).replace(/^t/, '')
+    try {
+      await api.post('/api/v1/ml/feedback/correct', {
+        transaction_id: parseInt(rawId),
+        category: newCat,
+        sub_category: 'General',
+        is_reimbursement: isReimbursement,
+      })
+      setEditTx(null)
+      loadData()
+    } catch {
+      alert('Failed to update category')
+    }
+  }
 
-  const committedSpend = 12500
-  const topCat = topCategories[0]
-  const topCatPct = Math.round((topCat.total / monthTotal) * 100)
+  const handleDelete = async (id: number | string) => {
+    if (!window.confirm('Delete this transaction?')) return
+    const rawId = String(id).replace(/^t/, '')
+    try {
+      await api.delete(`/api/v1/dashboard/transactions/${rawId}`)
+      loadData()
+    } catch {
+      alert('Failed to delete')
+    }
+  }
+
+  const pieData = dashboardSummary?.category_breakdown?.slice(0, 8) || []
+  const COMMITTED_CATEGORIES = ["Bills", "Subscriptions", "Loan EMI", "Utilities", "Insurance"]
+  const committedSpend = transactions.reduce((sum, tx) => {
+      if (COMMITTED_CATEGORIES.includes(tx.category)) {
+          return sum + (tx.amount || 0)
+      }
+      return sum
+  }, 0)
+  const topCat = pieData.length > 0 ? pieData[0] : { category: 'None', amount: 0 }
+  const topCatPct = monthTotal > 0 ? Math.round((topCat.amount / monthTotal) * 100) : 0
 
   if (loading) return (
     <div style={{ padding: 'var(--space-5)' }}>
@@ -179,29 +309,127 @@ export default function Expenses() {
       <div className={styles.px}>
         <div className={styles.sectionHeader}>
           <p className={styles.sectionTitle}>Spending Insights</p>
-          <button className={styles.seeAll}>↗</button>
         </div>
-        <div className={styles.insightTabs} role="group">
-          {(['Total', 'By Category', 'Ad hoc Period', 'None'] as InsightTab[]).map(t => (
-            <button
-              key={t}
-              className={`${styles.insightTab} ${insightTab === t ? styles.insightTabActive : ''}`}
-              onClick={() => setInsightTab(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-        <div className={styles.catList}>
-          {topCategories.map(cat => (
-            <CategoryBar
-              key={cat.category}
-              label={cat.category}
-              amount={cat.total}
-              total={monthTotal}
-              emoji={CATEGORY_EMOJI[cat.category] ?? '💰'}
-            />
-          ))}
+
+        {/* ── New ML Recharts Dashboard Integration ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          {/* Pie Chart & Bar Chart (Dekho styling) */}
+          <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)', marginBottom: '8px' }}>Spending by Category</div>
+              {pieData.length > 0 ? (
+                <>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        dataKey="amount"
+                        nameKey="category"
+                        cx="50%" cy="50%"
+                        outerRadius={80} innerRadius={40}
+                      >
+                        {pieData.map((_: any, i: number) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(val: any) => `₹${Number(val).toLocaleString("en-IN")}`}
+                        contentStyle={{
+                          background: "var(--bg-surface-highest)", border: "none",
+                          borderRadius: 8, color: "var(--color-on-surface)", fontFamily: 'var(--font-body)', fontSize: '12px'
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                    {pieData.map((d: any, i: number) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--color-muted)", fontFamily: 'var(--font-body)' }}>
+                        <span style={{ width: 8, height: 8, borderRadius: "50%", background: PIE_COLORS[i % PIE_COLORS.length], display: "inline-block" }} />
+                        {d.category}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div style={{ color: 'var(--color-muted)', fontSize: '12px', textAlign: 'center', padding: '20px' }}>No data</div>
+              )}
+            </div>
+
+            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)', marginBottom: '8px' }}>Top Spending Categories</div>
+              {pieData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={pieData.slice(0, 6)} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-outline-var)" horizontal={false} />
+                    <XAxis type="number" tick={{ fill: "var(--color-muted)", fontSize: 10 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                    <YAxis type="category" dataKey="category" tick={{ fill: "var(--color-muted)", fontSize: 10 }} width={80} />
+                    <Tooltip
+                      formatter={(val: any) => `₹${Number(val).toLocaleString("en-IN")}`}
+                      contentStyle={{ background: "var(--bg-surface-highest)", border: "none", borderRadius: 8, fontFamily: 'var(--font-body)', fontSize: '12px' }}
+                    />
+                    <Bar dataKey="amount" fill="var(--color-primary)" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ color: 'var(--color-muted)', fontSize: '12px', textAlign: 'center', padding: '20px' }}>No data</div>
+              )}
+            </div>
+          </div>
+
+          {/* Payment Method & Monthly Health */}
+          <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)', marginBottom: '16px' }}>💳 Spending by Payment Method</div>
+              {paymentMethods.length > 0 ? (
+                paymentMethods.map((m, i) => {
+                  const max = paymentMethods[0]?.amount || 1;
+                  const color = PM_COLORS[m.method] || "var(--color-primary-fixed)";
+                  return (
+                    <div key={i} style={{ marginBottom: 14 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 5, fontFamily: 'var(--font-body)' }}>
+                        <span style={{ color: "var(--color-muted)", fontWeight: 500 }}>{m.method}</span>
+                        <span style={{ color, fontWeight: 700 }}>₹{Number(m.amount).toLocaleString("en-IN")}</span>
+                      </div>
+                      <div style={{ height: 6, background: "var(--bg-surface-high)", borderRadius: 3, overflow: "hidden" }}>
+                        <div style={{ height: "100%", borderRadius: 3, background: color, width: `${(m.amount / max) * 100}%`, transition: "width 0.6s ease" }} />
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div style={{ color: 'var(--color-muted)', fontSize: '12px', textAlign: 'center', padding: '20px' }}>No payment data yet</div>
+              )}
+            </div>
+
+            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)' }}>📊 Monthly Health</div>
+              {[
+                { label: "Income",   value: dashboardSummary?.total_income  || 0, color: "var(--color-primary)", icon: "💰" },
+                { label: "Expenses", value: dashboardSummary?.total_expense || 0, color: "var(--color-negative)", icon: "💸" },
+                { label: "Savings",  value: dashboardSummary?.net_savings   || 0, color: "var(--color-secondary)", icon: "🏦" },
+              ].map((item) => (
+                <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--bg-surface)", borderRadius: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 18 }}>{item.icon}</span>
+                    <span style={{ fontSize: 13, color: "var(--color-muted)", fontFamily: 'var(--font-body)' }}>{item.label}</span>
+                  </div>
+                  <span style={{ fontWeight: 700, color: item.color, fontSize: 15, fontFamily: 'var(--font-headline)' }}>
+                    ₹{Number(item.value).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              ))}
+              <div style={{ marginTop: '8px' }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--color-muted)", marginBottom: 6, fontFamily: 'var(--font-body)' }}>
+                  <span>Savings Rate</span>
+                  <span style={{ color: "var(--color-secondary)", fontWeight: 700 }}>{dashboardSummary?.savings_rate_pct || 0}%</span>
+                </div>
+                <div style={{ height: 8, background: "var(--bg-surface-high)", borderRadius: 4, overflow: "hidden" }}>
+                  <div style={{ height: "100%", borderRadius: 4, background: "var(--color-secondary)", width: `${Math.max(0, Math.min(100, dashboardSummary?.savings_rate_pct || 0))}%`, transition: "width 0.6s ease" }} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -239,14 +467,14 @@ export default function Expenses() {
             </div>
           </div>
 
-          <div className={styles.reviewCard}>
+          <div className={styles.reviewCard} onClick={() => navigate('/review')}>
             <div className={styles.reviewLeft}>
               <div className={styles.reviewIcon}>📝</div>
               <div>
                 <div className={styles.reviewDots}>
                   <span /> <span /> <span />
                 </div>
-                <p className={styles.reviewText}>3 transactions need review</p>
+                <p className={styles.reviewText}>{reviewCount} transaction{reviewCount !== 1 ? 's' : ''} need review</p>
               </div>
             </div>
             <div className={styles.reviewChevron}>›</div>
@@ -261,7 +489,7 @@ export default function Expenses() {
           <p className={styles.aiCardLabel}>INSIGHT</p>
           <div className={styles.aiCardContent}>
             <p className={styles.aiCardTitle}>
-              {topCat.category} is your highest expense (₹{topCat.total.toLocaleString('en-IN')})
+              {topCat.category} is your highest expense (₹{(topCat.amount || 0).toLocaleString('en-IN')})
             </p>
             <div className={styles.aiCardBadgeWrap}>
               <span className={styles.aiCardBadge}>+{topCatPct}%</span>
@@ -299,7 +527,7 @@ export default function Expenses() {
       <div className={styles.px}>
         <div className={styles.sectionHeader}>
           <p className={styles.sectionTitle}>Transactions</p>
-          <button className={styles.seeAll}>See All</button>
+          <button className={styles.seeAll} onClick={() => navigate('/transactions')}>See All</button>
         </div>
         
         {/* Transaction Filters */}
@@ -311,11 +539,7 @@ export default function Expenses() {
         </div>
 
         <div className={styles.txList}>
-          {(transactions.length > 0 ? transactions : [
-            { id: 1, merchant: 'Blue Tokai Coffee', category: 'Food & Dining', amount: 340, date: 'Today' },
-            { id: 2, merchant: 'ZARA India', category: 'Shopping', amount: 4290, date: 'Yesterday' },
-            { id: 3, merchant: 'BESCOM Utility', category: 'Bills', amount: 1850, date: '2 days ago' },
-          ]).map((tx: any) => (
+          {transactions.map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
                 {CATEGORY_EMOJI[tx.category] ?? '💰'}
@@ -325,14 +549,85 @@ export default function Expenses() {
                 <p className={styles.txMeta}>
                   {tx.category} • {typeof tx.date === 'string' && !tx.date.includes('-')
                     ? tx.date
-                    : new Date(tx.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    : new Date(tx.date || tx.tx_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.payment_method || 'UPI'}</span>
                 </p>
               </div>
-              <span className={styles.txAmt}>−₹{tx.amount.toLocaleString('en-IN')}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                <span className={tx.type === "credit" ? styles.amountCredit : styles.txAmt}>
+                  {tx.type === "credit" ? "+" : "−"}₹{(tx.amount || 0).toLocaleString('en-IN')}
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => { setEditTx(tx); setNewCat(tx.category); setIsReimbursement(tx.tags?.includes("reimbursement") || false) }}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', padding: '2px' }}
+                  >
+                    <Edit2 size={14} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(tx.id)}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-negative)', cursor: 'pointer', padding: '2px' }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editTx && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '20px'
+        }} onClick={() => setEditTx(null)}>
+          <div style={{
+            background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px',
+            display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative'
+          }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setEditTx(null)} style={{ position: 'absolute', right: '16px', top: '16px', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <X size={20} color="var(--color-muted)" />
+            </button>
+            <h3 style={{ margin: 0, fontFamily: 'var(--font-headline)', color: 'var(--color-on-surface)' }}>Edit Category</h3>
+            
+            <div style={{ color: 'var(--color-muted)', fontSize: '14px', fontFamily: 'var(--font-body)' }}>
+              <div style={{ fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{editTx.merchant}</div>
+              ₹{(editTx.amount || 0).toLocaleString('en-IN')} • Current: {editTx.category}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-muted)', textTransform: 'uppercase' }}>New Category</label>
+              <select 
+                value={newCat} 
+                onChange={e => setNewCat(e.target.value)}
+                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'var(--bg-surface)', color: 'var(--color-on-surface)' }}
+              >
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
+            {editTx.type === "credit" && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input type="checkbox" id="reimb" checked={isReimbursement} onChange={e => setIsReimbursement(e.target.checked)} />
+                <label htmlFor="reimb" style={{ fontSize: '14px', color: 'var(--color-on-surface)', cursor: 'pointer' }}>Reimbursement for earlier spending</label>
+              </div>
+            )}
+
+            <button 
+              onClick={handleCorrect}
+              style={{ background: 'var(--color-primary)', color: 'white', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}
+            >
+              Save & Learn
+            </button>
+            <div style={{ fontSize: '11px', color: 'var(--color-muted)', textAlign: 'center' }}>
+              💡 This will teach the AI to auto-categorise this merchant in future.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

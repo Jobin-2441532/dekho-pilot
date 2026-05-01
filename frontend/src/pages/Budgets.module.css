@@ -70,3 +70,12 @@
 .goalContribIcon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
 .goalContribText { font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-on-surface-var); line-height: 1.4; }
 .goalContribText strong { color: var(--color-on-surface); font-family: var(--font-headline); font-weight: var(--font-bold); }
+.pulseCard     { background: var(--color-primary); border-radius: var(--radius-xl); padding: 24px; color: #fff; margin-bottom: 20px; }
+.pulseLabel    { font-size: 11px; letter-spacing: 0.07em; opacity: 0.7; margin-bottom: 8px; }
+.pulseHeadline { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 14px; }
+.pulseMeta     { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-bottom: 8px; }
+.pulseBar      { background: rgba(255,255,255,0.2); border-radius: 4px; height: 6px; margin-bottom: 10px; }
+.pulseBarFill  { background: #fff; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.pulseSafe     { font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
+.pulseSubtext  { font-size: 12px; opacity: 0.65; font-style: italic; }
+.goalHeadline  { font-size: 18px; font-weight: 700; color: #1A1A1A; margin-bottom: 12px; }

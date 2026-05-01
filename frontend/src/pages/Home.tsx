@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, ChevronDown, ChevronUp, Settings } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import { useInsights } from '../hooks/useInsights'
+import api from '../lib/api'
 import styles from './Home.module.css'
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const API = import.meta.env.VITE_API_BASE_URL ?? `http://${window.location.hostname}:8000`
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -23,40 +25,112 @@ export default function Home() {
   const navigate = useNavigate()
   const [loading, setLoading]       = useState(true)
   const [showWhy, setShowWhy]       = useState(false)
-  const [profile, setProfile]       = useState<any>({ name: 'Arjun', monthly_budget: 45000 })
-  const [todaySpend, setTodaySpend] = useState(1420)
-  const [avgSpend]                  = useState(1750)
+  const [profile, setProfile]       = useState<any>({ name: 'User', monthly_budget: 45000 })
+  const [todaySpend, setTodaySpend] = useState(0)
   const [monthTotal, setMonthTotal] = useState(0)
   const [savingGoals, setSavingGoals] = useState<any[]>([])
-  const [topCategory, setTopCategory] = useState<{ name: string; total: number; pct: number }>({ name: 'Dining', total: 8400, pct: 12 })
+  const [topCategory, setTopCategory] = useState<{ name: string; total: number; pct: number }>({ name: 'None', total: 0, pct: 0 })
   const [transactions, setTransactions] = useState<any[]>([])
+  
+  const [smsText, setSmsText] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [ingestStatus, setIngestStatus] = useState<{type: 'success' | 'error', msg: string} | null>(null)
 
-  useEffect(() => {
+  const { insights } = useInsights()
+
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatHistory, setChatHistory] = useState<{role: 'user'|'dekho', text: string}[]>([])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
+
+  async function handleAsk() {
+    if (!chatInput.trim()) return
+    const question = chatInput
+    setChatInput('')
+    setChatHistory(h => [...h, { role: 'user', text: question }])
+    setChatLoading(true)
+    try {
+      const token = localStorage.getItem('dekho_token') || ''
+      const res = await fetch(`${API}/api/v1/chat/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: question }),
+      })
+      const data = await res.json()
+      const answer = data.reply ?? data.message ?? 'Sorry, I could not understand that.'
+      setChatHistory(h => [...h, { role: 'dekho', text: answer }])
+    } catch {
+      setChatHistory(h => [...h, { role: 'dekho', text: 'Something went wrong. Please try again.' }])
+    } finally {
+      setChatLoading(false)
+    }
+  }
+
+  const fetchData = () => {
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+    const today = now.toISOString().slice(0, 10)
+
     Promise.all([
-      fetch(`${API}/api/profile`).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(`${API}/api/transactions`).then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch(`${API}/api/goals`).then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch(`${API}/api/summary`).then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([prof, txList, goals, summary]) => {
-      if (prof) setProfile(prof)
+      api.get<any>('/api/v1/dashboard/profile').catch(() => null),
+      api.get<any>('/api/v1/dashboard/transactions', { limit: 200, from_date: monthStart }).catch(() => ({ data: [] })),
+      api.get<any[]>('/api/v1/dashboard/goals').catch(() => []),
+    ]).then(([prof, txRes, goals]) => {
+      if (prof) setProfile({ ...prof, name: prof.fullName || prof.name || 'User' })
+      if (Array.isArray(goals)) setSavingGoals(goals)
+
+      const txList: any[] = txRes?.data || []
       if (Array.isArray(txList)) {
         setTransactions(txList)
-        const thisMonth = txList.filter((t: any) => t.date?.startsWith('2026-04'))
-        const total = thisMonth.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+        const total = txList.reduce((s: number, t: any) => s + (t.direction === 'debit' ? (t.amount ?? 0) : 0), 0)
         setMonthTotal(total)
-        // Estimate today
-        const today = new Date().toISOString().slice(0, 10)
-        const todayTx = txList.filter((t: any) => t.date === today)
-        const todayTotal = todayTx.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
-        if (todayTotal > 0) setTodaySpend(todayTotal)
-      }
-      if (Array.isArray(goals)) setSavingGoals(goals)
-      if (Array.isArray(summary) && summary.length > 0) {
-        const top = summary.sort((a: any, b: any) => b.total - a.total)[0]
-        if (top) setTopCategory({ name: top.category, total: top.total, pct: 12 })
+
+        const todayStr = today
+        const todayTxs = txList.filter((t: any) => t.date === todayStr && t.direction === 'debit')
+        setTodaySpend(todayTxs.reduce((s: number, t: any) => s + (t.amount ?? 0), 0))
+
+        // Top category this month
+        const catMap: Record<string, number> = {}
+        txList.filter((t: any) => t.direction === 'debit').forEach((t: any) => {
+          catMap[t.category || 'Others'] = (catMap[t.category || 'Others'] || 0) + (t.amount || 0)
+        })
+        const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1])
+        if (sorted.length > 0) {
+          setTopCategory({ name: sorted[0][0], total: sorted[0][1], pct: 12 })
+        }
       }
     }).finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    fetchData()
   }, [])
+
+  const handleSmsSubmit = async () => {
+    if (!smsText.trim()) return
+    setIsSubmitting(true)
+    setIngestStatus(null)
+    try {
+      const userId = localStorage.getItem('dekho_user_id') || 1
+      const res = await fetch(`${API}/ml/api/sms/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: Number(userId), sms_text: smsText })
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || 'Failed to process SMS')
+      }
+      const data = await res.json()
+      setIngestStatus({ type: 'success', msg: `Categorized as ${data.category} - ₹${data.amount}` })
+      setSmsText('')
+      fetchData() // Refresh dashboard data
+    } catch (e: any) {
+      setIngestStatus({ type: 'error', msg: e.message })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   if (loading) return (
     <div style={{ padding: 'var(--space-5)' }}>
@@ -71,6 +145,9 @@ export default function Home() {
   const goalPct = savingGoals.length > 0 ?
     Math.min(Math.round((savingGoals[0].current_amount / savingGoals[0].target_amount) * 100), 100) : 42
   const remaining = Math.max(budget - monthTotal, 0)
+  
+  const currentDay = new Date().getDate()
+  const avgSpend = currentDay > 0 ? Math.round(monthTotal / currentDay) : 0
 
   const narrativeText = todaySpend > avgSpend
     ? 'Today was a comfort spending day.'
@@ -83,32 +160,34 @@ export default function Home() {
     <div className={styles.page}>
       {/* ── Top Bar ── */}
       <div className={styles.topBar}>
-        <div className={styles.logoBlock}>
-          <div className={styles.logoAvatar}>D</div>
-          <div>
-            <p className={styles.logoName}>DEKHO</p>
-            <p className={styles.logoSub}>{getGreeting()}, {(profile?.name ?? 'Arjun').split(' ')[0]}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <img src="/logo-nobg.png" alt="Dekho Logo" style={{ width: 96, height: 96, objectFit: 'contain', margin: '-8px -12px -40px -16px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', marginTop: '24px' }}>
+              <p className={styles.logoName}>DEKHO</p>
+              <p className={styles.logoSub}>{getGreeting()}, {(profile?.name ?? 'Arjun').split(' ')[0]}</p>
+            </div>
           </div>
-        </div>
-        <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Notifications">
-          <Bell size={18} strokeWidth={1.75} />
+        <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings" style={{ marginTop: '16px' }}>
+          <Settings size={18} strokeWidth={1.75} />
         </button>
       </div>
 
-      {/* ── Hero Narrative Card ── */}
+      {/* HERO CARD — dynamic from insight engine, with static fallback */}
       <div className={styles.px}>
         <div className={styles.heroCard}>
-          <h1 className={styles.heroTitle}>{narrativeText}</h1>
-          <p className={styles.heroSub}>{narrativeSub}</p>
-          <button className={styles.tapWhy} onClick={() => setShowWhy(v => !v)}>
-            Tap to see why
-            {showWhy ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-          {showWhy && (
-            <p className={styles.whyText}>
-              Your {topCategory.name} spending is ₹{topCategory.total.toLocaleString('en-IN')} this month — {topCategory.pct}% higher than last month. Weekends tend to be your bigger spend days.
-            </p>
+          <p className={styles.heroCategory}>TODAY'S REFLECTION</p>
+          <div className={styles.heroHeadline}>
+            {insights?.home?.hero_card?.headline ?? narrativeText}
+          </div>
+          <div className={styles.heroSubtext}>
+            {insights?.home?.hero_card?.subtext ?? narrativeSub}
+          </div>
+          {insights?.home?.hero_card?.detail && (
+            <div className={styles.heroDetail}>{insights.home.hero_card.detail}</div>
           )}
+          <button className={styles.tapToSee}>
+            {insights?.home?.hero_card?.tap_label ?? 'See breakdown →'}
+          </button>
         </div>
       </div>
 
@@ -152,6 +231,18 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {insights?.home.streak_nudge && (
+        <div className={styles.px}>
+          <div className={styles.nudgeCard}>
+            <span className={styles.nudgeIcon}>⚡</span>
+            <div>
+              <div className={styles.nudgeHeadline}>{insights.home.streak_nudge.headline}</div>
+              <div className={styles.nudgeSubtext}>{insights.home.streak_nudge.subtext}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Progress Bars ── */}
       <div className={styles.px}>
@@ -206,6 +297,86 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* ── Add via SMS Section ── */}
+      <div className={styles.px} style={{ marginTop: '24px', paddingBottom: '32px' }}>
+        <div className={styles.smsCard}>
+          <div style={{ fontSize: '12px', color: 'var(--color-muted)', marginBottom: '-8px' }}>* this feature will be available only in the prototype</div>
+          <h2 className={styles.smsTitle}>Add via SMS</h2>
+          <p className={styles.smsSub}>Paste your bank SMS here to categorize automatically.</p>
+          <textarea
+            className={styles.smsTextarea}
+            placeholder="Paste your bank SMS here..."
+            value={smsText}
+            onChange={e => setSmsText(e.target.value)}
+          />
+          {ingestStatus && (
+            <p className={ingestStatus.type === 'success' ? styles.smsSuccess : styles.smsError}>
+              {ingestStatus.msg}
+            </p>
+          )}
+          <button
+            className={styles.smsBtn}
+            onClick={handleSmsSubmit}
+            disabled={isSubmitting || !smsText.trim()}
+          >
+            {isSubmitting ? 'Processing...' : 'Classify SMS'}
+          </button>
+
+          <div className={styles.quickAddWrap}>
+            {[
+              "Spent INR 450.00 on Zomato via UPI on 22-04-26. Bal: INR 12,345",
+              "Your A/C XX1234 has been debited by Rs 1500 for Electricity Bill on 25-04-2026. Available Bal Rs 45,000",
+              "Paid INR 800.00 to Netflix via Credit Card. Outstanding: INR 5,400",
+              "INR 3,000.00 debited from a/c XX5678 for Loan EMI on 20-04-2026.",
+              "Amount of INR 120.00 spent on Uber via UPI on 27-04-2026."
+            ].map((msg, idx) => (
+              <button
+                key={idx}
+                className={styles.quickAddChip}
+                onClick={() => setSmsText(msg)}
+              >
+                Sample {idx + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Floating chat button */}
+      <button className={styles.chatFab} onClick={() => setChatOpen(o => !o)}>
+        💬
+      </button>
+
+      {/* Chat panel */}
+      {chatOpen && (
+        <div className={styles.chatPanel}>
+          <div className={styles.chatHeader}>Ask Dekho</div>
+          <div className={styles.chatMessages}>
+            {chatHistory.length === 0 && (
+              <div className={styles.chatEmpty}>
+                Ask me about your spending, savings, goals, or investments.
+              </div>
+            )}
+            {chatHistory.map((msg, i) => (
+              <div key={i} className={`${styles.chatMsg} ${styles[msg.role]}`}>
+                {msg.text}
+              </div>
+            ))}
+            {chatLoading && <div className={styles.chatMsg}>...</div>}
+          </div>
+          <div className={styles.chatInput}>
+            <input
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAsk()}
+              placeholder="Where did I spend most this week?"
+            />
+            <button onClick={handleAsk}>→</button>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

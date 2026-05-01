@@ -6,7 +6,7 @@ import { ChevronRight, Settings } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
 import styles from './Assets.module.css'
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const API = import.meta.env.VITE_API_URL ?? `http://${window.location.hostname}:8000`
 
 /* Mini sparkline using SVG */
 function Sparkline({ data, color = '#6C482D' }: { data: number[]; color?: string }) {
@@ -80,7 +80,7 @@ export default function Assets() {
     <div className={styles.page}>
       {/* ── Top Bar ── */}
       <div className={styles.topBar}>
-        <p className={styles.pageTitle}>Dekho</p>
+        <p style={{ fontFamily: 'var(--font-headline)', fontSize: '24px', fontWeight: 'bold', color: 'var(--color-on-surface)', margin: 0 }}>Assets</p>
         <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings">
           <Settings size={18} strokeWidth={1.75} />
         </button>

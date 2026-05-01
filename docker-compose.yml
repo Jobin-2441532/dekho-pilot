@@ -1,6 +1,9 @@
-version: '3.8'
+# Dekho — Unified Docker Compose
+# Run: docker-compose up --build
+# Services: postgres, redis, minio, ml_service (financeAI), backend (FastAPI)
 
 services:
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
   db:
     image: postgres:15-alpine
     container_name: dekho_postgres
@@ -13,7 +16,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dekho"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # ── Redis ─────────────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: dekho_redis
@@ -23,6 +32,7 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  # ── MinIO (S3-compatible storage) ─────────────────────────────────────────
   minio:
     image: minio/minio
     container_name: dekho_minio
@@ -31,13 +41,69 @@ services:
       MINIO_ROOT_PASSWORD: dekho_minio_password
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000" # S3 API port
-      - "9001:9001" # Web UI port
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web UI
     volumes:
       - minio_data:/data
+    restart: unless-stopped
+
+  # ── financeAI ML Sidecar ──────────────────────────────────────────────────
+  ml_service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: dekho_ml_service
+    environment:
+      - ENV=development
+      - DATABASE_URL=sqlite:///./financeai.db
+    ports:
+      - "8001:8001"
+    volumes:
+      - ml_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Main FastAPI Backend ───────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dekho_backend
+    env_file:
+      - ./backend/.env          # load GEMINI_API_KEY, JWT_SECRET_KEY etc.
+    environment:
+      # Override local dev values with Docker-internal hostnames
+      - DATABASE_URL=postgresql://dekho:dekho_password@db:5432/dekho_db
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - ML_SERVICE_URL=http://ml_service:8001
+      - FAISS_INDEX_PATH=/app/data/faiss_index
+      - DATA_DIR=/app/data
+      - KNOWLEDGE_BASE_DIR=/app/knowledge-base
+      - ENV=production
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_data:/app/data
+      - ./knowledge-base:/app/knowledge-base:ro   # mount KB read-only
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+      ml_service:
+        condition: service_started
     restart: unless-stopped
 
 volumes:
   postgres_data:
   redis_data:
   minio_data:
+  ml_data:
+  backend_data:

@@ -1,12 +1,12 @@
-/* Budgets page — Stitch "Budget & Goals Ecosystem" */
-
 import { useState, useEffect } from 'react'
-import { Bell, Plus } from 'lucide-react'
+import { Bell, Plus, Edit2, Trash2 } from 'lucide-react'
 import { useAppStore } from '../store/appStore'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import { useInsights } from '../hooks/useInsights'
+import api from '../lib/api'
 import styles from './Budgets.module.css'
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const API = import.meta.env.VITE_API_BASE_URL ?? `http://${window.location.hostname}:8000`
 
 interface BudgetCategory {
   label: string
@@ -15,79 +15,153 @@ interface BudgetCategory {
   budget: number
 }
 
+const GOAL_IMAGES = [
+  "https://picsum.photos/seed/dekho_goal1/800/400",
+  "https://picsum.photos/seed/dekho_goal2/800/400",
+  "https://picsum.photos/seed/dekho_goal3/800/400",
+  "https://picsum.photos/seed/dekho_goal4/800/400",
+  "https://picsum.photos/seed/dekho_goal5/800/400"
+];
+
 export default function Budgets() {
   const { toggleChat } = useAppStore()
   const [loading, setLoading] = useState(true)
   const [goals, setGoals] = useState<any[]>([])
+  const [transactions, setTransactions] = useState<any[]>([])
+  const [profile, setProfile] = useState<any>(null)
 
-  const totalSpent = 34000
-  const totalBudget = 48000
+  const { insights, loading: insightsLoading } = useInsights()
+
+  const [totalSpent, setTotalSpent] = useState(0)
+  const [totalBudget, setTotalBudget] = useState(45000)
+
+  // Edit Budget State
+  const [isEditingBudget, setIsEditingBudget] = useState(false)
+  const [newBudget, setNewBudget] = useState("")
+  
+  // Edit Category Budget State
+  const [editCategoryBudget, setEditCategoryBudget] = useState<{label: string, budget: string} | null>(null)
+
+  // Add Goal State
+  const [isAddingGoal, setIsAddingGoal] = useState(false)
+  const [goalName, setGoalName] = useState("")
+  const [goalTarget, setGoalTarget] = useState("")
+  const [goalDeadline, setGoalDeadline] = useState("")
+
   const buffer = Math.max(totalBudget - totalSpent, 0)
-  const overallPct = Math.min(Math.round((totalSpent / totalBudget) * 100), 100)
+  const overallPct = Math.min(Math.round((totalSpent / (totalBudget || 1)) * 100), 100)
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
-  // Matches Stitch prototype categories with sub-categories
-  const categories = [
+  const [categoriesData, setCategoriesData] = useState<any[]>([
     {
-      label: 'Essentials',
-      subtitle: 'NON-NEGOTIABLE',
-      spent: 22000,
-      budget: 40000,
+      label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 25000,
       subcategories: [
-        { label: 'Housing', emoji: '🏠', amount: 15000 },
-        { label: 'Utilities', emoji: '⚡', amount: 2000 },
-        { label: 'Food & groceries', emoji: '🛒', amount: 5000 },
-        { label: 'Transport', emoji: '🚗', amount: 0 },
-        { label: 'Healthcare', emoji: '💊', amount: 0 },
-        { label: 'Insurance', emoji: '🛡️', amount: 0 },
-        { label: 'Debt / EMIs', emoji: '💳', amount: 0 },
-        { label: 'Family support', emoji: '👨‍👩‍👧‍👦', amount: 0 },
+        { label: 'Housing & Household', emoji: '🏠', amount: 0, match: ['Housing', 'Household'] },
+        { label: 'Utilities', emoji: '⚡', amount: 0, match: ['Utilities'] },
+        { label: 'Bills', emoji: '🧾', amount: 0, match: ['Bills'] },
+        { label: 'Food & Dining', emoji: '🍴', amount: 0, match: ['Food & Dining'] },
+        { label: 'Groceries', emoji: '🛒', amount: 0, match: ['Groceries'] },
+        { label: 'Transport', emoji: '🚗', amount: 0, match: ['Transport'] },
+        { label: 'Health', emoji: '💊', amount: 0, match: ['Health'] },
+        { label: 'Personal Care', emoji: '🧴', amount: 0, match: ['Personal Care'] },
+        { label: 'Insurance', emoji: '🛡️', amount: 0, match: ['Insurance'] },
+        { label: 'Loan EMI', emoji: '💳', amount: 0, match: ['Loan EMI'] },
+        { label: 'Credit Card', emoji: '💳', amount: 0, match: ['Credit Card'] },
       ]
     },
     {
-      label: 'Lifestyle',
-      subtitle: 'FLEXIBLE',
-      spent: 18000,
-      budget: 15000,
+      label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 10000,
       subcategories: [
-        { label: 'Shopping', emoji: '🛍️', amount: 8000 },
-        { label: 'Dining & entertainment', emoji: '🍽️', amount: 6000 },
-        { label: 'Travel', emoji: '✈️', amount: 2000 },
-        { label: 'Subscriptions', emoji: '📺', amount: 2000 },
+        { label: 'Shopping', emoji: '🛍️', amount: 0, match: ['Shopping'] },
+        { label: 'Entertainment', emoji: '🎬', amount: 0, match: ['Entertainment'] },
+        { label: 'Travel', emoji: '✈️', amount: 0, match: ['Travel'] },
+        { label: 'Subscriptions', emoji: '📺', amount: 0, match: ['Subscriptions'] },
+        { label: 'Telecom', emoji: '📱', amount: 0, match: ['Telecom'] },
       ]
     },
     {
-      label: 'Future-oriented',
-      subtitle: 'GOALS',
-      spent: 10000,
-      budget: 10000,
+      label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 5000,
       subcategories: [
-        { label: 'Education / learning', emoji: '📚', amount: 2000 },
-        { label: 'Taxes / savings instruments', emoji: '💰', amount: 8000 },
+        { label: 'Investment', emoji: '💰', amount: 0, match: ['Investment'] },
       ]
     },
     {
-      label: 'Buffer',
-      subtitle: 'FLEXIBILITY',
-      spent: 5000,
-      budget: 20000,
+      label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 5000,
       subcategories: [
-        { label: 'Miscellaneous', emoji: '🔮', amount: 5000 },
+        { label: 'Others', emoji: '🔮', amount: 0, match: ['Others'] },
+        { label: 'Services', emoji: '🛠️', amount: 0, match: ['Services'] },
+        { label: 'Uncategorised', emoji: '❓', amount: 0, match: ['Uncategorised'] },
       ]
     },
-  ]
+  ])
 
-  const narrativeText = 'Cruising smoothly this month'
-  const narrativeSub = 'Your lifestyle spending is slightly higher than usual, but covered by your buffer.'
+  const narrativeText = totalSpent > totalBudget ? 'You have exceeded your budget' : 'Cruising smoothly this month'
+  const narrativeSub = totalSpent > totalBudget ? 'You might need to dip into savings to cover this month.' : 'Your lifestyle spending is slightly higher than usual, but covered by your buffer.'
+
+  const loadData = () => {
+    Promise.all([
+      api.get<any[]>('/api/v1/dashboard/goals').catch(() => []),
+      api.get<any>('/api/v1/dashboard/profile').catch(() => null),
+      api.get<any>('/api/v1/dashboard/transactions', { limit: 200 }).catch(() => ({ data: [] })),
+    ]).then(([g, p, txRes]) => {
+      if (Array.isArray(g)) setGoals(g)
+      if (p) {
+        setProfile(p)
+        setTotalBudget(p.monthlyBudget || p.monthly_budget || 45000)
+      }
+      const txList = txRes?.data || []
+      if (Array.isArray(txList)) {
+        const now = new Date()
+        const thisMonthTxs = txList.filter((tx: any) => {
+          const d = new Date(tx.date)
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+        })
+        setTransactions(thisMonthTxs)
+
+        const total = thisMonthTxs.reduce((s: number, tx: any) =>
+          s + (tx.direction === 'credit' ? 0 : (tx.amount ?? 0)), 0
+        )
+        setTotalSpent(total)
+
+        // Calculate categories from real transaction data
+        const newCats = [...categoriesData]
+        newCats.forEach(cat => {
+          const savedBudget = localStorage.getItem(`dekho_budget_${cat.label}`)
+          if (savedBudget) cat.budget = parseFloat(savedBudget)
+          cat.spent = 0
+          cat.subcategories.forEach((sub: any) => { sub.amount = 0 })
+        })
+        thisMonthTxs.forEach((tx: any) => {
+          if (tx.direction === 'credit' || (tx.amount ?? 0) < 0) return
+          let found = false
+          newCats.forEach(cat => {
+            cat.subcategories.forEach((sub: any) => {
+              if (sub.match.includes(tx.category)) {
+                sub.amount += (tx.amount || 0)
+                cat.spent += (tx.amount || 0)
+                found = true
+              }
+            })
+          })
+          if (!found) {
+            newCats[3].subcategories[0].amount += (tx.amount || 0)
+            newCats[3].spent += (tx.amount || 0)
+          }
+        })
+        setCategoriesData(newCats)
+      }
+    }).finally(() => setLoading(false))
+  }
 
   useEffect(() => {
-    fetch(`${API}/api/goals`).then(r => r.ok ? r.json() : []).catch(() => [])
-      .then((g) => { if (Array.isArray(g)) setGoals(g) })
-      .finally(() => setLoading(false))
+    loadData()
   }, [])
 
-  const fmt = (n: number) => '₹' + n.toLocaleString('en-IN')
+  const fmt = (n: number | null | undefined) => {
+    if (n == null || isNaN(n)) return '₹0';
+    return '₹' + n.toLocaleString('en-IN');
+  }
 
   if (loading) return (
     <div style={{ padding: 'var(--space-5)' }}>
@@ -105,48 +179,47 @@ export default function Budgets() {
     <div className={styles.page}>
       {/* ── Top bar ── */}
       <div className={styles.topBar}>
-        <div className={styles.logoBlock}>
-          <div className={styles.logoAvatar}>D</div>
-          <p className={styles.logoName}>Dekho</p>
-        </div>
+        <p style={{ fontFamily: 'var(--font-headline)', fontSize: '24px', fontWeight: 'bold', color: 'var(--color-on-surface)', margin: 0 }}>Budgets & Goals</p>
         <button className={styles.iconBtn} aria-label="Notifications"><Bell size={18} strokeWidth={1.75} /></button>
       </div>
 
-      {/* ── Hero Card ── */}
+      {/* ── Pulse Card ── */}
       <div className={styles.px}>
-        <div className={styles.heroCard}>
-          <p className={styles.heroCategory}>BUDGET STATUS</p>
-          <h1 className={styles.heroTitle}>{narrativeText}</h1>
-          <div className={styles.heroMeta}>
-            <div>
-              <p className={styles.heroMetaLabel}>SPENT</p>
-              <p className={styles.heroMetaVal}>{fmt(totalSpent)}</p>
-            </div>
-            <div>
-              <p className={styles.heroMetaLabel}>BUDGET</p>
-              <p className={styles.heroMetaVal}>{fmt(totalBudget)}</p>
-            </div>
+        <div className={styles.pulseCard}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className={styles.pulseLabel} style={{ margin: 0 }}>MONTHLY PULSE</div>
+            <button 
+              onClick={() => { setNewBudget(totalBudget.toString()); setIsEditingBudget(true); }}
+              style={{ background: 'none', border: 'none', color: '#FFF', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}
+            >
+              EDIT BUDGET
+            </button>
           </div>
-          <div className={styles.heroTrack}>
-            <div className={styles.heroFill} style={{ width: `${overallPct}%` }} />
+          <div className={styles.pulseHeadline}>
+            {insightsLoading ? 'Calculating...' : insights?.budgets.monthly_pulse.headline}
           </div>
-          <div className={styles.heroBuffer}>
-            <p className={styles.heroBufferLabel}>Safe to spend: {fmt(buffer)}</p>
-            <p className={styles.heroBufferPct}>{overallPct}%</p>
+          <div className={styles.pulseMeta}>
+            <span>SPENT: {fmt(totalSpent)}</span>
+            <span>BUDGET: {fmt(totalBudget)}</span>
           </div>
+          <div className={styles.pulseBar}>
+            <div
+              className={styles.pulseBarFill}
+              style={{ width: `${overallPct}%` }}
+            />
+          </div>
+          <div className={styles.pulseSafe}>
+            Safe to spend: {insights?.budgets.monthly_pulse.safe_to_spend}
+          </div>
+          <div className={styles.pulseSubtext}>{insights?.budgets.monthly_pulse.subtext}</div>
         </div>
-      </div>
-
-      {/* ── Narrative text ── */}
-      <div className={styles.px}>
-        <p className={styles.narrativeSub}>{narrativeSub}</p>
       </div>
 
       {/* ── Categories ── */}
       <div className={styles.px}>
         <div className={styles.categoryList}>
-          {categories.map((cat) => {
-            const pct = Math.min(Math.round((cat.spent / cat.budget) * 100), 100)
+          {categoriesData.map((cat) => {
+            const pct = Math.min(Math.round((cat.spent / (cat.budget || 1)) * 100), 100)
             const isOver = cat.spent > cat.budget
             const isExpanded = expandedCategory === cat.label
             return (
@@ -157,7 +230,16 @@ export default function Budgets() {
               >
                 <div className={styles.catHeader}>
                   <div className={styles.catTitleRow}>
-                    <span className={styles.catLabel}>{cat.label}</span>
+                    <span className={styles.catLabel} style={{ display: 'flex', alignItems: 'center' }}>
+                      {cat.label}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setEditCategoryBudget({ label: cat.label, budget: cat.budget.toString() }) }}
+                        style={{ background: 'none', border: 'none', marginLeft: '8px', cursor: 'pointer', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', opacity: 0.7 }}
+                        aria-label="Edit Section Budget"
+                      >
+                        <Edit2 size={12} />
+                      </button>
+                    </span>
                     <span className={styles.catAmts}>{fmt(cat.spent)} / {fmt(cat.budget)}</span>
                   </div>
                   <div className={styles.catSubRow}>
@@ -180,7 +262,7 @@ export default function Budgets() {
                 </div>
                 {isExpanded && (
                   <div className={styles.subCatList}>
-                    {cat.subcategories.map(sub => (
+                    {cat.subcategories.map((sub: any) => (
                       <div key={sub.label} className={styles.subCatRow}>
                         <span className={styles.subCatLabel}>{sub.emoji} {sub.label}</span>
                         <span className={styles.subCatAmt}>{fmt(sub.amount)}</span>
@@ -198,23 +280,58 @@ export default function Budgets() {
       <div className={styles.px}>
         <div className={styles.sectionHeader}>
           <p className={styles.sectionTitle}>Your Goals</p>
-          <button className={styles.addBtn} onClick={toggleChat} aria-label="Add goal via chat">
+          <button className={styles.addBtn} onClick={() => setIsAddingGoal(true)} aria-label="Add goal">
             <Plus size={14} />
             Add Goal
           </button>
         </div>
 
-        {displayGoals.map((goal: any) => {
-          const pct = Math.min(Math.round((goal.current_amount / goal.target_amount) * 100), 100)
-          const deadline = new Date(goal.deadline).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+        {insights?.budgets.goal_card && (
+          <div className={styles.goalHeadline}>
+            {insights.budgets.goal_card.headline}
+          </div>
+        )}
+
+        {displayGoals.map((goal: any, index: number) => {
+          const currentAmt = goal.currentAmount ?? goal.current_amount ?? 0;
+          const targetAmt = goal.targetAmount ?? goal.target_amount ?? 1;
+          const pct = Math.min(Math.round((currentAmt / targetAmt) * 100), 100)
+          let deadline = 'No date'
+          try {
+            if (goal.deadline) {
+              deadline = new Date(goal.deadline).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+            }
+          } catch (e) {
+            console.error("Invalid date for goal:", goal)
+          }
           return (
             <div key={goal.id} className={styles.goalCard}>
               {/* Goal image header */}
               <div className={styles.goalImageWrap}>
-                <div className={styles.goalImageBg} style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop")' }} />
+                <div className={styles.goalImageBg} style={{ backgroundImage: `url(${GOAL_IMAGES[index % GOAL_IMAGES.length]})` }} />
                 <div className={styles.goalImageOverlay}>
                   <p className={styles.goalImageTitle}>{goal.name} is getting closer ✨</p>
                 </div>
+                {currentAmt <= 0 && (
+                  <button 
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (window.confirm('Are you sure you want to delete this goal?')) {
+                        try {
+                          const rawId = String(goal.id).replace(/^g/, '')
+                          await api.delete(`/api/v1/dashboard/goals/${rawId}`)
+                          loadData()
+                        } catch (err) {
+                          console.error('Failed to delete goal', err)
+                        }
+                      }
+                    }}
+                    style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer', zIndex: 10 }}
+                    aria-label="Delete Goal"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
 
               {/* Goal details */}
@@ -230,8 +347,8 @@ export default function Budgets() {
                 <div className={styles.goalName}>{goal.name}</div>
 
                 <div className={styles.goalProgress}>
-                  <span className={styles.goalCurrent}>{fmt(goal.current_amount)}</span>
-                  <span className={styles.goalSep}> /{goal.target_amount}</span>
+                  <span className={styles.goalCurrent}>{fmt(currentAmt)}</span>
+                  <span className={styles.goalSep}> /{fmt(targetAmt).replace('₹', '')}</span>
                   <span className={styles.goalPct}>{pct}%</span>
                 </div>
 
@@ -250,6 +367,73 @@ export default function Budgets() {
           )
         })}
       </div>
+
+      {/* Modals */}
+      {isEditingBudget && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Edit Monthly Budget</h3>
+            <input type="number" value={newBudget} onChange={e => setNewBudget(e.target.value)} placeholder="Amount (e.g. 50000)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setIsEditingBudget(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  await api.post('/api/v1/dashboard/profile/budget', { monthly_budget: parseFloat(newBudget) })
+                } catch { /* non-fatal */ }
+                setTotalBudget(parseFloat(newBudget) || totalBudget)
+                setIsEditingBudget(false)
+                loadData()
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editCategoryBudget && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Edit {editCategoryBudget.label} Budget</h3>
+            <input type="number" value={editCategoryBudget.budget} onChange={e => setEditCategoryBudget({...editCategoryBudget, budget: e.target.value})} placeholder="Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setEditCategoryBudget(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={() => {
+                const updatedCats = categoriesData.map(c => 
+                  c.label === editCategoryBudget.label ? { ...c, budget: parseFloat(editCategoryBudget.budget) || 0 } : c
+                )
+                setCategoriesData(updatedCats)
+                localStorage.setItem(`dekho_budget_${editCategoryBudget.label}`, editCategoryBudget.budget)
+                setEditCategoryBudget(null)
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAddingGoal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Add New Goal</h3>
+            <input type="text" value={goalName} onChange={e => setGoalName(e.target.value)} placeholder="Goal Name (e.g. New Laptop)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <input type="number" value={goalTarget} onChange={e => setGoalTarget(e.target.value)} placeholder="Target Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <input type="date" value={goalDeadline} onChange={e => setGoalDeadline(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setIsAddingGoal(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  await api.post('/api/v1/dashboard/goals', {
+                    name: goalName,
+                    target_amount: parseFloat(goalTarget),
+                    deadline: goalDeadline || null,
+                  })
+                  setIsAddingGoal(false)
+                  setGoalName(''); setGoalTarget(''); setGoalDeadline('')
+                  loadData()
+                } catch { alert('Failed to save goal') }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save Goal</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

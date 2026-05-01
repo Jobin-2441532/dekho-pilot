@@ -1,0 +1,33 @@
+# Backend — Docker ignore
+# Prevents large/unnecessary folders from being sent to Docker build context
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments — this is the big one (~500MB savings)
+venv/
+.venv/
+env/
+
+# Local development database and uploaded files
+*.db
+data/uploads/
+data/faiss_index/
+
+# Log files only (NOT *.txt — requirements.txt must be included!)
+*.log
+backend_log.txt
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests and scripts (not needed in the image)
+tests/
+scripts/
