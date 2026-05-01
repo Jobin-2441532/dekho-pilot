@@ -1,11 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Moon, Sun, ChevronRight, User, LogOut } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
+import { useState, useEffect } from 'react'
+import api from '../lib/api'
 import styles from './Settings.module.css'
 
 export default function Settings() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
+  const [profile, setProfile] = useState<{ name: string, email: string }>({ name: 'User', email: '' })
+
+  useEffect(() => {
+    api.get<any>('/api/v1/dashboard/profile')
+      .then(res => {
+        if (res) {
+          setProfile({
+            name: res.fullName || res.name || 'User',
+            email: res.email || ''
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -23,8 +39,8 @@ export default function Settings() {
             <User size={32} />
           </div>
           <div>
-            <h2 className={styles.userName}>Aarav Kumar</h2>
-            <p className={styles.userPhone}>+91 98765 43210</p>
+            <h2 className={styles.userName}>{profile.name}</h2>
+            <p className={styles.userPhone}>{profile.email || '+91 98765 43210'}</p>
           </div>
         </div>
       </div>

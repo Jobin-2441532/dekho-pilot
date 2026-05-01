@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from app.core.config import settings
 from app.core.logging_config import logger
 from app.core.rate_limit import limiter
-from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy
+from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import
 from app.services.retriever import retriever
 from app.services.storage import storage_service
 from contextlib import asynccontextmanager
@@ -21,6 +21,10 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Dekho API...")
+    # Ensure all DB tables exist on every startup (safe: CREATE TABLE IF NOT EXISTS)
+    from app.core.database import init_db
+    init_db()
+    logger.info("Database tables ready.")
     logger.info("Pre-loading FAISS Database into memory...")
     if not retriever.is_ready:
         retriever.load()
@@ -104,4 +108,5 @@ app.include_router(features.router, prefix="/api/v1/features", tags=["features"]
 app.include_router(feedback.router,  prefix="/api/v1/feedback",  tags=["feedback"])
 app.include_router(jobs.router,      prefix="/api/v1/jobs",      tags=["jobs"])
 app.include_router(insights.router,  prefix="/api/v1/insights",  tags=["insights"])
-app.include_router(ml_proxy.router,  prefix="/api/v1/ml",        tags=["ml"])
+app.include_router(ml_proxy.router,   prefix="/api/v1/ml",     tags=["ml"])
+app.include_router(csv_import.router, prefix="/api/v1/import", tags=["import"])

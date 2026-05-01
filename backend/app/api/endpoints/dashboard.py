@@ -119,6 +119,9 @@ def get_goals(db: Session = Depends(get_db), current_user: User = Depends(get_cu
             "deadline": row.deadline,
             "color": color_map.get(row.name, "#10B981"),
             "status": row.status,
+            "autoPayAmount": row.auto_pay_amount,
+            "autoPayDate": row.auto_pay_date,
+            "autoPayStatus": row.auto_pay_status,
         }
         for row in rows
     ]
@@ -152,6 +155,80 @@ def create_goal(
     db.refresh(goal)
     return {"id": goal.id, "name": goal.name, "target_amount": goal.target_amount}
 
+class GoalEdit(BaseModel):
+    name: Optional[str] = None
+    target_amount: Optional[float] = None
+    deadline: Optional[str] = None
+
+@router.put("/goals/{goal_id}")
+def edit_goal(
+    goal_id: int,
+    body: GoalEdit,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from fastapi import HTTPException as _HE
+    goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id, SavingsGoal.user_id == current_user.id).first()
+    if not goal:
+        raise _HE(status_code=404, detail="Goal not found")
+    
+    if body.name is not None:
+        goal.name = body.name
+    if body.target_amount is not None:
+        goal.target_amount = body.target_amount
+    if body.deadline is not None:
+        goal.deadline = body.deadline
+    
+    db.commit()
+    return {"status": "success"}
+
+class AddMoney(BaseModel):
+    amount: float
+
+@router.post("/goals/{goal_id}/add_money")
+def add_money_to_goal(
+    goal_id: int,
+    body: AddMoney,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from fastapi import HTTPException as _HE
+    goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id, SavingsGoal.user_id == current_user.id).first()
+    if not goal:
+        raise _HE(status_code=404, detail="Goal not found")
+    
+    goal.current_amount += body.amount
+    # Also add to Dekho Wallet
+    current_user.dekho_wallet_balance = (current_user.dekho_wallet_balance or 0.0) + body.amount
+    
+    db.commit()
+    return {"status": "success", "new_amount": goal.current_amount, "dekho_wallet_balance": current_user.dekho_wallet_balance}
+
+class AutoPaySetup(BaseModel):
+    auto_pay_amount: float
+    auto_pay_date: int
+    auto_pay_status: str
+
+@router.put("/goals/{goal_id}/auto_pay")
+def setup_auto_pay(
+    goal_id: int,
+    body: AutoPaySetup,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from fastapi import HTTPException as _HE
+    goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id, SavingsGoal.user_id == current_user.id).first()
+    if not goal:
+        raise _HE(status_code=404, detail="Goal not found")
+    
+    goal.auto_pay_amount = body.auto_pay_amount
+    goal.auto_pay_date = body.auto_pay_date
+    goal.auto_pay_status = body.auto_pay_status
+    
+    db.commit()
+    return {"status": "success"}
+
+
 
 # ---------------------------------------------------------------------------
 # Profile — income now derived from income_range
@@ -180,6 +257,7 @@ def get_profile(db: Session = Depends(get_db), current_user: User = Depends(get_
         "stage": user.financial_stage,
         "purposes": user.goal_type.split(",") if user.goal_type else [],
         "monthlyBudget": user.monthly_budget,
+        "dekhoWalletBalance": user.dekho_wallet_balance or 0.0,
     }
 
 
@@ -272,7 +350,7 @@ def get_review_queue(db: Session = Depends(get_db), current_user: User = Depends
     """Return transactions where review_status is 'pending'."""
     rows = (
         db.query(Transaction)
-        .filter(Transaction.user_id == current_user.id, Transaction.review_status == "pending")
+        .filter(Transaction.user_id == current_user.id, Transaction.review_status == "needs_review")
         .order_by(Transaction.date.desc())
         .limit(50)
         .all()

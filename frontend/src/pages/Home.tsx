@@ -31,6 +31,7 @@ export default function Home() {
   const [savingGoals, setSavingGoals] = useState<any[]>([])
   const [topCategory, setTopCategory] = useState<{ name: string; total: number; pct: number }>({ name: 'None', total: 0, pct: 0 })
   const [transactions, setTransactions] = useState<any[]>([])
+  const [reviewCount, setReviewCount] = useState(0)
   
   const [smsText, setSmsText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -75,9 +76,11 @@ export default function Home() {
       api.get<any>('/api/v1/dashboard/profile').catch(() => null),
       api.get<any>('/api/v1/dashboard/transactions', { limit: 200, from_date: monthStart }).catch(() => ({ data: [] })),
       api.get<any[]>('/api/v1/dashboard/goals').catch(() => []),
-    ]).then(([prof, txRes, goals]) => {
+      api.get<any[]>('/api/v1/dashboard/review/queue').catch(() => []),
+    ]).then(([prof, txRes, goals, revData]) => {
       if (prof) setProfile({ ...prof, name: prof.fullName || prof.name || 'User' })
       if (Array.isArray(goals)) setSavingGoals(goals)
+      if (Array.isArray(revData)) setReviewCount(revData.length)
 
       const txList: any[] = txRes?.data || []
       if (Array.isArray(txList)) {
@@ -111,11 +114,11 @@ export default function Home() {
     setIsSubmitting(true)
     setIngestStatus(null)
     try {
-      const userId = localStorage.getItem('dekho_user_id') || 1
-      const res = await fetch(`${API}/ml/api/sms/ingest`, {
+      const token = localStorage.getItem('dekho_token') || ''
+      const res = await fetch(`/api/v1/ml/classify`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: Number(userId), sms_text: smsText })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ sms_text: smsText })
       })
       if (!res.ok) {
         const err = await res.json()
@@ -140,14 +143,15 @@ export default function Home() {
     </div>
   )
 
-  const budget = profile?.monthly_budget ?? 45000
-  const budgetPct = Math.min(Math.round((monthTotal / budget) * 100), 100)
-  const goalPct = savingGoals.length > 0 ?
-    Math.min(Math.round((savingGoals[0].current_amount / savingGoals[0].target_amount) * 100), 100) : 42
-  const remaining = Math.max(budget - monthTotal, 0)
+  const budget    = profile?.monthlyBudget ?? profile?.monthly_budget ?? 50000
+  const budgetPct  = Math.min(Math.round((monthTotal / budget) * 100), 100)
+  const goalPct    = savingGoals.length > 0
+    ? Math.min(Math.round((savingGoals[0].current_amount / savingGoals[0].target_amount) * 100), 100) : 42
+  const remaining  = Math.max(budget - monthTotal, 0)
+  const isOverBudget = monthTotal > budget
   
-  const currentDay = new Date().getDate()
-  const avgSpend = currentDay > 0 ? Math.round(monthTotal / currentDay) : 0
+  const uniqueDays = new Set(transactions.map((t: any) => t.date?.slice(0, 10))).size || 1
+  const avgSpend = Math.round(monthTotal / uniqueDays)
 
   const narrativeText = todaySpend > avgSpend
     ? 'Today was a comfort spending day.'
@@ -248,11 +252,23 @@ export default function Home() {
       <div className={styles.px}>
         <div className={styles.progressCard}>
           <div className={styles.progressRow}>
-            <p className={styles.progressLabel}>MONTHLY SAVING TARGET</p>
+            <p className={styles.progressLabel}>MONTHLY BUDGET</p>
             <p className={styles.progressPct}>{budgetPct}%</p>
           </div>
           <div className={styles.track}>
-            <div className={styles.fill} style={{ width: `${budgetPct}%` }} />
+            <div
+              className={styles.fill}
+              style={{
+                width: `${budgetPct}%`,
+                background: isOverBudget ? 'var(--color-negative, #e53935)'
+                          : budgetPct > 70  ? '#f59e0b'
+                          : 'var(--color-primary)',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', opacity: 0.6, fontSize: '11px' }}>
+            <span>Spent {fmtINR(monthTotal)}</span>
+            <span>Budget {fmtINR(budget)}</span>
           </div>
 
           <div style={{ height: 'var(--space-4)' }} />
@@ -266,35 +282,32 @@ export default function Home() {
           </div>
 
           <div className={styles.remainingRow}>
-            <p className={styles.progressLabel}>Remaining Budget</p>
-            <p className={styles.remainingAmt}>{fmtINR(remaining)}</p>
+            <p className={styles.progressLabel}>
+              {isOverBudget ? '⚠️ Over Budget' : '✅ Remaining Budget'}
+            </p>
+            <p
+              className={styles.remainingAmt}
+              style={{ color: isOverBudget ? 'var(--color-negative, #e53935)' : undefined }}
+            >
+              {isOverBudget ? `-${fmtINR(monthTotal - budget)}` : fmtINR(remaining)}
+            </p>
           </div>
         </div>
       </div>
 
       {/* ── AI Nudge Card ── */}
       <div className={styles.px}>
-        <div className={styles.nudgeCard}>
-          <div className={styles.nudgeLeft}>
-            <div className={styles.nudgeIconWrap}>
-              <span className={styles.nudgeEmoji}>🎯</span>
-            </div>
+        <div className={styles.reviewCard} onClick={() => navigate('/review')}>
+          <div className={styles.reviewLeft}>
+            <div className={styles.reviewIcon}>📝</div>
             <div>
-              <p className={styles.nudgeTitle}>
-                {transactions.length > 0
-                  ? `${Math.min(transactions.filter((t: any) => t.date?.startsWith('2026-04')).length, 3)} days of controlled spending`
-                  : '3 days of controlled spending'}
-              </p>
-              <p className={styles.nudgeSub}>You're building a healthy rhythm.</p>
+              <div className={styles.reviewDots}>
+                <span /> <span /> <span />
+              </div>
+              <p className={styles.reviewText}>{reviewCount} transaction{reviewCount !== 1 ? 's' : ''} need review</p>
             </div>
           </div>
-          <button
-            className={styles.nudgeBtn}
-            onClick={() => navigate('/ask')}
-            aria-label="Open AI chat"
-          >
-            💬
-          </button>
+          <div className={styles.reviewChevron}>›</div>
         </div>
       </div>
 
@@ -343,39 +356,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Floating chat button */}
-      <button className={styles.chatFab} onClick={() => setChatOpen(o => !o)}>
-        💬
-      </button>
 
-      {/* Chat panel */}
-      {chatOpen && (
-        <div className={styles.chatPanel}>
-          <div className={styles.chatHeader}>Ask Dekho</div>
-          <div className={styles.chatMessages}>
-            {chatHistory.length === 0 && (
-              <div className={styles.chatEmpty}>
-                Ask me about your spending, savings, goals, or investments.
-              </div>
-            )}
-            {chatHistory.map((msg, i) => (
-              <div key={i} className={`${styles.chatMsg} ${styles[msg.role]}`}>
-                {msg.text}
-              </div>
-            ))}
-            {chatLoading && <div className={styles.chatMsg}>...</div>}
-          </div>
-          <div className={styles.chatInput}>
-            <input
-              value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAsk()}
-              placeholder="Where did I spend most this week?"
-            />
-            <button onClick={handleAsk}>→</button>
-          </div>
-        </div>
-      )}
 
     </div>
   )

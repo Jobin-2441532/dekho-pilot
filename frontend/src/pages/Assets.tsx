@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Settings } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import { api } from '../lib/api'
 import styles from './Assets.module.css'
 
 const API = import.meta.env.VITE_API_URL ?? `http://${window.location.hostname}:8000`
@@ -37,6 +38,7 @@ function Sparkline({ data, color = '#6C482D' }: { data: number[]; color?: string
 
 export default function Assets() {
   const navigate = useNavigate()
+  const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'1W' | '1M' | '3M' | '1Y'>('1M')
 
@@ -61,9 +63,10 @@ export default function Assets() {
   ]
 
   useEffect(() => {
-    // Simulate load
-    const t = setTimeout(() => setLoading(false), 400)
-    return () => clearTimeout(t)
+    api.get('/api/v1/dashboard/profile')
+      .then((res: any) => setProfile(res))
+      .catch((err: any) => console.error("Failed to load profile", err))
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading) return (

@@ -125,10 +125,13 @@ class FileStorageService:
             return False
 
     def is_available(self) -> bool:
-        """Health-check: returns True if MinIO is reachable."""
+        """Health-check: returns True if MinIO is reachable (1-second timeout)."""
+        import socket
+        host, _, port_str = MINIO_ENDPOINT.partition(":")
+        port = int(port_str) if port_str else 9000
         try:
-            _ = self.client  # triggers connection + bucket check
-            return True
+            with socket.create_connection((host, port), timeout=1.0):
+                return True
         except Exception:
             return False
 

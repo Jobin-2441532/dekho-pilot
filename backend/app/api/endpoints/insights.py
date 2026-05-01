@@ -16,9 +16,8 @@ Endpoints:
     GET /api/v1/insights/all       → all of the above in one call (cached 30 min)
 """
 
-import sys
 import os
-from datetime import datetime, date, timezone
+from datetime import datetime, date, timedelta, timezone
 from typing import Optional
 
 import httpx
@@ -26,10 +25,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, extract
 
-# ── Add backend root to sys.path so insight_engine_v2 can be imported ──
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-
-from insight_engine_v2 import (
+from app.services.insight_engine_v2 import (
     DekhoInsightEngine, UserData,
     SpendingPattern, EmotionalTrigger, UserStage,
     TimeOfDay, MonthPosition,
@@ -220,8 +216,8 @@ async def _build_user_data(user_id: int, db: Session) -> UserData:
     ).all()
     month_income = sum(r.amount for r in income_rows)
 
-    # ── Budget ──
-    month_budget = month_income * 0.8 if month_income > 0 else 50000.0
+    # ── Budget — use user's actual monthly_budget, fall back to 50000 ──
+    month_budget = float(user.monthly_budget or 50000.0)
     remaining_budget = max(0.0, month_budget - month_total)
 
     # ── Streak (consecutive days with any transaction) ──
@@ -239,7 +235,6 @@ async def _build_user_data(user_id: int, db: Session) -> UserData:
             continue
         if d_obj == check:
             streak_days += 1
-            from datetime import timedelta
             check = check - timedelta(days=1)
         elif d_obj < check:
             break
@@ -272,7 +267,7 @@ async def _build_user_data(user_id: int, db: Session) -> UserData:
     emotional_trigger = _safe_emotion(ml_data.get("emotional_trigger", "none"))
 
     return UserData(
-        name=getattr(user, "full_name", None) or getattr(user, "username", None) or "there",
+        name=getattr(user, "name", None) or "there",
         days_on_app=days_on_app,
         stage=stage,
         time_of_day=time_of_day,
@@ -356,7 +351,6 @@ def _invalidate_cache(user_id: int):
 # Date helpers
 # ---------------------------------------------------------------------------
 def _days_ago(n: int) -> str:
-    from datetime import timedelta
     return (date.today() - timedelta(days=n)).isoformat()
 
 

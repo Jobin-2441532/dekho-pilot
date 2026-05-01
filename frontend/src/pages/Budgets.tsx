@@ -44,9 +44,22 @@ export default function Budgets() {
 
   // Add Goal State
   const [isAddingGoal, setIsAddingGoal] = useState(false)
-  const [goalName, setGoalName] = useState("")
-  const [goalTarget, setGoalTarget] = useState("")
-  const [goalDeadline, setGoalDeadline] = useState("")
+  const [goalName, setGoalName] = useState('')
+  const [goalTarget, setGoalTarget] = useState('')
+  const [goalDeadline, setGoalDeadline] = useState('')
+
+  // New goal actions
+  const [editingGoal, setEditingGoal] = useState<any>(null)
+  const [addingMoneyGoal, setAddingMoneyGoal] = useState<any>(null)
+  const [autoPayGoal, setAutoPayGoal] = useState<any>(null)
+  const [addMoneyAmount, setAddMoneyAmount] = useState('')
+  
+  const [editGoalName, setEditGoalName] = useState('')
+  const [editGoalTarget, setEditGoalTarget] = useState('')
+  const [editGoalDeadline, setEditGoalDeadline] = useState('')
+
+  const [autoPayAmount, setAutoPayAmount] = useState('')
+  const [autoPayDate, setAutoPayDate] = useState('')
 
   const buffer = Math.max(totalBudget - totalSpent, 0)
   const overallPct = Math.min(Math.round((totalSpent / (totalBudget || 1)) * 100), 100)
@@ -171,16 +184,13 @@ export default function Budgets() {
     </div>
   )
 
-  const displayGoals = goals.length > 0 ? goals : [
-    { id: 1, name: 'Trip to Goa', target_amount: 50000, current_amount: 25000, deadline: '2025-12-01', emoji: '🏖️' },
-  ]
+  const displayGoals = goals
 
   return (
     <div className={styles.page}>
       {/* ── Top bar ── */}
       <div className={styles.topBar}>
         <p style={{ fontFamily: 'var(--font-headline)', fontSize: '24px', fontWeight: 'bold', color: 'var(--color-on-surface)', margin: 0 }}>Budgets & Goals</p>
-        <button className={styles.iconBtn} aria-label="Notifications"><Bell size={18} strokeWidth={1.75} /></button>
       </div>
 
       {/* ── Pulse Card ── */}
@@ -196,7 +206,11 @@ export default function Budgets() {
             </button>
           </div>
           <div className={styles.pulseHeadline}>
-            {insightsLoading ? 'Calculating...' : insights?.budgets.monthly_pulse.headline}
+            {totalSpent > totalBudget
+              ? 'Over budget. The awareness matters.'
+              : totalSpent > totalBudget * 0.85
+              ? 'Spending high — stay mindful.'
+              : 'Cruising smoothly this month.'}
           </div>
           <div className={styles.pulseMeta}>
             <span>SPENT: {fmt(totalSpent)}</span>
@@ -209,9 +223,13 @@ export default function Budgets() {
             />
           </div>
           <div className={styles.pulseSafe}>
-            Safe to spend: {insights?.budgets.monthly_pulse.safe_to_spend}
+            Safe to spend: <strong>{fmt(buffer)}</strong>
           </div>
-          <div className={styles.pulseSubtext}>{insights?.budgets.monthly_pulse.subtext}</div>
+          <div className={styles.pulseSubtext}>
+            {totalSpent > totalBudget
+              ? `Over by ${fmt(totalSpent - totalBudget)}. Dekho will help you understand what drove it.`
+              : `₹${(buffer).toLocaleString('en-IN')} remaining — you're well in control.`}
+          </div>
         </div>
       </div>
 
@@ -292,6 +310,28 @@ export default function Budgets() {
           </div>
         )}
 
+
+        {displayGoals.length === 0 && (
+          <div style={{
+            textAlign: 'center',
+            padding: '32px 24px',
+            background: 'var(--bg-surface)',
+            borderRadius: '16px',
+            border: '2px dashed var(--color-outline)',
+            marginBottom: '16px',
+          }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🎯</div>
+            <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'var(--color-on-surface)', marginBottom: '6px' }}>No goals yet</p>
+            <p style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '16px' }}>Set a savings goal and watch your money grow step by step.</p>
+            <button
+              onClick={() => setIsAddingGoal(true)}
+              style={{ padding: '10px 24px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+            >
+              + Add Your First Goal
+            </button>
+          </div>
+        )}
+
         {displayGoals.map((goal: any, index: number) => {
           const currentAmt = goal.currentAmount ?? goal.current_amount ?? 0;
           const targetAmt = goal.targetAmount ?? goal.target_amount ?? 1;
@@ -312,26 +352,24 @@ export default function Budgets() {
                 <div className={styles.goalImageOverlay}>
                   <p className={styles.goalImageTitle}>{goal.name} is getting closer ✨</p>
                 </div>
-                {currentAmt <= 0 && (
-                  <button 
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (window.confirm('Are you sure you want to delete this goal?')) {
-                        try {
-                          const rawId = String(goal.id).replace(/^g/, '')
-                          await api.delete(`/api/v1/dashboard/goals/${rawId}`)
-                          loadData()
-                        } catch (err) {
-                          console.error('Failed to delete goal', err)
-                        }
+                <button 
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (window.confirm('Are you sure you want to delete this goal?')) {
+                      try {
+                        const rawId = String(goal.id).replace(/^g/, '')
+                        await api.delete(`/api/v1/dashboard/goals/${rawId}`)
+                        loadData()
+                      } catch (err) {
+                        console.error('Failed to delete goal', err)
                       }
-                    }}
-                    style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer', zIndex: 10 }}
-                    aria-label="Delete Goal"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
+                    }
+                  }}
+                  style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer', zIndex: 10 }}
+                  aria-label="Delete Goal"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
 
               {/* Goal details */}
@@ -356,11 +394,31 @@ export default function Budgets() {
                   <div className={styles.goalFill} style={{ width: `${pct}%` }} />
                 </div>
 
-                <div className={styles.goalContribCard}>
-                  <div className={styles.goalContribIcon}>⚡</div>
-                  <p className={styles.goalContribText}>
-                    <strong>₹5,000/month</strong> funded from your budget
-                  </p>
+                <div className={styles.goalContribCard} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {goal.autoPayStatus === 'active' ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className={styles.goalContribIcon}>⚡</div>
+                      <p className={styles.goalContribText}>
+                        <strong>₹{(goal.autoPayAmount || 0).toLocaleString('en-IN')}/month</strong> auto-pay on the {goal.autoPayDate}th
+                      </p>
+                    </div>
+                  ) : (
+                    <p className={styles.goalContribText} style={{ color: 'var(--color-muted)' }}>No auto-pay configured.</p>
+                  )}
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <button onClick={() => setAddingMoneyGoal(goal)} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Add Money</button>
+                    <button onClick={() => {
+                      setAutoPayGoal(goal)
+                      setAutoPayAmount(goal.autoPayAmount ? String(goal.autoPayAmount) : '')
+                      setAutoPayDate(goal.autoPayDate ? String(goal.autoPayDate) : '')
+                    }} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Auto Pay</button>
+                    <button onClick={() => {
+                      setEditingGoal(goal)
+                      setEditGoalName(goal.name)
+                      setEditGoalTarget(goal.targetAmount)
+                      setEditGoalDeadline(goal.deadline || '')
+                    }} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Edit</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -430,6 +488,103 @@ export default function Budgets() {
                   loadData()
                 } catch { alert('Failed to save goal') }
               }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save Goal</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Adding Money Modal */}
+      {addingMoneyGoal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Add Money to {addingMoneyGoal.name}</h3>
+            <input type="number" value={addMoneyAmount} onChange={e => setAddMoneyAmount(e.target.value)} placeholder="Amount (₹)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setAddingMoneyGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  const rawId = String(addingMoneyGoal.id).replace(/^g/, '')
+                  await api.post(`/api/v1/dashboard/goals/${rawId}/add_money`, { amount: parseFloat(addMoneyAmount) })
+                  setAddingMoneyGoal(null)
+                  setAddMoneyAmount('')
+                  loadData()
+                } catch (err: any) {
+                    const msg = err?.message || ''
+                    if (msg.includes('404') || msg.includes('not found')) {
+                      alert('Goal not found. Try logging out and back in.')
+                    } else if (msg.includes('401')) {
+                      alert('Session expired. Please log in again.')
+                    } else {
+                      alert('Failed to add money: ' + msg)
+                    }
+                  }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Add</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Editing Goal Modal */}
+      {editingGoal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Edit Goal</h3>
+            <input type="text" value={editGoalName} onChange={e => setEditGoalName(e.target.value)} placeholder="Goal Name" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <input type="number" value={editGoalTarget} onChange={e => setEditGoalTarget(e.target.value)} placeholder="Target Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <input type="date" value={editGoalDeadline} onChange={e => setEditGoalDeadline(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setEditingGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  const rawId = String(editingGoal.id).replace(/^g/, '')
+                  await api.put(`/api/v1/dashboard/goals/${rawId}`, {
+                    name: editGoalName,
+                    target_amount: parseFloat(editGoalTarget),
+                    deadline: editGoalDeadline || null,
+                  })
+                  setEditingGoal(null)
+                  loadData()
+                } catch { alert('Failed to edit goal') }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auto Pay Modal */}
+      {autoPayGoal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Auto Pay Settings</h3>
+            <input type="number" value={autoPayAmount} onChange={e => setAutoPayAmount(e.target.value)} placeholder="Amount (₹)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            <input type="number" min="1" max="31" value={autoPayDate} onChange={e => setAutoPayDate(e.target.value)} placeholder="Day of month (1-31)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setAutoPayGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  const rawId = String(autoPayGoal.id).replace(/^g/, '')
+                  await api.put(`/api/v1/dashboard/goals/${rawId}/auto_pay`, {
+                    auto_pay_amount: parseFloat(autoPayAmount) || 0,
+                    auto_pay_date: parseInt(autoPayDate) || 1,
+                    auto_pay_status: 'inactive'
+                  })
+                  setAutoPayGoal(null)
+                  loadData()
+                } catch { alert('Failed to update auto pay') }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ff4444', background: 'transparent', color: '#ff4444', fontWeight: 'bold' }}>Pause / Remove</button>
+              <button onClick={async () => {
+                try {
+                  const rawId = String(autoPayGoal.id).replace(/^g/, '')
+                  await api.put(`/api/v1/dashboard/goals/${rawId}/auto_pay`, {
+                    auto_pay_amount: parseFloat(autoPayAmount) || 0,
+                    auto_pay_date: parseInt(autoPayDate) || 1,
+                    auto_pay_status: 'active'
+                  })
+                  setAutoPayGoal(null)
+                  loadData()
+                } catch { alert('Failed to update auto pay') }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save Auto Pay</button>
             </div>
           </div>
         </div>

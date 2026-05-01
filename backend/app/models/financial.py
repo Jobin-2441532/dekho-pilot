@@ -12,6 +12,9 @@ class SavingsGoal(Base):
     current_amount = Column(Float, default=0)
     deadline = Column(String)
     status = Column(String, default='active')
+    auto_pay_amount = Column(Float, default=0.0)
+    auto_pay_date = Column(Integer, nullable=True)
+    auto_pay_status = Column(String, default='inactive')
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="savings_goals")

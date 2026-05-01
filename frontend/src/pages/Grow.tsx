@@ -68,10 +68,10 @@ function GrowHome() {
           <h1 className={styles.actionTitle}>Your next growth step</h1>
         
         <div className={styles.readinessBadge}>
-          <ShieldCheck size={18} className={styles.readinessIcon} strokeWidth={2} />
+          <Sparkles size={18} className={styles.readinessIcon} strokeWidth={2} />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className={styles.readinessBadgeLabel}>AI READINESS STATUS</span>
-            <span className={styles.readinessBadgeText}>You are ready to start investing</span>
+            <span className={styles.readinessBadgeLabel}>SMART INSIGHT</span>
+            <span className={styles.readinessBadgeText}>Because your savings buffer is stable, you can safely start growing your wealth.</span>
           </div>
         </div>
 
@@ -81,19 +81,6 @@ function GrowHome() {
       </div>
 
       <div className={styles.px} style={{ marginTop: 'var(--space-4)' }}>
-        <div className={styles.insightCard}>
-          <div className={styles.insightIconWrap}>✨</div>
-          <div>
-            <p className={styles.insightCardLabel}>SMART INSIGHT</p>
-            <p className={styles.insightCardText}>
-              Because your savings buffer is stable, you can safely start growing your wealth.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* AI Recommendations block */}
-      <div className={styles.px} style={{ marginTop: 'var(--space-5)' }}>
         <div className={styles.aiRecCard}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
             <Sparkles size={18} color="rgba(255,255,255,0.8)" strokeWidth={1.75} />
@@ -107,6 +94,7 @@ function GrowHome() {
           </p>
         </div>
       </div>
+
 
       {/* Your Next Steps */}
       <div className={styles.px} style={{ marginTop: 'var(--space-5)' }}>

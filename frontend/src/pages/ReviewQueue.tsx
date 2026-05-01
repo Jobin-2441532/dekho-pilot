@@ -112,8 +112,8 @@ export default function ReviewQueue() {
                 <div className={styles.cardLeft}>
                   <div className={styles.titleRow}>
                     <span className={styles.merchant}>{tx.merchant || tx.vpa || "Unknown Merchant"}</span>
-                    <span className={tx.type === "credit" ? styles.amountCredit : styles.amountDebit}>
-                      {tx.type === "credit" ? "+" : "−"}₹{(tx.amount || 0).toLocaleString("en-IN")}
+                    <span className={tx.direction === "credit" ? styles.amountCredit : styles.amountDebit}>
+                      {tx.direction === "credit" ? "+" : "−"}₹{(tx.amount || 0).toLocaleString("en-IN")}
                     </span>
                     {tx.is_family_expense && (
                       <span className={styles.familyBadge}>👨‍👩‍👧 Family</span>
@@ -121,13 +121,13 @@ export default function ReviewQueue() {
                   </div>
 
                   <div className={styles.meta}>
-                    {tx.tx_date
-                      ? new Date(tx.tx_date).toLocaleDateString("en-IN", {
+                    {tx.date
+                      ? new Date(tx.date).toLocaleDateString("en-IN", {
                           day: "numeric", month: "short", year: "numeric",
                         })
                       : "—"}
                     {" · "}
-                    {tx.payment_method || "Unknown method"}
+                    {tx.paymentMode || "Unknown method"}
                     {tx.vpa && ` · ${tx.vpa}`}
                   </div>
 
@@ -155,7 +155,7 @@ export default function ReviewQueue() {
                 </div>
 
                 <div className={styles.cardRight}>
-                  {tx.type === "credit" && (
+                  {tx.direction === "credit" && (
                     <div className={styles.checkboxRow}>
                       <input
                         type="checkbox"

@@ -537,3 +537,12 @@
 .chatInput { display: flex; border-top: 1px solid #E8D5CC; }
 .chatInput input { flex: 1; border: none; padding: 12px 14px; background: #FAF7F2; font-size: 13px; outline: none; }
 .chatInput button { padding: 12px 16px; background: #6B3A2A; color: #fff; border: none; font-size: 16px; cursor: pointer; }
+
+.reviewCard { background: var(--bg-card); border-radius: var(--radius-xl); padding: var(--space-3) var(--space-5); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: transform var(--transition-fast); }
+.reviewCard:active { transform: scale(0.98); }
+.reviewLeft { display: flex; align-items: center; gap: var(--space-3); }
+.reviewIcon { font-size: var(--text-lg); background: var(--color-secondary-container); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); opacity: 0.9; }
+.reviewDots { display: flex; gap: 3px; margin-bottom: 2px; }
+.reviewDots span { width: 4px; height: 4px; border-radius: 50%; background: var(--color-primary-fixed); }
+.reviewText { font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--font-semibold); color: var(--color-secondary); }
+.reviewChevron { color: var(--color-secondary); font-size: var(--text-xl); font-weight: var(--font-bold); }

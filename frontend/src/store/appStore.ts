@@ -12,6 +12,7 @@ interface UserProfile {
   name: string
   avatarInitials: string
   isInvestmentEligible: boolean  // controls Grow Home vs Readiness Guardrail
+  dekhoWalletBalance?: number
 }
 
 interface AppState {

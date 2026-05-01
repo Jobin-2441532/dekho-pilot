@@ -14,6 +14,7 @@ class User(Base):
     risk_comfort = Column(String)
     monthly_budget = Column(Float)
     financial_stage = Column(String)
+    dekho_wallet_balance = Column(Float, default=0.0)
     created_at = Column(DateTime, server_default=func.now())
 
     transactions = relationship("Transaction", back_populates="user")

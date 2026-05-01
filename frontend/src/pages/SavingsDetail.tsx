@@ -1,9 +1,18 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowUpCircle, ShieldCheck, TrendingUp, Landmark, Lock, Wallet, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowUpCircle, ShieldCheck, TrendingUp, Landmark, Lock, Wallet, ArrowRight, Target } from 'lucide-react'
+import { api } from '../lib/api'
 import styles from './SubPage.module.css'
 
 export default function SavingsDetail() {
   const navigate = useNavigate()
+  const [profile, setProfile] = useState<any>(null)
+
+  useEffect(() => {
+    api.get('/api/v1/dashboard/profile')
+      .then((res: any) => setProfile(res))
+      .catch((err: any) => console.error("Failed to load profile", err))
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -81,6 +90,16 @@ export default function SavingsDetail() {
               <p className={styles.bdSubGrey}>Physical currency</p>
             </div>
             <p className={styles.bdAmt}>₹20,000</p>
+          </div>
+
+          {/* Dekho Wallet */}
+          <div className={styles.bdCard} style={{ background: 'var(--bg-surface-highest)', border: '1px solid var(--color-primary)' }}>
+            <div className={styles.bdIcon} style={{ background: 'var(--color-primary)', color: 'white' }}><Target size={20} strokeWidth={1.5} /></div>
+            <div className={styles.bdBody}>
+              <p className={styles.bdName} style={{ color: 'var(--color-primary)' }}>Dekho Wallet</p>
+              <p className={styles.bdSubGrey}>Savings goals funds</p>
+            </div>
+            <p className={styles.bdAmt}>₹{(profile?.dekhoWalletBalance || 0).toLocaleString('en-IN')}</p>
           </div>
         </div>
 

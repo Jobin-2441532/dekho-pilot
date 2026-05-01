@@ -113,15 +113,21 @@ export default function Expenses() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [insightTab, setInsightTab] = useState<InsightTab>('Total')
-  const [transactions, setTransactions] = useState<any[]>([])
-  
-  // New ML analytics state
+
+  // All transactions fetched (unfiltered)
+  const [allTransactions, setAllTransactions] = useState<any[]>([])
+  // Month filter — default to CURRENT month; user can switch to earlier months via dropdown
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  })
+
+  // ML analytics state
   const [dashboardSummary, setDashboardSummary] = useState<any>(null)
   const [paymentMethods, setPaymentMethods] = useState<any[]>([])
   const [reviewCount, setReviewCount] = useState(0)
-
   const [monthTotal, setMonthTotal] = useState(0)
-  
+
   // Transaction editing state
   const [editTx, setEditTx] = useState<any>(null)
   const [newCat, setNewCat] = useState("")
@@ -131,89 +137,136 @@ export default function Expenses() {
   const [heatmapData, setHeatmapData] = useState<HeatmapCell[][]>([])
 
   const loadData = () => {
-    const now = new Date()
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-    const today = now.toISOString().slice(0, 10)
-
+    setLoading(true)
     Promise.all([
-      // Real transactions from our JWT-authenticated backend
-      api.get<any>('/api/v1/dashboard/transactions', { limit: 100, from_date: monthStart, direction: 'debit' }).catch(() => ({ data: [] })),
-      // Category summary this month
-      api.get<any>('/api/v1/dashboard/transactions/summary', { from_date: monthStart, to_date: today }).catch(() => null),
+      // Fetch ALL transactions — no direction filter, large limit to capture both months
+      api.get<any>('/api/v1/dashboard/transactions', { limit: 500 }).catch(() => ({ data: [] })),
       // Review queue count
       api.get<any>('/api/v1/dashboard/review/queue').catch(() => []),
-    ]).then(([txRes, sumData, revData]) => {
+    ]).then(([txRes, revData]) => {
       const txList: any[] = txRes?.data || []
-
       if (Array.isArray(txList)) {
-        setTransactions(txList.slice(0, 15))
-        const total = txList.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
-        if (total > 0) setMonthTotal(total)
-
-        // Build heatmap from real transaction dates
-        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay()
-        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
-        const numWeeks = Math.ceil((firstDayOfMonth + daysInMonth) / 7)
-
-        const newHeatmap: HeatmapCell[][] = Array.from({ length: numWeeks }, () =>
-          Array(7).fill(null).map(() => ({ date: null, amount: 0 }))
-        )
-        let currentDay = 1
-        for (let w = 0; w < numWeeks; w++) {
-          for (let d = 0; d < 7; d++) {
-            if (w === 0 && d < firstDayOfMonth) {
-              newHeatmap[w][d] = { date: null, amount: 0 }
-            } else if (currentDay <= daysInMonth) {
-              newHeatmap[w][d] = { date: currentDay, amount: 0 }
-              currentDay++
-            } else {
-              newHeatmap[w][d] = { date: null, amount: 0 }
-            }
-          }
-        }
-        txList.forEach((tx: any) => {
-          const txDate = new Date(tx.date)
-          if (txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
-            const dateObj = txDate.getDate()
-            const week = Math.floor((firstDayOfMonth + dateObj - 1) / 7)
-            const day = (firstDayOfMonth + dateObj - 1) % 7
-            if (week < numWeeks && day < 7) {
-              newHeatmap[week][day].amount += (tx.amount || 0)
-            }
-          }
-        })
-        setHeatmapData(newHeatmap)
+        setAllTransactions(txList)
       }
-
-      // Category breakdown — dashboard returns { category, total }, ML insight uses { category, amount }
-      if (sumData?.category_breakdown) {
-        const normalized = sumData.category_breakdown.map((c: any) => ({
-          category: c.category,
-          amount: c.total ?? c.amount ?? 0,
-        }))
-        setDashboardSummary({ ...sumData, category_breakdown: normalized })
-
-        // Compute income/expense/savings from summary totals
-        const totalExpense = sumData.total_spend ?? 0
-        const totalIncome  = sumData.total_credit ?? 0
-        setDashboardSummary({
-          ...sumData,
-          category_breakdown: normalized,
-          total_income:  totalIncome,
-          total_expense: totalExpense,
-          net_savings:   totalIncome - totalExpense,
-          savings_rate_pct: totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0,
-        })
-      }
-
-      // Review queue count from dashboard (already JWT-scoped)
       if (Array.isArray(revData)) setReviewCount(revData.length)
     }).finally(() => setLoading(false))
   }
 
+  // Initial load
+  useEffect(() => { loadData() }, [])
+
+  // ── Derived: all debit transactions for the selected month ─────────────────
+  const transactions = allTransactions.filter(tx => {
+    const txMonth = tx.date ? String(tx.date).slice(0, 7) : ''
+    return txMonth === selectedMonth && tx.direction === 'debit'
+  })
+
+  // ── Available months from all transactions (newest first) ──────────────────
+  const availableMonths: string[] = Array.from(
+    new Set(allTransactions.map(tx => String(tx.date || '').slice(0, 7)).filter(Boolean))
+  ).sort((a, b) => b.localeCompare(a))
+
+  const formatMonthLabel = (ym: string) => {
+    const [y, m] = ym.split('-')
+    return new Date(Number(y), Number(m) - 1, 1)
+      .toLocaleString('en-IN', { month: 'long', year: 'numeric' })
+  }
+
+  // ── Reactive: recompute everything when month or data changes ──────────────
   useEffect(() => {
-    loadData()
-  }, [])
+    const monthDebits = allTransactions.filter(tx =>
+      String(tx.date || '').startsWith(selectedMonth) && tx.direction === 'debit'
+    )
+
+    // Total spend
+    const total = monthDebits.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+    setMonthTotal(total)
+
+    // Payment methods breakdown
+    const pmTotals: Record<string, number> = {}
+    monthDebits.forEach((tx: any) => {
+      const raw = tx.paymentMode || tx.payment_mode || 'Unknown'
+      const key = raw.toUpperCase().includes('UPI')        ? 'UPI'
+                : raw.toUpperCase().includes('CREDIT')     ? 'Credit Card'
+                : raw.toUpperCase().includes('DEBIT')      ? 'Debit Card'
+                : raw.toUpperCase().includes('CARD')       ? 'Card'
+                : raw.toUpperCase().includes('NEFT')       ? 'NEFT'
+                : raw.toUpperCase().includes('NETBANKING') ? 'NEFT'
+                : raw.toUpperCase().includes('AUTOPAY')    ? 'AutoPay'
+                : raw.toUpperCase().includes('IMPS')       ? 'IMPS'
+                : raw.toUpperCase().includes('ATM')        ? 'ATM'
+                : 'Other'
+      pmTotals[key] = (pmTotals[key] || 0) + (tx.amount || 0)
+    })
+    setPaymentMethods(
+      Object.entries(pmTotals)
+        .map(([method, amount]) => ({ method, amount }))
+        .sort((a, b) => b.amount - a.amount)
+    )
+
+    // Heatmap for selected month
+    const [selYear, selMon] = selectedMonth.split('-').map(Number)
+    if (!selYear || !selMon) return
+    const firstDayOfMonth = new Date(selYear, selMon - 1, 1).getDay()
+    const daysInMonth     = new Date(selYear, selMon, 0).getDate()
+    const numWeeks        = Math.ceil((firstDayOfMonth + daysInMonth) / 7)
+
+    const newHeatmap: HeatmapCell[][] = Array.from({ length: numWeeks }, () =>
+      Array(7).fill(null).map(() => ({ date: null, amount: 0 }))
+    )
+    let currentDay = 1
+    for (let w = 0; w < numWeeks; w++) {
+      for (let d = 0; d < 7; d++) {
+        if (w === 0 && d < firstDayOfMonth) {
+          newHeatmap[w][d] = { date: null, amount: 0 }
+        } else if (currentDay <= daysInMonth) {
+          newHeatmap[w][d] = { date: currentDay, amount: 0 }
+          currentDay++
+        } else {
+          newHeatmap[w][d] = { date: null, amount: 0 }
+        }
+      }
+    }
+    monthDebits.forEach((tx: any) => {
+      const txDate = new Date(tx.date)
+      if (txDate.getFullYear() === selYear && txDate.getMonth() === selMon - 1) {
+        const dateObj = txDate.getDate()
+        const week    = Math.floor((firstDayOfMonth + dateObj - 1) / 7)
+        const day     = (firstDayOfMonth + dateObj - 1) % 7
+        if (week < numWeeks && day < 7) newHeatmap[week][day].amount += (tx.amount || 0)
+      }
+    })
+    setHeatmapData(newHeatmap)
+
+    // Fetch category summary for this month from backend
+    if (allTransactions.length > 0) {
+      const fromDate = `${selectedMonth}-01`
+      const lastDay  = new Date(selYear, selMon, 0).getDate()
+      const toDate   = `${selectedMonth}-${String(lastDay).padStart(2, '0')}`
+      api.get<any>('/api/v1/dashboard/transactions/summary', { from_date: fromDate, to_date: toDate })
+        .then(sumData => {
+          if (!sumData?.category_breakdown) return
+          const normalized = sumData.category_breakdown.map((c: any) => ({
+            category: c.category,
+            amount: c.total ?? c.amount ?? 0,
+          }))
+          const totalExpense = sumData.total_spend  ?? 0
+          const totalIncome  = sumData.total_credit ?? 0
+          setDashboardSummary({
+            ...sumData,
+            category_breakdown: normalized,
+            total_income:  totalIncome,
+            total_expense: totalExpense,
+            net_savings:   totalIncome - totalExpense,
+            savings_rate_pct: totalIncome > 0
+              ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0,
+          })
+        })
+        .catch(() => {})
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMonth, allTransactions])
+
 
   const handleCorrect = async () => {
     if (!newCat || !editTx) return
@@ -269,7 +322,21 @@ export default function Expenses() {
       <div className={styles.header}>
         <p className={styles.pageTitle}>Expenses</p>
         <div className={styles.headerRight}>
-          <button className={styles.monthPill}>Apr 2026 ▾</button>
+          {/* Working month selector — options built from real transaction data */}
+          <select
+            className={styles.monthPill}
+            value={selectedMonth}
+            onChange={e => setSelectedMonth(e.target.value)}
+            style={{ cursor: 'pointer', appearance: 'none', paddingRight: 20, backgroundImage: 'none' }}
+          >
+            {availableMonths.length === 0 ? (
+              <option value={selectedMonth}>{formatMonthLabel(selectedMonth)}</option>
+            ) : (
+              availableMonths.map(ym => (
+                <option key={ym} value={ym}>{formatMonthLabel(ym)}</option>
+              ))
+            )}
+          </select>
           <button className={styles.iconBtn} aria-label="Search"><Search size={16} /></button>
           <button className={styles.iconBtn} aria-label="Filter"><Filter size={16} /></button>
         </div>
@@ -305,6 +372,35 @@ export default function Expenses() {
         </div>
       </div>
 
+      {/* ── AI Insight card ── */}
+      <div className={styles.px}>
+        <div className={styles.aiCard}>
+          <div className={styles.aiWatermark}>🍴</div>
+          <p className={styles.aiCardLabel}>INSIGHT</p>
+          <div className={styles.aiCardContent}>
+            <p className={styles.aiCardTitle}>
+              {topCat.category} is your highest expense (₹{(topCat.amount || 0).toLocaleString('en-IN')})
+            </p>
+            <div className={styles.aiCardBadgeWrap}>
+              <span className={styles.aiCardBadge}>+{topCatPct}%</span>
+            </div>
+          </div>
+          <p className={styles.aiCardSub}>
+            Try reducing Swiggy orders by 15% to save ₹1,200 this month.
+          </p>
+
+          <div className={styles.aiTarget}>
+            <div className={styles.aiTargetHeader}>
+              <span>TARGET SAVINGS</span>
+              <span>₹1,200</span>
+            </div>
+            <div className={styles.aiTargetTrack}>
+              <div className={styles.aiTargetFill} style={{ width: '25%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── Insight Tabs + Categories ── */}
       <div className={styles.px}>
         <div className={styles.sectionHeader}>
@@ -316,7 +412,7 @@ export default function Expenses() {
           
           {/* Pie Chart & Bar Chart (Dekho styling) */}
           <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
+            {/* <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)', marginBottom: '8px' }}>Spending by Category</div>
               {pieData.length > 0 ? (
                 <>
@@ -354,7 +450,7 @@ export default function Expenses() {
               ) : (
                 <div style={{ color: 'var(--color-muted)', fontSize: '12px', textAlign: 'center', padding: '20px' }}>No data</div>
               )}
-            </div>
+            </div> */}
 
             <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)', marginBottom: '8px' }}>Top Spending Categories</div>
@@ -384,7 +480,7 @@ export default function Expenses() {
               {paymentMethods.length > 0 ? (
                 paymentMethods.map((m, i) => {
                   const max = paymentMethods[0]?.amount || 1;
-                  const color = PM_COLORS[m.method] || "var(--color-primary-fixed)";
+                  const color = "var(--color-primary)";
                   return (
                     <div key={i} style={{ marginBottom: 14 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 5, fontFamily: 'var(--font-body)' }}>
@@ -482,34 +578,6 @@ export default function Expenses() {
         </div>
       </div>
 
-      {/* ── AI Insight card ── */}
-      <div className={styles.px}>
-        <div className={styles.aiCard}>
-          <div className={styles.aiWatermark}>🍴</div>
-          <p className={styles.aiCardLabel}>INSIGHT</p>
-          <div className={styles.aiCardContent}>
-            <p className={styles.aiCardTitle}>
-              {topCat.category} is your highest expense (₹{(topCat.amount || 0).toLocaleString('en-IN')})
-            </p>
-            <div className={styles.aiCardBadgeWrap}>
-              <span className={styles.aiCardBadge}>+{topCatPct}%</span>
-            </div>
-          </div>
-          <p className={styles.aiCardSub}>
-            Try reducing Swiggy orders by 15% to save ₹1,200 this month.
-          </p>
-
-          <div className={styles.aiTarget}>
-            <div className={styles.aiTargetHeader}>
-              <span>TARGET SAVINGS</span>
-              <span>₹1,200</span>
-            </div>
-            <div className={styles.aiTargetTrack}>
-              <div className={styles.aiTargetFill} style={{ width: '25%' }} />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* ── Heatmap ── */}
       <div className={styles.px}>
@@ -550,12 +618,12 @@ export default function Expenses() {
                   {tx.category} • {typeof tx.date === 'string' && !tx.date.includes('-')
                     ? tx.date
                     : new Date(tx.date || tx.tx_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.payment_method || 'UPI'}</span>
+                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.paymentMode || tx.payment_method || 'UPI'}</span>
                 </p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                <span className={tx.type === "credit" ? styles.amountCredit : styles.txAmt}>
-                  {tx.type === "credit" ? "+" : "−"}₹{(tx.amount || 0).toLocaleString('en-IN')}
+                <span className={tx.direction === "credit" ? styles.amountCredit : styles.txAmt}>
+                  {tx.direction === "credit" ? "+" : "−"}₹{(tx.amount || 0).toLocaleString('en-IN')}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button 

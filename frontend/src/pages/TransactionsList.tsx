@@ -38,10 +38,12 @@ export default function TransactionsList() {
   const loadData = async (pageNum: number) => {
     const userId = localStorage.getItem('dekho_user_id') || 1
     try {
-      const res = await fetch(`${API}/ml/api/transactions?user_id=${userId}&limit=${limit}&offset=${(pageNum - 1) * limit}`)
+      const res = await fetch(`${API}/api/v1/dashboard/transactions?limit=${limit}&offset=${(pageNum - 1) * limit}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('dekho_token')}` }
+      })
       if (res.ok) {
         const data = await res.json()
-        const txList = data.transactions || (Array.isArray(data) ? data : [])
+        const txList = data.data || data.transactions || (Array.isArray(data) ? data : [])
         
         if (pageNum === 1) {
           setTransactions(txList)
