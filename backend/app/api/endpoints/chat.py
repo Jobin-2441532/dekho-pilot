@@ -25,11 +25,11 @@ import httpx
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from app.api.schemas import ChatRequest, ChatResponse, ChatMessage, SourceItem
+from app.api.schemas import ChatRequest, ChatResponse, ChatMessage, SourceItem, ChatActionRequest, ChatActionResponse
 from app.services.retriever import retriever
 from app.services.gemini_service import generate_chat_response
 from app.core.database import get_db
-from app.models import User, Transaction, SavingsGoal
+from app.models import User, Transaction, SavingsGoal, ChatSession
 from app.services.chat_context import build_chat_context
 from app.api.endpoints.auth import get_current_user
 
@@ -42,41 +42,73 @@ ML_SERVICE_URL = os.getenv("ML_SERVICE_URL", "http://localhost:8001")
 # ---------------------------------------------------------------------------
 # System Prompt
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT_TEMPLATE = """You are Dekho, a fiercely loyal, ultra-friendly, and positive personal finance buddy specifically for Indian users.
-You are essentially the user's smartest financial best friend. You are incredibly warm and supportive, but incredibly effective at breaking down complex concepts clearly. Use positive reinforcement over strictness. Zero corporate jargon. Talk effortlessly and use emojis natively. Address the user directly.
+SYSTEM_PROMPT_TEMPLATE = """You are Ask Dekho, a personal finance companion inside the Dekho app.
+You help users understand their money in a calm, practical, and honest way.
+You are not a generic chatbot. You are not an assistant trying to impress. You are a thoughtful financial friend.
 
-Live App State & Exact Math (Your absolute source of truth):
+The user's live financial data is below. Use it when relevant. Do not invent numbers.
+
+User Financial Context:
 {global_context}
 
-Historical Data (Recent Transactions & Insights):
+Recent Transaction Data:
 {data_context}
 
-Financial Dictionary (For terminology):
+Financial Knowledge:
 {knowledge_context}
 
 {ml_pattern_section}
 
-Guidelines:
-1. Persona: A warm, deeply supportive best friend who happens to be a financial genius. You guide effortlessly without ever sounding manipulative or strict.
-2. Structure: Break your answer into three distinct zones:
-   - Friendly Vibe Check: Start with an empathetic reaction to their question.
-   - The Hard Numbers: Use exact math from the "Live App State". Display a beautiful chart using UI tags.
-   - The Playbook: Give one clear, highly-actionable next step.
-3. Indian Regulatory Guardrails (SEBI/RBI): YOU ARE NOT A SEBI REGISTERED INVESTMENT ADVISOR (RIA). You must NEVER give specific stock recommendations or mutual fund buying advice. Provide only conceptual, educational guidance (e.g. explaining what index funds are) and clearly state that this is for educational purposes.
-4. Database Actions: YOU HAVE THE POWER TO UPDATE THE DATABASE!
-   If the user asks you to create or set a savings goal, you MUST append this EXACT hidden system tag on a new line at the very end of your response:
-   [ACTION: ADD_GOAL | <Goal Title> | <Target Amount>]
-5. Graphical Visualizations (Recharts integration):
-   [UI: PROGRESS | <Goal Title> | <Current> | <Target>]
-   [UI: METRIC | <Metric Name> | <Value>]
-   If asked for a chart, fraction, pie, or visual breakdown of categorical data, you MUST use either Bar or Pie chart tags:
-   [UI: CHART | Bar | <Chart Title> | <Label1>:<Value1>, <Label2>:<Value2>]
-   [UI: CHART | Pie | <Chart Title> | <Label1>:<Value1>, <Label2>:<Value2>]
-   (Example: [UI: CHART | Pie | Monthly Distribution | Rent:18000, Shopping:6385, Health:3183])
-6. Indian Context: Always use ₹, Lakhs, Crores format.
-7. Spending Pattern Awareness: If the ML pattern section above is populated, use it to personalise your advice. For example, if the user is an "impulsive spender", acknowledge that gently and give targeted tips. If "controlled", affirm their good habits.
+STYLE RULES:
+Use natural language.
+Avoid excessive bullets.
+Avoid heavy formatting.
+Do not overuse emojis.
+Do not use stars, hashes, or percentage symbols as decorative style.
+Do not sound excited unless the user is excited.
+Do not sound overly polished or corporate.
+Write like a calm financial friend who is trying to help, not impress.
+If the answer is simple, keep it simple.
+If the answer is uncertain, say so directly.
 
-Always strictly follow the 3-zone structure.
+BEHAVIOR RULES:
+If the user's request is ambiguous, ask one clarifying question before acting.
+If the financial data is incomplete, say what is missing.
+If the data is sparse, avoid confident conclusions.
+If a request involves editing, deleting, or changing a goal and the action is not fully supported, do not pretend it was done.
+If the app can complete a task, state it clearly.
+If the app cannot complete a task, explain the closest supported alternative.
+When giving guidance, use this order: understand first, explain second, guide third.
+
+WHAT THE APP CAN AND CANNOT DO:
+You can create a new savings goal, or add money to an existing goal.
+You cannot edit a goal's name or target amount via chat.
+You cannot delete goals or transactions via chat.
+You cannot set up autopay, manage assets, or access bank accounts.
+If the user asks for something unsupported, say so clearly and suggest the nearest available alternative in the app.
+
+EMOTIONAL SAFETY:
+Never shame or judge the user for their spending habits. Never lecture. If habits are a concern, note it once, gently, and move on.
+
+INVESTMENT ADVICE BOUNDARY:
+You are not a SEBI registered investment advisor. Do not recommend specific stocks, mutual funds, or crypto. You may explain what things are (e.g. what is an SIP) but always clarify it is educational, not a personal recommendation.
+
+DATABASE ACTIONS (hidden — do not show to user):
+When the user clearly asks to create a savings goal, append this on a new line at the very end of your response:
+[ACTION: ADD_GOAL | <Goal Name> | <Target Amount as plain number e.g. 25000>]
+
+When the user clearly asks to add money to an existing goal, append this on a new line at the very end:
+[ACTION: ADD_TO_GOAL | <Goal Name> | <Amount as plain number>]
+
+Only use these tags when the intent is unambiguous. If there is any doubt, ask one clarifying question first.
+
+VISUAL ELEMENTS (use when genuinely helpful, not by default):
+Show a goal's progress: [UI: PROGRESS | <Goal Name> | <Current Amount> | <Target Amount>]
+Show a single metric: [UI: METRIC | <Label> | <Value>]
+Show a spending breakdown: [UI: CHART | Pie | <Title> | <Label1>:<Value1>, <Label2>:<Value2>]
+Show a comparison: [UI: CHART | Bar | <Title> | <Label1>:<Value1>, <Label2>:<Value2>]
+
+Use Indian formatting: rupees as ₹, amounts in thousands or lakhs where natural.
 """
 
 ML_PATTERN_SECTION_TEMPLATE = """ML Spending Pattern Analysis (Use to personalise advice):
@@ -132,24 +164,52 @@ def _build_ml_section(pattern: Optional[dict]) -> str:
 # ---------------------------------------------------------------------------
 def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
     """
-    Detects [ACTION: ADD_GOAL | Title | Amount] tags, creates the DB record,
+    Detects [ACTION: ADD_GOAL | Title | Amount] or [ACTION: ADD_TO_GOAL | Title | Amount] tags,
+    creates/updates the DB records (including dekho_wallet_balance),
     and strips the tag so the frontend never sees internal instructions.
-
-    Phase E fix: uses the injected `db` session instead of opening a new
-    SessionLocal() which would leak connections.
     """
-    action_match = re.search(
+    import re as _re
+
+    def parse_financial_number(text_val: str) -> float:
+        if not text_val: return 0.0
+        text_val = text_val.lower().replace(',', '').strip()
+        
+        multiplier = 1.0
+        if 'm' in text_val or 'million' in text_val:
+            multiplier = 1000000.0
+        elif 'lakh' in text_val or 'l' in text_val:
+            multiplier = 100000.0
+        elif 'k' in text_val:
+            multiplier = 1000.0
+        
+        numeric_str = _re.sub(r'[^\d.]', '', text_val)
+        if numeric_str:
+            try:
+                return float(numeric_str) * multiplier
+            except:
+                pass
+        return 0.0
+
+    action_taken = False
+
+    # DEBUG: Print first 500 chars of AI response to see if tags are present
+    logger.info(f"🔍 AI RESPONSE (first 500 chars): {response_text[:500]}")
+    logger.info(f"🔍 ACTION tag present: {'[ACTION:' in response_text.upper()}")
+    logger.info(f"🔍 UI PROGRESS tag present: {'[UI: PROGRESS' in response_text.upper() or '[UI:PROGRESS' in response_text.upper()}")
+
+    # 1. Check for ADD_GOAL
+    add_goal_match = re.search(
         r'\[ACTION:\s*ADD_GOAL\s*\|\s*([^|\]]+)\s*\|\s*([^\]]+)\]',
         response_text,
         re.IGNORECASE,
     )
-
-    if action_match:
-        title = action_match.group(1).strip()
+    if add_goal_match:
+        action_taken = True
+        title = add_goal_match.group(1).strip()
         try:
-            amount_str = action_match.group(2).replace(',', '').replace('₹', '').strip()
-            amount = float(amount_str)
-
+            amount = parse_financial_number(add_goal_match.group(2))
+            # Rollback any aborted PostgreSQL transaction from earlier in this session
+            db.rollback()
             new_goal = SavingsGoal(
                 user_id=user_id,
                 name=title,
@@ -161,12 +221,195 @@ def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
             db.commit()
             logger.info(f"✅ Goal created via chat: '{title}' ₹{amount:,.0f} for user {user_id}")
         except Exception as e:
+            db.rollback()
             logger.error(f"❌ Goal creation failed: {e}")
 
-        # Strip the hidden tag from the response
-        return re.sub(r'\[ACTION:[^\]]+\]', '', response_text).strip()
+    # 2. Check for ADD_TO_GOAL
+    add_to_goal_match = re.search(
+        r'\[ACTION:\s*ADD_TO_GOAL\s*\|\s*([^|\]]+)\s*\|\s*([^\]]+)\]',
+        response_text,
+        re.IGNORECASE,
+    )
+    if add_to_goal_match:
+        action_taken = True
+        title = add_to_goal_match.group(1).strip()
+        try:
+            amount = parse_financial_number(add_to_goal_match.group(2))
+            # Rollback any aborted PostgreSQL transaction from earlier in this session
+            db.rollback()
+            goal = db.query(SavingsGoal).filter(
+                SavingsGoal.user_id == user_id,
+                SavingsGoal.name.ilike(f"%{title}%")
+            ).first()
+            
+            if goal:
+                goal.current_amount += amount
+                user = db.query(User).filter(User.id == user_id).first()
+                if user:
+                    user.dekho_wallet_balance += amount
+                db.commit()
+                logger.info(f"✅ Added ₹{amount:,.0f} to goal '{title}' and increased wallet balance for user {user_id}")
+            else:
+                logger.warning(f"⚠️ Goal '{title}' not found to add money")
+        except Exception as e:
+            db.rollback()
+            logger.error(f"❌ Add to goal failed: {e}")
 
-    return response_text
+    # 3. Fallback: Auto-create goal if [UI: PROGRESS | Title | Current | Target] is found
+    ui_progress_match = re.search(
+        r'\[UI:\s*PROGRESS\s*\|\s*([^|\]]+)\s*\|\s*([^|\]]+)\s*\|\s*([^\]]+)\]',
+        response_text,
+        re.IGNORECASE,
+    )
+    if ui_progress_match:
+        title = ui_progress_match.group(1).strip()
+        try:
+            target = parse_financial_number(ui_progress_match.group(3))
+            # Rollback any aborted PostgreSQL transaction from earlier in this session
+            db.rollback()
+            existing_goal = db.query(SavingsGoal).filter(
+                SavingsGoal.user_id == user_id,
+                SavingsGoal.name.ilike(f"%{title}%")
+            ).first()
+
+            if not existing_goal:
+                action_taken = True
+                new_goal = SavingsGoal(
+                    user_id=user_id,
+                    name=title,
+                    target_amount=target,
+                    current_amount=0,
+                    status='active',
+                )
+                db.add(new_goal)
+                db.commit()
+                logger.info(f"✅ Auto-created missing goal from UI tag: '{title}' ₹{target:,.0f}")
+        except Exception as e:
+            db.rollback()
+            logger.error(f"❌ Auto-goal creation failed: {e}")
+
+    # Strip ALL action tags from the final response
+    cleaned_text = re.sub(r'\[ACTION:[^\]]+\]', '', response_text).strip()
+    return cleaned_text, action_taken
+
+
+# ---------------------------------------------------------------------------
+# Last-resort NLP fallback — detects goal creation from user message directly
+# ---------------------------------------------------------------------------
+def _nlp_goal_fallback(user_message: str, ai_response: str, user_id: int, db: Session) -> bool:
+    """
+    If the AI forgot to output an [ACTION: ADD_GOAL] tag, this function tries to
+    detect goal-creation intent from the user's own message and saves it to the DB.
+    Returns True if a goal was created.
+    """
+    import re as _re
+
+    msg_lower = user_message.lower()
+
+    # Check if user's message has goal-creation intent keywords
+    goal_keywords = ['save', 'saving', 'goal', 'target', 'fund', 'buy', 'purchase', 'want to get', 'saving for']
+    create_keywords = ['create', 'set', 'add', 'make', 'start', 'new', 'help me', 'i want to', 'i need to', 'plan']
+
+    has_goal_intent = any(kw in msg_lower for kw in goal_keywords)
+    has_create_intent = any(kw in msg_lower for kw in create_keywords)
+
+    logger.info(f"🔍 NLP fallback: user_msg='{user_message[:100]}' goal_intent={has_goal_intent} create_intent={has_create_intent}")
+
+    if not (has_goal_intent and has_create_intent):
+        return False
+
+    # Try to extract an amount from the user's message
+    # Strategy: find ALL numbers and pick the LARGEST one with a > 500 threshold
+    # (This avoids picking "6 months" instead of "25000")
+    amount = 0.0
+    
+    # First try explicit multiplier patterns
+    lakh_m = _re.search(r'(\d+(?:\.\d+)?)\s*(?:lakh|lakhs)\b', msg_lower)
+    k_m = _re.search(r'(\d+(?:\.\d+)?)\s*k\b', msg_lower)
+    
+    if lakh_m:
+        amount = float(lakh_m.group(1)) * 100000
+    elif k_m:
+        amount = float(k_m.group(1)) * 1000
+    else:
+        # Find all plain numbers and pick the largest one that's > 500
+        all_numbers = _re.findall(r'\b(\d[\d,]*(?:\.\d+)?)\b', msg_lower)
+        candidates = []
+        for n in all_numbers:
+            try:
+                val = float(n.replace(',', ''))
+                if val > 500:
+                    candidates.append(val)
+            except:
+                pass
+        if candidates:
+            amount = max(candidates)
+
+    logger.info(f"🔍 NLP fallback: extracted amount={amount}")
+
+    if amount <= 0:
+        logger.info("NLP fallback: goal intent detected but no valid amount found")
+        return False
+
+    # Try to extract a goal name from the user's message
+    # Look for noun phrases after "for a/an/the", "to buy", "to get", "for my"
+    name_patterns = [
+        r'(?:for (?:a|an|the|my)\s+)([a-z][a-z\s]{2,30}?)(?:\s+(?:for|in|over|within|by|target|goal)|\s*$)',
+        r'(?:to (?:buy|get|purchase)\s+(?:a|an|the|my)?\s*)([a-z][a-z\s]{2,30}?)(?:\s+(?:for|in|over|within|by)|\s*$)',
+        r'(?:saving for\s+(?:a|an|the|my)?\s*)([a-z][a-z\s]{2,30}?)(?:\s+(?:for|in|over|within|by)|\s*$)',
+        r'(?:goal\s+(?:for|of)\s+(?:a|an|the|my)?\s*)([a-z][a-z\s]{2,30}?)(?:\s+(?:for|in|over|within|by)|\s*$)',
+        r'(?:a\s+(?:new\s+)?)([a-z][a-z\s]{2,25}?)(?:\s+(?:goal|fund|target|purchase|savings?)|\s*$)',
+    ]
+
+    goal_name = None
+    for pattern in name_patterns:
+        m = _re.search(pattern, msg_lower)
+        if m:
+            candidate = m.group(1).strip().rstrip('.,!?')
+            # Filter out generic words
+            if candidate not in ('goal', 'saving', 'savings', 'money', 'fund', 'target', 'amount', 'months', 'years'):
+                goal_name = candidate.title()
+                break
+
+    if not goal_name:
+        # As last resort, look for capitalized nouns in the user message
+        words = user_message.split()
+        for word in words:
+            if word[0].isupper() and len(word) > 3 and word.lower() not in ('create', 'goal', 'help', 'save', 'saving', 'month', 'year', 'the', 'for', 'next', 'that'):
+                goal_name = word.title()
+                break
+
+    if not goal_name:
+        goal_name = "Savings Goal"
+
+    # Check if this goal already exists for this user
+    existing = db.query(SavingsGoal).filter(
+        SavingsGoal.user_id == user_id,
+        SavingsGoal.name.ilike(f"%{goal_name}%")
+    ).first()
+
+    if existing:
+        logger.info(f"NLP fallback: goal '{goal_name}' already exists, skipping creation")
+        return False
+
+    try:
+        # Rollback any aborted PostgreSQL transaction from earlier in this session
+        db.rollback()
+        new_goal = SavingsGoal(
+            user_id=user_id,
+            name=goal_name,
+            target_amount=amount,
+            current_amount=0,
+            status='active',
+        )
+        db.add(new_goal)
+        db.commit()
+        logger.info(f"✅ NLP fallback created goal: '{goal_name}' target=Rs {amount:,.0f} for user {user_id}")
+        return True
+    except Exception as e:
+        logger.error(f"NLP fallback goal creation failed: {e}")
+        db.rollback()
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +478,140 @@ async def simple_chat_endpoint(
 
 
 # ---------------------------------------------------------------------------
+# GET /chat/history  — Phase 6: Session Memory
+# Returns the user's last N chat messages (chronological order)
+# ---------------------------------------------------------------------------
+@router.get("/chat/history")
+def get_chat_history(
+    limit: int = 30,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Returns up to `limit` most recent chat messages for the current user,
+    ordered chronologically (oldest first) so the frontend can replay them.
+    """
+    rows = (
+        db.query(ChatSession)
+        .filter(ChatSession.user_id == current_user.id)
+        .order_by(ChatSession.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    # Reverse so oldest message is first (correct display order)
+    rows = list(reversed(rows))
+    return [
+        {
+            "role": r.role,
+            "content": r.content,
+            "id": str(r.id),
+            "timestamp": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in rows
+    ]
+
+
+# ---------------------------------------------------------------------------
+# DELETE /chat/history  — clear session memory for the current user
+# ---------------------------------------------------------------------------
+@router.delete("/chat/history")
+def clear_chat_history(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Clears all stored chat history for the current user."""
+    try:
+        db.rollback()
+        deleted = db.query(ChatSession).filter(ChatSession.user_id == current_user.id).delete()
+        db.commit()
+        logger.info(f"🗑️ Cleared {deleted} history messages for user {current_user.id}")
+        return {"deleted": deleted}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to clear history: {str(e)}")
+
+
+# ---------------------------------------------------------------------------
+# POST /chat/action  — dedicated deterministic action endpoint (Phase 3)
+# Bypasses AI-generated tags entirely. Frontend calls this directly.
+# ---------------------------------------------------------------------------
+@router.post("/chat/action", response_model=ChatActionResponse)
+async def chat_action_endpoint(
+    request: ChatActionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Dedicated endpoint for goal creation and goal money additions.
+    Called directly by the frontend after parsing user intent —
+    does NOT depend on the AI producing correct tags.
+    """
+    try:
+        db.rollback()  # Clear any stale PostgreSQL transaction state
+
+        if request.action_type == 'ADD_GOAL':
+            # Prevent duplicates: check if goal with same name already exists
+            existing = db.query(SavingsGoal).filter(
+                SavingsGoal.user_id == current_user.id,
+                SavingsGoal.name.ilike(f"%{request.goal_name}%")
+            ).first()
+
+            if existing:
+                logger.info(f"Action endpoint: goal '{request.goal_name}' already exists for user {current_user.id}")
+                return ChatActionResponse(
+                    success=True,
+                    message=f"Goal '{existing.name}' already exists.",
+                    goal_id=existing.id,
+                )
+
+            new_goal = SavingsGoal(
+                user_id=current_user.id,
+                name=request.goal_name,
+                target_amount=request.amount,
+                current_amount=0,
+                status='active',
+            )
+            db.add(new_goal)
+            db.commit()
+            db.refresh(new_goal)
+            logger.info(f"✅ Action endpoint: created goal '{request.goal_name}' ₹{request.amount:,.0f} for user {current_user.id}")
+            return ChatActionResponse(
+                success=True,
+                message=f"Goal '{request.goal_name}' created with a target of ₹{request.amount:,.0f}.",
+                goal_id=new_goal.id,
+            )
+
+        elif request.action_type == 'ADD_TO_GOAL':
+            goal = db.query(SavingsGoal).filter(
+                SavingsGoal.user_id == current_user.id,
+                SavingsGoal.name.ilike(f"%{request.goal_name}%")
+            ).first()
+
+            if not goal:
+                return ChatActionResponse(
+                    success=False,
+                    message=f"No goal matching '{request.goal_name}' found.",
+                )
+
+            goal.current_amount = (goal.current_amount or 0) + request.amount
+            user = db.query(User).filter(User.id == current_user.id).first()
+            if user:
+                user.dekho_wallet_balance = (user.dekho_wallet_balance or 0) + request.amount
+            db.commit()
+            logger.info(f"✅ Action endpoint: added ₹{request.amount:,.0f} to '{goal.name}' for user {current_user.id}")
+            return ChatActionResponse(
+                success=True,
+                message=f"₹{request.amount:,.0f} added to '{goal.name}'.",
+                goal_id=goal.id,
+            )
+
+    except Exception as e:
+        db.rollback()
+        logger.error(f"❌ Action endpoint error: {e}")
+        raise HTTPException(status_code=500, detail=f"Action failed: {str(e)}")
+
+
+# ---------------------------------------------------------------------------
 # Core logic — shared by both endpoints
 # ---------------------------------------------------------------------------
 async def _process_chat(
@@ -279,7 +656,12 @@ async def _process_chat(
         ai_response_text = generate_chat_response(system_prompt, chat_history, user_message)
 
         # 6. Process action tags — uses injected db session (Phase E fix: no connection leak)
-        processed_response_text = process_action_tags(ai_response_text, current_user.id, db)
+        processed_response_text, action_taken = process_action_tags(ai_response_text, current_user.id, db)
+
+        # 6b. LAST-RESORT FALLBACK: If the AI didn't produce an ACTION tag but the user
+        #     clearly asked to create a goal, parse it directly from the user message.
+        if not action_taken:
+            action_taken = _nlp_goal_fallback(user_message, ai_response_text, current_user.id, db)
 
         # 7. Build source citations
         sources = []
@@ -301,6 +683,25 @@ async def _process_chat(
                 type=s_type,
             ))
 
+        # 8. Persist the exchange to DB for session memory (Phase 6)
+        try:
+            db.rollback()  # Clear any stale state before writing
+            db.add(ChatSession(
+                user_id=current_user.id,
+                role='user',
+                content=user_message,
+            ))
+            db.add(ChatSession(
+                user_id=current_user.id,
+                role='assistant',
+                content=processed_response_text,
+            ))
+            db.commit()
+            logger.info(f"💾 Session: persisted 2 messages for user {current_user.id}")
+        except Exception as persist_err:
+            db.rollback()
+            logger.warning(f"⚠️ Session persist failed (non-fatal): {persist_err}")
+
         return ChatResponse(
             message=ChatMessage(
                 role="assistant",
@@ -308,7 +709,8 @@ async def _process_chat(
                 id=str(uuid4()),
                 timestamp=datetime.now(timezone.utc).isoformat(),
                 sources=sources,
-            )
+            ),
+            action_taken=action_taken
         )
 
     except Exception as e:

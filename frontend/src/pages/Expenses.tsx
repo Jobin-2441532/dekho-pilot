@@ -4,11 +4,7 @@ import { useState, useEffect } from 'react'
 import { Filter, Search, Edit2, Trash2, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
-import { useQuery } from '@tanstack/react-query'
 import { SkeletonCard } from '../components/ui/LoadingState'
-import { ExpenseInsightCard } from '../components/expenses/ExpenseInsightCard'
-import { TotalOutflowBadge } from '../components/expenses/TotalOutflowBadge'
-import { ReviewNudge } from '../components/expenses/ReviewNudge'
 import api from '../lib/api'
 import styles from './Expenses.module.css'
 
@@ -122,6 +118,8 @@ export default function Expenses() {
   const [allTransactions, setAllTransactions] = useState<any[]>([])
   // Month filter — default to CURRENT month; user can switch to earlier months via dropdown
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const saved = sessionStorage.getItem('dekho_selected_month')
+    if (saved) return saved
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   })
@@ -139,21 +137,9 @@ export default function Expenses() {
 
   // Dynamic heatmap data
   const [heatmapData, setHeatmapData] = useState<HeatmapCell[][]>([])
-
-  const [selYear, selMon] = selectedMonth.split('-').map(Number)
-  const { data: insight, isLoading: isInsightLoading, error: insightError } = useQuery({
-    queryKey: ['expenses-insight', selectedMonth],
-    queryFn: async () => {
-      const result = await api.get<any>('/api/v1/expenses/insight', { month: selMon, year: selYear })
-      console.log('[Insight API] response:', result)
-      return result
-    },
-    enabled: !!selectedMonth,
-    retry: false
-  })
-
-  // Debug: log any API error
-  if (insightError) console.error('[Insight API] error:', insightError)
+  
+  // Dynamic outflow history
+  const [outflowHistory, setOutflowHistory] = useState<{label: string, total: number, height: number}[]>([])
 
   const loadData = () => {
     setLoading(true)
@@ -201,6 +187,26 @@ export default function Expenses() {
     const total = monthDebits.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
     setMonthTotal(total)
 
+    sessionStorage.setItem('dekho_selected_month', selectedMonth)
+
+    // Calculate last 6 months history for outflow chart
+    const [selYear, selMon] = selectedMonth.split('-').map(Number)
+    if (selYear && selMon) {
+      const historyData = []
+      const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+      for (let i = 5; i >= 0; i--) {
+        let m = selMon - i
+        let y = selYear
+        if (m <= 0) { m += 12; y -= 1; }
+        const monthStr = `${y}-${String(m).padStart(2, '0')}`
+        const totalForMonth = allTransactions.filter(tx => String(tx.date || '').startsWith(monthStr) && tx.direction === 'debit').reduce((s, t) => s + (t.amount ?? 0), 0)
+        historyData.push({ label: monthNames[m - 1], total: totalForMonth })
+      }
+      const maxTotal = Math.max(...historyData.map(d => d.total), 1)
+      const normalizedHistory = historyData.map(d => ({ ...d, height: (d.total / maxTotal) * 100 }))
+      setOutflowHistory(normalizedHistory)
+    }
+
     // Payment methods breakdown
     const pmTotals: Record<string, number> = {}
     monthDebits.forEach((tx: any) => {
@@ -224,7 +230,6 @@ export default function Expenses() {
     )
 
     // Heatmap for selected month
-    const [selYear, selMon] = selectedMonth.split('-').map(Number)
     if (!selYear || !selMon) return
     const firstDayOfMonth = new Date(selYear, selMon - 1, 1).getDay()
     const daysInMonth     = new Date(selYear, selMon, 0).getDate()
@@ -324,6 +329,12 @@ export default function Expenses() {
       }
       return sum
   }, 0)
+  
+  const subscriptionsAmount = transactions.reduce((sum, tx) => tx.category === "Subscriptions" ? sum + (tx.amount || 0) : sum, 0)
+  const emiBillsAmount = transactions.reduce((sum, tx) => ["Loan EMI", "Bills", "Utilities", "Insurance"].includes(tx.category) ? sum + (tx.amount || 0) : sum, 0)
+  const subPct = committedSpend > 0 ? (subscriptionsAmount / committedSpend) * 100 : 0
+  const emiPct = committedSpend > 0 ? (emiBillsAmount / committedSpend) * 100 : 0
+
   const topCat = pieData.length > 0 ? pieData[0] : { category: 'None', amount: 0 }
   const topCatPct = monthTotal > 0 ? Math.round((topCat.amount / monthTotal) * 100) : 0
 
@@ -366,73 +377,57 @@ export default function Expenses() {
         <div className={styles.outflowCard}>
           <div className={styles.outflowHeader}>
             <span className={styles.outflowLabel}>TOTAL OUTFLOW</span>
-            {insight && (
-              <TotalOutflowBadge 
-                percent={insight.vs_last_month_percent} 
-                direction={insight.vs_last_month_direction} 
-              />
-            )}
+            <div className={styles.trendBadge}>
+              <span className={styles.trendIcon}>↗</span> 12% higher
+            </div>
           </div>
           <div className={styles.outflowAmounts}>
             <p className={styles.bigAmount}>₹{monthTotal.toLocaleString('en-IN')}</p>
             <p className={styles.bigAmountSub}>Spent this month</p>
           </div>
           <div className={styles.barChart}>
-            {(() => {
-              // Calculate last 6 months relative to selectedMonth
-              const [currY, currM] = selectedMonth.split('-').map(Number)
-              const bars = []
-              for (let i = 5; i >= 0; i--) {
-                const d = new Date(currY, currM - 1 - i, 1)
-                const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-                const label = d.toLocaleString('en-IN', { month: 'short' }).toUpperCase()
-                
-                const mTotal = allTransactions
-                  .filter(tx => String(tx.date || '').startsWith(ym) && tx.direction === 'debit')
-                  .reduce((sum, tx) => sum + (tx.amount || 0), 0)
-                
-                bars.push({ ym, label, amount: mTotal })
-              }
-              
-              const maxAmt = Math.max(...bars.map(b => b.amount), 1)
-              
-              return bars.map((bar, i) => {
-                const h = (bar.amount / maxAmt) * 100
-                const isActive = bar.ym === selectedMonth
-                return (
-                  <div key={i} className={styles.barCol} onClick={() => setSelectedMonth(bar.ym)} style={{ cursor: 'pointer' }}>
-                    <div
-                      className={styles.bar}
-                      style={{ 
-                        height: `${Math.max(h, 5)}%`, 
-                        background: isActive ? 'var(--color-primary)' : 'var(--bg-surface-highest)',
-                        opacity: bar.amount === 0 ? 0.3 : 1
-                      }}
-                    />
-                    <span className={`${styles.barLabel} ${isActive ? styles.barLabelActive : ''}`}>
-                      {bar.label}
-                    </span>
-                  </div>
-                )
-              })
-            })()}
+            {outflowHistory.map((h, i) => (
+                <div key={i} className={styles.barCol}>
+                  <div
+                    className={styles.bar}
+                    style={{ height: `${h.height}%`, background: i === 5 ? 'var(--color-primary)' : 'var(--bg-surface-highest)' }}
+                    title={`₹${h.total.toLocaleString('en-IN')}`}
+                  />
+                  <span className={styles.barLabel}>{h.label}</span>
+                </div>
+            ))}
           </div>
         </div>
       </div>
 
-
       {/* ── AI Insight card ── */}
       <div className={styles.px}>
-        <ExpenseInsightCard
-          isLoading={isInsightLoading}
-          mood={insight?.insight_mood || (insightError ? 'empty' : 'balanced')}
-          headline={insight?.headline || (insightError ? 'Could not load insight' : (monthTotal > 0 ? 'Analyzing your habits...' : 'A fresh start.'))}
-          subtext={insight?.subtext || (insightError ? String(insightError) : (monthTotal > 0 ? "We're looking at your spending patterns for the month." : "You haven't recorded any spending yet this month."))}
-          potentialSavings={insight?.potential_breathing_room || 0}
-        />
+        <div className={styles.aiCard}>
+          <div className={styles.aiWatermark}>🍴</div>
+          <p className={styles.aiCardLabel}>INSIGHT</p>
+          <div className={styles.aiCardContent}>
+            <p className={styles.aiCardTitle}>
+              {topCat.category} is your highest expense (₹{(topCat.amount || 0).toLocaleString('en-IN')})
+            </p>
+            <div className={styles.aiCardBadgeWrap}>
+              <span className={styles.aiCardBadge}>+{topCatPct}%</span>
+            </div>
+          </div>
+          <p className={styles.aiCardSub}>
+            Try reducing Swiggy orders by 15% to save ₹1,200 this month.
+          </p>
+
+          <div className={styles.aiTarget}>
+            <div className={styles.aiTargetHeader}>
+              <span>TARGET SAVINGS</span>
+              <span>₹1,200</span>
+            </div>
+            <div className={styles.aiTargetTrack}>
+              <div className={styles.aiTargetFill} style={{ width: '25%' }} />
+            </div>
+          </div>
+        </div>
       </div>
-
-
 
       {/* ── Insight Tabs + Categories ── */}
       <div className={styles.px}>
@@ -553,20 +548,6 @@ export default function Expenses() {
                   <span>Savings Rate</span>
                   <span style={{ color: "var(--color-secondary)", fontWeight: 700 }}>{dashboardSummary?.savings_rate_pct || 0}%</span>
                 </div>
-                
-                {insight?.savings_rate_line && (
-                  <p style={{ 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: '11px', 
-                    fontStyle: 'italic', 
-                    color: '#6B3F1F', 
-                    opacity: 0.8, 
-                    margin: '0 0 8px 0' 
-                  }}>
-                    {insight.savings_rate_line}
-                  </p>
-                )}
-
                 <div style={{ height: 8, background: "var(--bg-surface-high)", borderRadius: 4, overflow: "hidden" }}>
                   <div style={{ height: "100%", borderRadius: 4, background: "var(--color-secondary)", width: `${Math.max(0, Math.min(100, dashboardSummary?.savings_rate_pct || 0))}%`, transition: "width 0.6s ease" }} />
                 </div>
@@ -592,28 +573,36 @@ export default function Expenses() {
               <div className={styles.progressRow}>
                 <div className={styles.progressLabels}>
                   <span>Subscriptions</span>
-                  <span>₹4,500</span>
+                  <span>₹{subscriptionsAmount.toLocaleString('en-IN')}</span>
                 </div>
                 <div className={styles.progressTrack}>
-                  <div className={styles.progressFillSub} style={{ width: '45%' }} />
+                  <div className={styles.progressFillSub} style={{ width: `${subPct}%` }} />
                 </div>
               </div>
               <div className={styles.progressRow}>
                 <div className={styles.progressLabels}>
                   <span>EMI / Bills</span>
-                  <span>₹8,000</span>
+                  <span>₹{emiBillsAmount.toLocaleString('en-IN')}</span>
                 </div>
                 <div className={styles.progressTrack}>
-                  <div className={styles.progressFillEmi} style={{ width: '70%' }} />
+                  <div className={styles.progressFillEmi} style={{ width: `${emiPct}%` }} />
                 </div>
               </div>
             </div>
           </div>
 
-          <ReviewNudge 
-            count={insight?.review_count || 0} 
-            onClick={() => navigate('/review')} 
-          />
+          <div className={styles.reviewCard} onClick={() => navigate('/review')}>
+            <div className={styles.reviewLeft}>
+              <div className={styles.reviewIcon}>📝</div>
+              <div>
+                <div className={styles.reviewDots}>
+                  <span /> <span /> <span />
+                </div>
+                <p className={styles.reviewText}>{reviewCount} transaction{reviewCount !== 1 ? 's' : ''} need review</p>
+              </div>
+            </div>
+            <div className={styles.reviewChevron}>›</div>
+          </div>
         </div>
       </div>
 

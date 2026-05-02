@@ -78,6 +78,5 @@
 .pulseBarFill  { background: #fff; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
 .pulseSafe     { font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
 .pulseSubtext  { font-size: 12px; opacity: 0.65; font-style: italic; }
-.goalHeadline  { font-size: 18px; font-weight: 700; color: #1A1A1A; margin-bottom: 12px; }
+.goalHeadline  { font-size: 18px; font-weight: 700; color: var(--color-on-surface); margin-bottom: 12px; }
 .catMicroInsight { font-family: var(--font-body); font-size: 12px; font-style: italic; color: #9B7E6A; margin-top: 6px; line-height: 1.4; }
-

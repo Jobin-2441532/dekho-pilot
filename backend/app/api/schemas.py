@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 class SourceItem(BaseModel):
     label: str
@@ -18,3 +18,14 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     message: ChatMessage
+    action_taken: Optional[bool] = False
+
+class ChatActionRequest(BaseModel):
+    action_type: Literal['ADD_GOAL', 'ADD_TO_GOAL']
+    goal_name: str
+    amount: float
+
+class ChatActionResponse(BaseModel):
+    success: bool
+    message: str
+    goal_id: Optional[int] = None

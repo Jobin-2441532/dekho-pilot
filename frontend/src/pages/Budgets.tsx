@@ -250,6 +250,9 @@ export default function Budgets() {
 
   useEffect(() => {
     loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('dekho_data_updated', handleUpdate)
+    return () => window.removeEventListener('dekho_data_updated', handleUpdate)
   }, [])
 
   const fmt = (n: number | null | undefined) => {
@@ -281,9 +284,10 @@ export default function Budgets() {
             <div className={styles.pulseLabel} style={{ margin: 0 }}>MONTHLY PULSE</div>
             <button 
               onClick={() => { setNewBudget(totalBudget.toString()); setIsEditingBudget(true); }}
-              style={{ background: 'none', border: 'none', color: '#FFF', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}
+              style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+              aria-label="Edit Budget"
             >
-              EDIT BUDGET
+              <Edit2 size={16} />
             </button>
           </div>
           <div className={styles.pulseHeadline}>{PULSE_HEADLINES[pulseMood]}</div>

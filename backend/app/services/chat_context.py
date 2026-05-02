@@ -10,15 +10,47 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from app.services.feature_service import feature_service
+from app.models import Transaction, SavingsGoal
+
+
+def _check_data_completeness(db: Session, user_id: int) -> dict:
+    """
+    Counts available data for a user.
+    Returns a dict with counts and a boolean 'is_sparse' flag.
+    """
+    transaction_count = db.query(Transaction).filter(
+        Transaction.user_id == user_id
+    ).count()
+
+    goal_count = db.query(SavingsGoal).filter(
+        SavingsGoal.user_id == user_id,
+        SavingsGoal.status == 'active'
+    ).count()
+
+    # Sparse = fewer than 5 transactions (new user or very little data)
+    is_sparse = transaction_count < 5
+
+    return {
+        'transaction_count': transaction_count,
+        'goal_count': goal_count,
+        'is_sparse': is_sparse,
+    }
 
 
 def build_chat_context(db: Session, user_id: int) -> str:
     """
     Returns a richly formatted context string for the chatbot system prompt.
     Pulls profile, monthly features, and goals from the FeatureService.
+    Includes a data completeness check to prevent hallucination on sparse data.
     """
     today = date.today()
     current_month = today.strftime("%Y-%m")
+
+    # --- Phase 5: Data completeness check ---
+    try:
+        completeness = _check_data_completeness(db, user_id)
+    except Exception:
+        completeness = {'transaction_count': 0, 'goal_count': 0, 'is_sparse': True}
 
     try:
         profile = feature_service.compute_user_profile(db, user_id, months=3)
@@ -31,6 +63,17 @@ def build_chat_context(db: Session, user_id: int) -> str:
         monthly = {}
 
     ctx_lines = []
+
+    # Inject sparse data warning FIRST so the AI reads it before any numbers
+    if completeness['is_sparse']:
+        ctx_lines.append("=== DATA WARNING ===")
+        ctx_lines.append(
+            f"This user has only {completeness['transaction_count']} transaction(s) on record. "
+            "Financial data is limited. Do not make confident statements about spending patterns. "
+            "Do not invent numbers or trends. If asked about spending history, say clearly that "
+            "there is not enough data to give a reliable answer yet."
+        )
+        ctx_lines.append("")
 
     # --- User Overview ---
     ctx_lines.append("=== USER FINANCIAL PROFILE ===")
@@ -75,10 +118,10 @@ def build_chat_context(db: Session, user_id: int) -> str:
     if budget_util:
         ctx_lines.append("\nBudget Utilization:")
         for cat, data in budget_util.items():
-            status = "⚠️ Over" if data["pct"] > 100 else "✅ OK"
+            status = "Over budget" if data["pct"] > 100 else "On track"
             ctx_lines.append(
                 f"  • {cat}: ₹{data['spent']:,.0f} / ₹{data['budget']:,.0f} "
-                f"({data['pct']:.0f}%) {status}"
+                f"({data['pct']:.0f}%) — {status}"
             )
 
     # --- Goals ---
@@ -90,6 +133,9 @@ def build_chat_context(db: Session, user_id: int) -> str:
                 f"  • {g['name']}: ₹{g['current']:,.0f} / ₹{g['target']:,.0f} "
                 f"({g['progress_pct']:.0f}%) — Deadline: {g['deadline']}"
             )
+    else:
+        ctx_lines.append("\n=== ACTIVE SAVINGS GOALS ===")
+        ctx_lines.append("  No active savings goals yet.")
 
     # --- Spending Trend ---
     trend = profile.get("spending_trend", [])
