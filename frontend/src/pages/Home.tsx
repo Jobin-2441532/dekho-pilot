@@ -6,6 +6,7 @@ import { Settings } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
 import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
+import { ReflectionCard } from '../components/ui/ReflectionCard'
 import styles from './Home.module.css'
 
 const API = import.meta.env.VITE_API_BASE_URL ?? `http://${window.location.hostname}:8000`
@@ -176,23 +177,9 @@ export default function Home() {
         </button>
       </div>
 
-      {/* HERO CARD — dynamic from insight engine, with static fallback */}
+      {/* HERO CARD — dynamic mood-aware ReflectionCard */}
       <div className={styles.px}>
-        <div className={styles.heroCard}>
-          <p className={styles.heroCategory}>TODAY'S REFLECTION</p>
-          <div className={styles.heroHeadline}>
-            {insights?.home?.hero_card?.headline ?? narrativeText}
-          </div>
-          <div className={styles.heroSubtext}>
-            {insights?.home?.hero_card?.subtext ?? narrativeSub}
-          </div>
-          {insights?.home?.hero_card?.detail && (
-            <div className={styles.heroDetail}>{insights.home.hero_card.detail}</div>
-          )}
-          <button className={styles.tapToSee}>
-            {insights?.home?.hero_card?.tap_label ?? 'See breakdown →'}
-          </button>
-        </div>
+        <ReflectionCard />
       </div>
 
       {/* ── 2-col Mini Stats ── */}

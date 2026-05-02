@@ -1,0 +1,122 @@
+.aiCard {
+  background: #6B3F1F; /* Default Dekho Brown */
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.aiWatermark {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  font-size: 140px;
+  color: white;
+  opacity: 0.1;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.aiCardLabel {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.aiCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aiCardTitle {
+  font-family: var(--font-headline);
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.3;
+  z-index: 1;
+  margin: 0;
+}
+
+.aiCardSub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  z-index: 1;
+  margin: 0;
+}
+
+.aiTarget {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  z-index: 1;
+}
+
+.aiTargetHeader {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.aiTargetTrack {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 100px;
+  width: 100%;
+}
+
+.aiTargetFill {
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: 100px;
+  opacity: 0.9;
+}
+
+/* Skeleton Effect */
+.skeleton {
+  position: relative;
+  color: transparent !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.2) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

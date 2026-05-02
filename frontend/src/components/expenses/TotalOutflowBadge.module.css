@@ -1,0 +1,31 @@
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.icon {
+  font-size: 12px;
+}
+
+.up {
+  background: #FFF9E6; /* Muted amber */
+  color: #B28B00;
+}
+
+.down {
+  background: #F0F9F4; /* Soft green */
+  color: #4A8C6F;
+}
+
+.flat {
+  background: #F2F2F2; /* Neutral grey */
+  color: #8C8C8C;
+}

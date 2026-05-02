@@ -109,8 +109,89 @@ export default function Budgets() {
     },
   ])
 
-  const narrativeText = totalSpent > totalBudget ? 'You have exceeded your budget' : 'Cruising smoothly this month'
-  const narrativeSub = totalSpent > totalBudget ? 'You might need to dip into savings to cover this month.' : 'Your lifestyle spending is slightly higher than usual, but covered by your buffer.'
+  // ── Monthly Pulse Mood ──────────────────────────────────────────────────
+  const now2 = new Date()
+  const daysInMonth = new Date(now2.getFullYear(), now2.getMonth() + 1, 0).getDate()
+  const daysPassed = now2.getDate()
+  const monthPct = (daysPassed / daysInMonth) * 100
+  const spendPct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
+
+  const getPulseMood = () => {
+    if (spendPct > 100) return 'stretched'
+    if (spendPct > 85 && daysPassed > 5) return 'tight'
+    if (spendPct > 70) return 'mindful'
+    if (spendPct < 20 && monthPct > 40) return 'underspent'
+    if (spendPct >= 50 && spendPct <= 70 && monthPct >= 50) return 'on_track'
+    return 'cruising'
+  }
+  const pulseMood = getPulseMood()
+  const PULSE_HEADLINES: Record<string, string> = {
+    cruising:   'Cruising smoothly this month.',
+    on_track:   'Pacing well. Right where you should be.',
+    mindful:    'Getting into the second half. Stay mindful.',
+    tight:      'The month is tightening up a little.',
+    stretched:  'A stretched month. It happens — reset is coming.',
+    underspent: "You're running very lean this month."
+  }
+  const PULSE_SUBS: Record<string, string> = {
+    cruising:   `₹${buffer.toLocaleString('en-IN')} remaining — you're well in control.`,
+    on_track:   'Spending is matching the calendar. Keep the rhythm.',
+    mindful:    `₹${buffer.toLocaleString('en-IN')} left for the rest of the month. Conscious choices from here.`,
+    tight:      `₹${buffer.toLocaleString('en-IN')} to work with. Small decisions matter now.`,
+    stretched:  'Over budget this month. Every month is a new page — this one taught you something.',
+    underspent: 'Running lean. Either a quiet month or savings are winning — both are fine.'
+  }
+
+  // ── Category Micro-insights ──────────────────────────────────────────────
+  const getCatInsight = (label: string, pct: number): string => {
+    if (label === 'Essentials') {
+      if (pct === 0) return 'Core needs covered. The foundation is solid.'
+      if (pct < 50) return 'Core needs covered. The foundation is solid.'
+      if (pct < 80) return 'Essentials are tracking well this month.'
+      if (pct < 100) return 'Most of your essentials budget is used — expected at this point.'
+      return 'Essentials ran over this month. These things happen.'
+    }
+    if (label === 'Lifestyle') {
+      if (pct === 0) return 'No lifestyle spend yet — saving it for when it matters.'
+      if (pct < 50) return 'Light on lifestyle this month. That\'s perfectly fine.'
+      if (pct < 80) return 'Enjoying life within your plan. Nice balance.'
+      if (pct < 100) return 'Lifestyle budget is mostly used — the fun happened.'
+      return 'A little over on lifestyle. Worth it sometimes.'
+    }
+    if (label === 'Future-oriented') {
+      if (pct === 0) return 'Future-you is waiting. No rush — but worth starting.'
+      if (pct < 50) return 'A start has been made. Small steps compound.'
+      if (pct < 80) return 'Halfway to your goals commitment. Keep going.'
+      if (pct < 100) return 'Strong progress on future goals this month.'
+      return 'Future-oriented budget fully allocated. Remarkable.'
+    }
+    if (label === 'Buffer') {
+      if (pct === 0) return 'Buffer untouched — that\'s the goal of a buffer.'
+      if (pct < 60) return 'A little dipped into the buffer. That\'s what it\'s there for.'
+      return 'Buffer has absorbed some pressure this month. It did its job.'
+    }
+    return ''
+  }
+
+  // ── Goal Mood ────────────────────────────────────────────────────────────
+  const getGoalMood = (pct: number, deadline: string | null) => {
+    if (!deadline) {
+      if (pct < 15) return 'Every journey starts somewhere. You\'ve started.'
+      if (pct < 40) return 'The foundation is being laid. Keep adding to it.'
+      if (pct < 65) return 'Real momentum now. This goal is becoming real.'
+      if (pct < 85) return 'You\'re in the home stretch. The end is visible.'
+      return 'Almost there. One of those rare moments — stay with it.'
+    }
+    const daysLeft = Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000)
+    const expectedPct = daysLeft < 0 ? 100 : Math.max(0, 100 - (daysLeft / 365) * 100)
+    if (pct < expectedPct - 10) return 'A little behind the pace — but the goal is still yours.'
+    if (pct > expectedPct + 10) return 'Ahead of schedule. You\'re moving faster than you planned.'
+    if (pct < 15) return 'Every journey starts somewhere. You\'ve started.'
+    if (pct < 40) return 'The foundation is being laid. Keep adding to it.'
+    if (pct < 65) return 'Real momentum now. This goal is becoming real.'
+    if (pct < 85) return 'You\'re in the home stretch. The end is visible.'
+    return 'Almost there. One of those rare moments — stay with it.'
+  }
 
   const loadData = () => {
     Promise.all([
@@ -205,31 +286,18 @@ export default function Budgets() {
               EDIT BUDGET
             </button>
           </div>
-          <div className={styles.pulseHeadline}>
-            {totalSpent > totalBudget
-              ? 'Over budget. The awareness matters.'
-              : totalSpent > totalBudget * 0.85
-              ? 'Spending high — stay mindful.'
-              : 'Cruising smoothly this month.'}
-          </div>
+          <div className={styles.pulseHeadline}>{PULSE_HEADLINES[pulseMood]}</div>
           <div className={styles.pulseMeta}>
             <span>SPENT: {fmt(totalSpent)}</span>
             <span>BUDGET: {fmt(totalBudget)}</span>
           </div>
           <div className={styles.pulseBar}>
-            <div
-              className={styles.pulseBarFill}
-              style={{ width: `${overallPct}%` }}
-            />
+            <div className={styles.pulseBarFill} style={{ width: `${overallPct}%` }} />
           </div>
           <div className={styles.pulseSafe}>
             Safe to spend: <strong>{fmt(buffer)}</strong>
           </div>
-          <div className={styles.pulseSubtext}>
-            {totalSpent > totalBudget
-              ? `Over by ${fmt(totalSpent - totalBudget)}. Dekho will help you understand what drove it.`
-              : `₹${(buffer).toLocaleString('en-IN')} remaining — you're well in control.`}
-          </div>
+          <div className={styles.pulseSubtext}>{PULSE_SUBS[pulseMood]}</div>
         </div>
       </div>
 
@@ -278,6 +346,7 @@ export default function Budgets() {
                     }}
                   />
                 </div>
+                <p className={styles.catMicroInsight}>{getCatInsight(cat.label, pct)}</p>
                 {isExpanded && (
                   <div className={styles.subCatList}>
                     {cat.subcategories.map((sub: any) => (
@@ -300,7 +369,7 @@ export default function Budgets() {
           <p className={styles.sectionTitle}>Your Goals</p>
           <button className={styles.addBtn} onClick={() => setIsAddingGoal(true)} aria-label="Add goal">
             <Plus size={14} />
-            Add Goal
+            + New Goal
           </button>
         </div>
 
@@ -312,22 +381,12 @@ export default function Budgets() {
 
 
         {displayGoals.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '32px 24px',
-            background: 'var(--bg-surface)',
-            borderRadius: '16px',
-            border: '2px dashed var(--color-outline)',
-            marginBottom: '16px',
-          }}>
+          <div style={{ textAlign: 'center', padding: '32px 24px', background: 'var(--bg-surface)', borderRadius: '16px', border: '2px dashed var(--color-outline)', marginBottom: '16px' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>🎯</div>
-            <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'var(--color-on-surface)', marginBottom: '6px' }}>No goals yet</p>
-            <p style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '16px' }}>Set a savings goal and watch your money grow step by step.</p>
-            <button
-              onClick={() => setIsAddingGoal(true)}
-              style={{ padding: '10px 24px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
-            >
-              + Add Your First Goal
+            <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'var(--color-on-surface)', marginBottom: '6px' }}>What are you saving towards?</p>
+            <p style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '16px' }}>A trip, a gadget, a rainy day — give your money a direction.</p>
+            <button onClick={() => setIsAddingGoal(true)} style={{ padding: '10px 24px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>
+              + Set your first goal
             </button>
           </div>
         )}
@@ -375,7 +434,7 @@ export default function Budgets() {
               {/* Goal details */}
               <div className={styles.goalDetails}>
                 <div className={styles.goalMeta}>
-                  <p className={styles.goalStatus}>You're on track for your goal.</p>
+                  <p className={styles.goalStatus} style={{ fontStyle: 'italic', color: '#9B7E6A' }}>{getGoalMood(pct, goal.deadline || null)}</p>
                   <div className={styles.goalDeadlineWrap}>
                     <span className={styles.goalDeadlineLabel}>TARGET</span>
                     <span className={styles.goalDeadline}>{deadline}</span>
@@ -403,7 +462,7 @@ export default function Budgets() {
                       </p>
                     </div>
                   ) : (
-                    <p className={styles.goalContribText} style={{ color: 'var(--color-muted)' }}>No auto-pay configured.</p>
+                    <p className={styles.goalContribText} style={{ color: 'var(--color-muted)' }}>Set up auto-save to reach this goal on autopilot.</p>
                   )}
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <button onClick={() => setAddingMoneyGoal(goal)} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Add Money</button>
