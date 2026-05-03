@@ -70,8 +70,11 @@ class Retriever:
             chunk_type_filter: Optional filter — 'knowledge' | 'data_summary' | 'transaction'.
 
         Returns:
-            List of chunk dicts with added 'score' field (0–1, higher is better).
+            List of chunk dicts with added 'score' field (0-1, higher is better).
         """
+        if top_k <= 0:
+            return []
+
         self.load()
 
         # Embed + normalise query
@@ -79,8 +82,8 @@ class Retriever:
         norm  = self._np.linalg.norm(q_vec, axis=1, keepdims=True)
         q_vec = (q_vec / self._np.maximum(norm, 1e-10)).astype('float32')
 
-        # Search index — fetch 2x to allow filtering
-        k_search = min(top_k * 2, self._index.ntotal)
+        # Search index — clamp k to at least 1 and at most index size
+        k_search = max(1, min(top_k * 2, self._index.ntotal))
         scores, indices = self._index.search(q_vec, k_search)
 
         results: List[Dict[str, Any]] = []
@@ -101,6 +104,8 @@ class Retriever:
 
     def search_data(self, query: str, top_k: int = 4) -> List[Dict[str, Any]]:
         """Retrieve only data (transaction/profile/goals) chunks."""
+        if top_k <= 0:
+            return []
         self.load()
         all_results = self.search(query, top_k=top_k * 3)
         data_results = [r for r in all_results if r.get('chunk_type') in ('data_summary', 'transaction')]

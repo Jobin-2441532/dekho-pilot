@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     # Ensure all DB tables exist on every startup (safe: CREATE TABLE IF NOT EXISTS)
     from app.core.database import init_db
     init_db()
-    logger.info("Database tables ready.")
+    logger.info("Database tables ready (Neon warmup complete).")
     logger.info("Pre-loading FAISS Database into memory...")
     if not retriever.is_ready:
         retriever.load()

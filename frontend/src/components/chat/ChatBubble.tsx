@@ -24,8 +24,10 @@ type ChatBubbleProps =
     }
 
 function formatTime(ts?: string): string {
-  if (!ts) return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-  return new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  if (!ts) return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+  // Ensure the string is parsed as UTC (append Z if missing)
+  const raw = ts.endsWith('Z') || ts.includes('+') ? ts : ts + 'Z'
+  return new Date(raw).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
 }
 
 export default function ChatBubble({

@@ -6,9 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Main backend — preserve full path (no rewrite, /api/v1/... is correct)
+      // Main backend — use 127.0.0.1 explicitly (avoids Windows localhost→IPv6 issue)
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },

@@ -106,13 +106,29 @@ When the user clearly asks to add money to an existing goal, append this on a ne
 
 Only use these tags when the intent is unambiguous. If there is any doubt, ask one clarifying question first.
 
-VISUAL ELEMENTS (use when genuinely helpful, not by default):
-Show a goal's progress: [UI: PROGRESS | <Goal Name> | <Current Amount> | <Target Amount>]
-Show a single metric: [UI: METRIC | <Label> | <Value>]
-Show a spending breakdown: [UI: CHART | Pie | <Title> | <Label1>:<Value1>, <Label2>:<Value2>]
-Show a comparison: [UI: CHART | Bar | <Title> | <Label1>:<Value1>, <Label2>:<Value2>]
+VISUAL ELEMENTS — USE THESE PROACTIVELY for financial questions:
 
-Use Indian formatting: rupees as ₹, amounts in thousands or lakhs where natural.
+Whenever the user asks about spending categories, breakdowns, or "where does my money go" — always include:
+[UI: CHART | Pie | <Title> | <Category1>:<Amount1>, <Category2>:<Amount2>, ...]
+
+Whenever the user asks about spending over time, comparisons, or month-vs-month — always include:
+[UI: CHART | Bar | <Title> | <Label1>:<Amount1>, <Label2>:<Amount2>]
+
+Whenever the user asks about a savings goal or mentions a goal by name — always include:
+[UI: PROGRESS | <Goal Name> | <Current Amount> | <Target Amount>]
+
+Whenever the user asks for a single key number (e.g. "how much did I spend", "what's my savings rate") — include:
+[UI: METRIC | <Label> | <Value>]
+
+When answering about all goals at once — include one [UI: PROGRESS ...] block per goal.
+
+RULES FOR VISUAL ELEMENTS:
+- Use ONLY numbers in the data fields (no ₹ symbol, no commas). Example: [UI: CHART | Pie | May Spending | Housing:18000, Groceries:2100]
+- Amounts must be plain integers or decimals only.
+- Always place visual tags on their own line, after the text explanation.
+- Do not use visual tags inside sentences.
+
+Use Indian formatting in text: rupees as ₹, amounts in thousands or lakhs where natural.
 """
 
 ML_PATTERN_SECTION_TEMPLATE = """ML Spending Pattern Analysis (Use to personalise advice):
@@ -498,18 +514,16 @@ def get_chat_history(
     rows = (
         db.query(ChatSession)
         .filter(ChatSession.user_id == current_user.id)
-        .order_by(ChatSession.created_at.desc())
+        .order_by(ChatSession.id.asc())   # id is auto-increment — guarantees insertion order
         .limit(limit)
         .all()
     )
-    # Reverse so oldest message is first (correct display order)
-    rows = list(reversed(rows))
     return [
         {
             "role": r.role,
             "content": r.content,
             "id": str(r.id),
-            "timestamp": r.created_at.isoformat() if r.created_at else None,
+            "timestamp": r.created_at.isoformat() + "Z" if r.created_at else None,
         }
         for r in rows
     ]
@@ -676,6 +690,7 @@ async def _process_chat(
             ))
 
         # 8. Persist the exchange to DB for session memory (Phase 6)
+        # Commit user message first, then assistant — ensures distinct IDs for correct sort order
         try:
             db.rollback()  # Clear any stale state before writing
             db.add(ChatSession(
@@ -683,12 +698,13 @@ async def _process_chat(
                 role='user',
                 content=user_message,
             ))
+            db.commit()   # First commit — gives user message a lower id
             db.add(ChatSession(
                 user_id=current_user.id,
                 role='assistant',
                 content=processed_response_text,
             ))
-            db.commit()
+            db.commit()   # Second commit — assistant id is always > user id
             logger.info(f"[DB] Session: persisted 2 messages for user {current_user.id}")
         except Exception as persist_err:
             db.rollback()

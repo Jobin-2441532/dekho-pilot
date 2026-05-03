@@ -251,12 +251,14 @@ export default function ChatPanel() {
         timestamp: data.message.timestamp,
       }
       setMessages((prev) => [...prev, assistantMsg])
-    } catch {
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      console.error('[Ask Dekho] Chat error:', errMsg)
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: "I couldn't reach the server right now. Check that the backend is running and try again.",
+          content: `Something went wrong: ${errMsg}`,
           id: crypto.randomUUID(),
           timestamp: new Date().toISOString(),
         },
