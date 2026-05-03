@@ -4,7 +4,7 @@ services:
     name: dekho-api
     env: python
     plan: free
-    buildCommand: pip install -r backend/requirements.txt
+    buildCommand: pip install --no-cache-dir -r backend/requirements.txt
     startCommand: bash start-render.sh
     envVars:
       - key: DATABASE_URL
