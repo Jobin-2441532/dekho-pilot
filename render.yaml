@@ -3,6 +3,7 @@ services:
   - type: web
     name: dekho-api
     env: python
+    plan: free
     buildCommand: pip install -r backend/requirements.txt
     startCommand: bash start-render.sh
     envVars:
