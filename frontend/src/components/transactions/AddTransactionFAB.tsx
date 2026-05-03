@@ -22,7 +22,7 @@ export default function AddTransactionFAB() {
         amount: parseFloat(amount),
         merchant,
         category,
-        date: date + 'T12:00:00Z', // Basic ISO
+        date: date,
         notes: 'Added offline',
         direction: 'debit',
         payment_mode: 'Cash',

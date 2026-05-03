@@ -90,7 +90,7 @@ export default function Home() {
         setMonthTotal(total)
 
         const todayStr = today
-        const todayTxs = txList.filter((t: any) => t.date === todayStr && t.direction === 'debit')
+        const todayTxs = txList.filter((t: any) => String(t.date || '').startsWith(todayStr) && t.direction === 'debit')
         setTodaySpend(todayTxs.reduce((s: number, t: any) => s + (t.amount ?? 0), 0))
 
         // Top category this month
