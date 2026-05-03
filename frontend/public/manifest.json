@@ -1,26 +1,22 @@
 {
-  "name": "Dekho — Finance Companion",
+  "name": "Dekho Finance",
   "short_name": "Dekho",
-  "description": "Your habit-first personal finance companion",
+  "description": "Your habit-first personal finance companion.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FEF8F2",
+  "background_color": "#FDFBF7",
   "theme_color": "#5C3D2E",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/logo-nobg.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "/logo-nobg.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
-  ],
-  "categories": ["finance", "productivity"],
-  "lang": "en-IN"
+  ]
 }

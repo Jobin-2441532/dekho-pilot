@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react'
 import FloatingDock from '../navigation/FloatingDock'
 import ChatbotFAB from '../chat/ChatbotFAB'
+import AddTransactionFAB from '../transactions/AddTransactionFAB'
 import ChatPanel from '../chat/ChatPanel'
 import { useTheme } from '../../hooks/useTheme'
 import styles from './AppShell.module.css'
@@ -19,6 +20,9 @@ export default function AppShell({ children }: AppShellProps) {
       <main className={styles.content}>
         {children}
       </main>
+
+      {/* Add Offline Spending FAB — sits above Chatbot FAB */}
+      <AddTransactionFAB />
 
       {/* Global chatbot FAB — always rendered above the dock */}
       <ChatbotFAB />

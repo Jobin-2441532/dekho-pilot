@@ -4,9 +4,7 @@
  * Automatically attaches JWT Bearer token from localStorage.
  * Uses the Vite proxy in dev (/api → http://localhost:8000)
  */
-
-const BASE_URL = ''   // Use Vite proxy — all /api/... requests route to http://localhost:8000
-
+const BASE_URL = import.meta.env.VITE_API_URL || ''   // Use Render API URL in prod, or Vite proxy in dev
 
 interface ApiOptions extends RequestInit {
   params?: Record<string, string | number | boolean>

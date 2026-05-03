@@ -55,6 +55,49 @@ def get_transactions(
             for row in rows
         ],
     }
+from pydantic import BaseModel
+from datetime import datetime
+
+class TransactionCreate(BaseModel):
+    amount: float
+    merchant: str
+    category: str
+    date: str
+    notes: Optional[str] = None
+    direction: str = "debit"
+    payment_mode: str = "Cash"
+    source_type: str = "Manual"
+
+@router.post("/transactions")
+def create_transaction(
+    body: TransactionCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    tx = Transaction(
+        user_id=current_user.id,
+        amount=body.amount,
+        merchant=body.merchant,
+        category=body.category,
+        date=body.date,
+        notes=body.notes,
+        direction=body.direction,
+        payment_mode=body.payment_mode,
+        source_type=body.source_type,
+        confidence=1.0,
+        review_status="reviewed",
+    )
+    db.add(tx)
+    db.commit()
+    db.refresh(tx)
+    return {
+        "status": "success",
+        "data": {
+            "id": f"t{tx.id}",
+            "amount": tx.amount,
+            "merchant": tx.merchant,
+        }
+    }
 
 
 @router.get("/transactions/summary")

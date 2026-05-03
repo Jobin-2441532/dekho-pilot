@@ -69,7 +69,14 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    "https://dekho.vercel.app",
+    "https://dekho-app.vercel.app",
 ]
+
+# Allow custom domain from env var if provided
+env_origin = os.getenv("FRONTEND_ORIGIN")
+if env_origin and env_origin not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(env_origin)
 
 app.add_middleware(
     CORSMiddleware,

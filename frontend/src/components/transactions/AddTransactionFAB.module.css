@@ -1,0 +1,137 @@
+/* ── Add Transaction FAB — fixed bottom-right, above Chatbot ── */
+
+.wrapper {
+  position: fixed;
+  bottom: calc(var(--dock-height) + var(--space-5) + 12px + var(--fab-size) + 16px);
+  right: var(--space-5);
+  z-index: var(--z-fab);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab {
+  width: calc(var(--fab-size) * 0.85); /* Slightly smaller than main chatbot */
+  height: calc(var(--fab-size) * 0.85);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.2s;
+}
+
+.fab.open {
+  background: var(--bg-surface-high);
+  color: var(--color-on-surface);
+  box-shadow: var(--shadow-md);
+}
+
+/* Modal Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-4);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal Content */
+.modal {
+  background: var(--bg-surface);
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xl);
+  margin-bottom: var(--dock-height);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--text-primary);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.inputGroup label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.inputGroup input,
+.inputGroup select {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface-high);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  outline: none;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus {
+  border-color: var(--color-primary);
+}
+
+.submitBtn {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  font-size: var(--text-base);
+  cursor: pointer;
+  margin-top: var(--space-2);
+  transition: opacity 0.2s;
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
