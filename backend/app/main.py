@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
@@ -10,7 +10,9 @@ from app.core.logging_config import logger
 from app.core.rate_limit import limiter
 from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import, home, expenses
 from app.services.retriever import retriever
+from app.core.database import get_db
 from app.services.storage import storage_service
+from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
 load_dotenv()
@@ -97,12 +99,23 @@ def read_root():
 
 
 @app.get("/health", tags=["health"])
-async def health():
-    """Enhanced health check — reports status of all backend services."""
+async def health(db: Session = Depends(get_db)):
+    """Enhanced health check — reports status of all backend services including DB."""
+    db_status = "ok"
+    db_error = None
+    try:
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
+    except Exception as e:
+        db_status = "unavailable"
+        db_error = str(e)
+        
     return {
-        "status": "healthy",
+        "status": "healthy" if db_status == "ok" else "unhealthy",
         "services": {
             "api": "ok",
+            "database": db_status,
+            "db_error": db_error,
             "minio": "ok" if storage_service.is_available() else "unavailable",
         },
     }
