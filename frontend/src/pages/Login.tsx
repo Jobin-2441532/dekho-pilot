@@ -6,6 +6,8 @@ import Button from '../components/ui/Button'
 import FloatingInput from '../components/ui/FloatingInput'
 import styles from './Onboarding.module.css'
 
+const BASE_URL = import.meta.env.VITE_API_URL || ''
+
 /* ── Types ───────────────────────────────────────────────────────────────── */
 interface StatementMeta {
   id:           string
@@ -136,7 +138,7 @@ export default function Login() {
 
   // Load statement metadata from backend
   useEffect(() => {
-    fetch('/api/v1/import/statements')
+    fetch(`${BASE_URL}/api/v1/import/statements`)
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setStatements(data) })
       .catch(() => {
@@ -165,7 +167,7 @@ export default function Login() {
         const formData = new URLSearchParams()
         formData.append('username', email)
         formData.append('password', password)
-        const res  = await fetch('/api/v1/auth/login', {
+        const res  = await fetch(`${BASE_URL}/api/v1/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData.toString(),
@@ -174,7 +176,7 @@ export default function Login() {
         if (!res.ok) throw new Error(parseApiError(data, 'Login failed'))
         token = data.access_token
       } else {
-        const res  = await fetch('/api/v1/auth/register', {
+        const res  = await fetch(`${BASE_URL}/api/v1/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name.trim(), email, password, income_range: '5-10L', monthly_budget: 50000 }),
@@ -190,7 +192,7 @@ export default function Login() {
       // ── Import the selected bank statement ──────────────────────────────
       setLoading(false)
       setImporting(true)
-      const importRes = await fetch('/api/v1/import/statement', {
+      const importRes = await fetch(`${BASE_URL}/api/v1/import/statement`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
