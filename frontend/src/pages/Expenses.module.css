@@ -61,14 +61,14 @@
 /* AI insight card */
 .aiCard { background: #6B3A2A; color: #fff; padding: var(--space-5); border-radius: var(--radius-2xl); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: var(--space-3); }
 .aiWatermark { position: absolute; right: -20px; top: -20px; font-size: 100px; opacity: 0.05; pointer-events: none; }
-.aiCardLabel { font-family: var(--font-body); font-size: 10px; font-weight: var(--font-bold); letter-spacing: 0.05em; opacity: 0.8; }
+.aiCardLabel { font-family: var(--font-body); font-size: 10px; font-weight: var(--font-bold); letter-spacing: 0.05em; opacity: 0.8; color: #fff; }
 .aiCardContent { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
-.aiCardTitle { font-family: var(--font-headline); font-size: var(--text-xl); font-weight: var(--font-bold); line-height: 1.2; flex: 1; }
+.aiCardTitle { font-family: var(--font-headline); font-size: var(--text-xl); font-weight: var(--font-bold); line-height: 1.2; flex: 1; color: #fff; }
 .aiCardBadgeWrap { display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: var(--radius-sm); }
-.aiCardBadge { font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--font-bold); }
-.aiCardSub { font-family: var(--font-body); font-size: var(--text-sm); opacity: 0.9; line-height: 1.4; }
+.aiCardBadge { font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--font-bold); color: #fff; }
+.aiCardSub { font-family: var(--font-body); font-size: var(--text-sm); opacity: 0.9; line-height: 1.4; color: #fff; }
 .aiTarget { margin-top: var(--space-2); }
-.aiTargetHeader { display: flex; justify-content: space-between; font-family: var(--font-body); font-size: 10px; font-weight: var(--font-bold); letter-spacing: 0.05em; opacity: 0.8; margin-bottom: 6px; }
+.aiTargetHeader { display: flex; justify-content: space-between; font-family: var(--font-body); font-size: 10px; font-weight: var(--font-bold); letter-spacing: 0.05em; opacity: 0.8; margin-bottom: 6px; color: #fff; }
 .aiTargetTrack { height: 6px; background: rgba(0,0,0,0.2); border-radius: var(--radius-full); }
 .aiTargetFill { height: 100%; background: #4edea3; border-radius: var(--radius-full); }
 
