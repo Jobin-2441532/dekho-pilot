@@ -86,16 +86,22 @@ class FeatureService:
         except ValueError:
             raise ValueError(f"month must be 'YYYY-MM', got: {month!r}")
 
-        # All transactions in this month for this user
+        import calendar as _cal
+        last_day = _cal.monthrange(year_int, month_int)[1]
+        month_start = f"{year_int}-{month_int:02d}-01"
+        month_end   = f"{year_int}-{month_int:02d}-{last_day:02d}"
+
+        # All transactions in this month for this user (string date comparison)
         txns = (
             db.query(Transaction)
             .filter(
                 Transaction.user_id == user_id,
-                extract("year", Transaction.date) == year_int,
-                extract("month", Transaction.date) == month_int,
+                Transaction.date >= month_start,
+                Transaction.date <= month_end,
             )
             .all()
         )
+
 
         debit_txns = [t for t in txns if t.direction == "debit"]
         credit_txns = [t for t in txns if t.direction == "credit"]

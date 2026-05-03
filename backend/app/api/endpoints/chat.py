@@ -48,16 +48,20 @@ You are not a generic chatbot. You are not an assistant trying to impress. You a
 
 The user's live financial data is below. Use it when relevant. Do not invent numbers.
 
-User Financial Context:
+User Financial Context (LIVE — this is the source of truth):
 {global_context}
 
-Recent Transaction Data:
-{data_context}
-
-Financial Knowledge:
+Financial Knowledge (general articles, not user-specific):
 {knowledge_context}
 
 {ml_pattern_section}
+
+DATA ACCURACY RULES (CRITICAL):
+- The "User Financial Context" above is pulled live from the database. It is the ONLY source of truth for this user's numbers, goals, spending, and balances.
+- Do NOT use any numbers, goals, or transactions from outside that section.
+- If the context says the user has 2 goals, there are exactly 2 goals. Do not mention any other goals.
+- If the context says May spending is Rs22,590, use that number. Do not guess or use cached data.
+- The Financial Knowledge section contains general articles — do not use those to invent user-specific data.
 
 STYLE RULES:
 Use natural language.
@@ -193,9 +197,9 @@ def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
     action_taken = False
 
     # DEBUG: Print first 500 chars of AI response to see if tags are present
-    logger.info(f"🔍 AI RESPONSE (first 500 chars): {response_text[:500]}")
-    logger.info(f"🔍 ACTION tag present: {'[ACTION:' in response_text.upper()}")
-    logger.info(f"🔍 UI PROGRESS tag present: {'[UI: PROGRESS' in response_text.upper() or '[UI:PROGRESS' in response_text.upper()}")
+    logger.info(f"[DEBUG] AI RESPONSE (first 500 chars): {response_text[:500]}")
+    logger.info(f"[DEBUG] ACTION tag present: {'[ACTION:' in response_text.upper()}")
+    logger.info(f"[DEBUG] UI PROGRESS tag present: {'[UI: PROGRESS' in response_text.upper() or '[UI:PROGRESS' in response_text.upper()}")
 
     # 1. Check for ADD_GOAL
     add_goal_match = re.search(
@@ -219,10 +223,10 @@ def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
             )
             db.add(new_goal)
             db.commit()
-            logger.info(f"✅ Goal created via chat: '{title}' ₹{amount:,.0f} for user {user_id}")
+            logger.info(f"[OK] Goal created via chat: '{title}' Rs{amount:,.0f} for user {user_id}")
         except Exception as e:
             db.rollback()
-            logger.error(f"❌ Goal creation failed: {e}")
+            logger.error(f"[ERR] Goal creation failed: {e}")
 
     # 2. Check for ADD_TO_GOAL
     add_to_goal_match = re.search(
@@ -248,12 +252,12 @@ def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
                 if user:
                     user.dekho_wallet_balance += amount
                 db.commit()
-                logger.info(f"✅ Added ₹{amount:,.0f} to goal '{title}' and increased wallet balance for user {user_id}")
+                logger.info(f"[OK] Added Rs{amount:,.0f} to goal '{title}' and increased wallet balance for user {user_id}")
             else:
-                logger.warning(f"⚠️ Goal '{title}' not found to add money")
+                logger.warning(f"[WARN] Goal '{title}' not found to add money")
         except Exception as e:
             db.rollback()
-            logger.error(f"❌ Add to goal failed: {e}")
+            logger.error(f"[ERR] Add to goal failed: {e}")
 
     # 3. Fallback: Auto-create goal if [UI: PROGRESS | Title | Current | Target] is found
     ui_progress_match = re.search(
@@ -283,10 +287,10 @@ def process_action_tags(response_text: str, user_id: int, db: Session) -> str:
                 )
                 db.add(new_goal)
                 db.commit()
-                logger.info(f"✅ Auto-created missing goal from UI tag: '{title}' ₹{target:,.0f}")
+                logger.info(f"[OK] Auto-created missing goal from UI tag: '{title}' Rs{target:,.0f}")
         except Exception as e:
             db.rollback()
-            logger.error(f"❌ Auto-goal creation failed: {e}")
+            logger.error(f"[ERR] Auto-goal creation failed: {e}")
 
     # Strip ALL action tags from the final response
     cleaned_text = re.sub(r'\[ACTION:[^\]]+\]', '', response_text).strip()
@@ -313,7 +317,7 @@ def _nlp_goal_fallback(user_message: str, ai_response: str, user_id: int, db: Se
     has_goal_intent = any(kw in msg_lower for kw in goal_keywords)
     has_create_intent = any(kw in msg_lower for kw in create_keywords)
 
-    logger.info(f"🔍 NLP fallback: user_msg='{user_message[:100]}' goal_intent={has_goal_intent} create_intent={has_create_intent}")
+    logger.info(f"[NLP] fallback: user_msg='{user_message[:100]}' goal_intent={has_goal_intent} create_intent={has_create_intent}")
 
     if not (has_goal_intent and has_create_intent):
         return False
@@ -345,7 +349,7 @@ def _nlp_goal_fallback(user_message: str, ai_response: str, user_id: int, db: Se
         if candidates:
             amount = max(candidates)
 
-    logger.info(f"🔍 NLP fallback: extracted amount={amount}")
+    logger.info(f"[NLP] fallback: extracted amount={amount}")
 
     if amount <= 0:
         logger.info("NLP fallback: goal intent detected but no valid amount found")
@@ -404,7 +408,7 @@ def _nlp_goal_fallback(user_message: str, ai_response: str, user_id: int, db: Se
         )
         db.add(new_goal)
         db.commit()
-        logger.info(f"✅ NLP fallback created goal: '{goal_name}' target=Rs {amount:,.0f} for user {user_id}")
+        logger.info(f"[OK] NLP fallback created goal: '{goal_name}' target=Rs {amount:,.0f} for user {user_id}")
         return True
     except Exception as e:
         logger.error(f"NLP fallback goal creation failed: {e}")
@@ -524,7 +528,7 @@ def clear_chat_history(
         db.rollback()
         deleted = db.query(ChatSession).filter(ChatSession.user_id == current_user.id).delete()
         db.commit()
-        logger.info(f"🗑️ Cleared {deleted} history messages for user {current_user.id}")
+        logger.info(f"[DB] Cleared {deleted} history messages for user {current_user.id}")
         return {"deleted": deleted}
     except Exception as e:
         db.rollback()
@@ -557,7 +561,7 @@ async def chat_action_endpoint(
             ).first()
 
             if existing:
-                logger.info(f"Action endpoint: goal '{request.goal_name}' already exists for user {current_user.id}")
+                logger.info(f"[OK] Action endpoint: goal '{request.goal_name}' already exists for user {current_user.id}")
                 return ChatActionResponse(
                     success=True,
                     message=f"Goal '{existing.name}' already exists.",
@@ -574,7 +578,7 @@ async def chat_action_endpoint(
             db.add(new_goal)
             db.commit()
             db.refresh(new_goal)
-            logger.info(f"✅ Action endpoint: created goal '{request.goal_name}' ₹{request.amount:,.0f} for user {current_user.id}")
+            logger.info(f"[OK] Action endpoint: created goal '{request.goal_name}' Rs{request.amount:,.0f} for user {current_user.id}")
             return ChatActionResponse(
                 success=True,
                 message=f"Goal '{request.goal_name}' created with a target of ₹{request.amount:,.0f}.",
@@ -598,7 +602,7 @@ async def chat_action_endpoint(
             if user:
                 user.dekho_wallet_balance = (user.dekho_wallet_balance or 0) + request.amount
             db.commit()
-            logger.info(f"✅ Action endpoint: added ₹{request.amount:,.0f} to '{goal.name}' for user {current_user.id}")
+            logger.info(f"[OK] Action endpoint: added Rs{request.amount:,.0f} to '{goal.name}' for user {current_user.id}")
             return ChatActionResponse(
                 success=True,
                 message=f"₹{request.amount:,.0f} added to '{goal.name}'.",
@@ -607,7 +611,7 @@ async def chat_action_endpoint(
 
     except Exception as e:
         db.rollback()
-        logger.error(f"❌ Action endpoint error: {e}")
+        logger.error(f"[ERR] Action endpoint error: {e}")
         raise HTTPException(status_code=500, detail=f"Action failed: {str(e)}")
 
 
@@ -627,14 +631,13 @@ async def _process_chat(
 
         retrieved_chunks = retriever.search_hybrid(
             user_message,
-            data_k=4,
-            knowledge_k=2,
+            data_k=0,          # Disable stale FAISS data chunks — live DB context is injected instead
+            knowledge_k=3,
         )
 
-        data_chunks = [c for c in retrieved_chunks if c.get('chunk_type') in ('data_summary', 'transaction')]
+        # Only use knowledge articles from FAISS (general finance tips)
+        # Data/transaction chunks are intentionally excluded to prevent hallucination
         knowledge_chunks = [c for c in retrieved_chunks if c.get('chunk_type') == 'knowledge']
-
-        data_text = "\n---\n".join([c.get('text', '') for c in data_chunks])
         knowledge_text = "\n---\n".join([c.get('text', '') for c in knowledge_chunks])
 
         # 2. Global financial context (JWT-scoped via current_user.id)
@@ -647,7 +650,6 @@ async def _process_chat(
         # 4. Build system prompt with ML context injected
         system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
             global_context=global_text,
-            data_context=data_text if data_text else "No specific data found.",
             knowledge_context=knowledge_text if knowledge_text else "No specific knowledge found.",
             ml_pattern_section=ml_section,
         )
@@ -663,24 +665,14 @@ async def _process_chat(
         if not action_taken:
             action_taken = _nlp_goal_fallback(user_message, ai_response_text, current_user.id, db)
 
-        # 7. Build source citations
+        # 7. Build source citations (knowledge articles only)
         sources = []
-        for c in retrieved_chunks:
-            if c.get("chunk_type") == "knowledge":
-                label = f"Article: {c.get('source', '').replace('.md', '').replace('_', ' ').title()}"
-                s_type = "knowledge"
-            elif c.get("chunk_type") == "data_summary":
-                cat = c.get("category", "")
-                label = f"Data Summary ({cat.title()})" if cat else "Data Summary"
-                s_type = "data"
-            else:
-                label = "Recent Transaction"
-                s_type = "data"
-
+        for c in knowledge_chunks:
+            label = f"Article: {c.get('source', '').replace('.md', '').replace('_', ' ').title()}"
             sources.append(SourceItem(
                 label=label,
                 text=c.get('text', '')[:150] + "...",
-                type=s_type,
+                type="knowledge",
             ))
 
         # 8. Persist the exchange to DB for session memory (Phase 6)
@@ -697,10 +689,10 @@ async def _process_chat(
                 content=processed_response_text,
             ))
             db.commit()
-            logger.info(f"💾 Session: persisted 2 messages for user {current_user.id}")
+            logger.info(f"[DB] Session: persisted 2 messages for user {current_user.id}")
         except Exception as persist_err:
             db.rollback()
-            logger.warning(f"⚠️ Session persist failed (non-fatal): {persist_err}")
+            logger.warning(f"[WARN] Session persist failed (non-fatal): {persist_err}")
 
         return ChatResponse(
             message=ChatMessage(
