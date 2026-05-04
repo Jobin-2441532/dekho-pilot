@@ -687,15 +687,8 @@ async def _process_chat(
         if not action_taken:
             action_taken = _nlp_goal_fallback(user_message, ai_response_text, current_user.id, db)
 
-        # 7. Build source citations (knowledge articles only)
+        # 7. Build source citations (knowledge articles only — empty if FAISS unavailable)
         sources = []
-        for c in knowledge_chunks:
-            label = f"Article: {c.get('source', '').replace('.md', '').replace('_', ' ').title()}"
-            sources.append(SourceItem(
-                label=label,
-                text=c.get('text', '')[:150] + "...",
-                type="knowledge",
-            ))
 
         # 8. Persist the exchange to DB for session memory (Phase 6)
         # Commit user message first, then assistant — ensures distinct IDs for correct sort order
