@@ -24,6 +24,7 @@ export default function TransactionsList() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [transactions, setTransactions] = useState<any[]>([])
+  const [filterMode, setFilterMode] = useState<"All" | "Credit" | "Debit" | "UPI" | "Card">("All")
   
   const { insights } = useInsights()
   const [page, setPage] = useState(1)
@@ -157,7 +158,26 @@ export default function TransactionsList() {
         )}
 
         <div className={styles.txList} style={{ marginTop: '16px' }}>
-          {transactions.map((tx: any) => (
+          <div className={styles.scrollRow} style={{ padding: '16px 16px 0' }}>
+            {["All", "Credit", "Debit", "UPI", "Card"].map((f) => (
+              <button
+                key={f}
+                className={`${styles.filterPill} ${filterMode === f ? styles.filterPillActive : ''}`}
+                onClick={() => setFilterMode(f as any)}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {transactions.filter(tx => {
+            if (filterMode === "All") return true;
+            if (filterMode === "Credit") return tx.type === "credit";
+            if (filterMode === "Debit") return tx.type === "debit";
+            if (filterMode === "UPI") return tx.payment_method?.toLowerCase().includes("upi");
+            if (filterMode === "Card") return tx.payment_method?.toLowerCase().includes("card");
+            return true;
+          }).map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
                 {CATEGORY_EMOJI[tx.category] ?? '💰'}
