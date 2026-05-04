@@ -139,9 +139,19 @@ export default function Login() {
   // Load statement metadata from backend
   useEffect(() => {
     fetch(`${BASE_URL}/api/v1/import/statements`)
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setStatements(data) })
-      .catch(() => {
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`)
+        return r.json()
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setStatements(data)
+        } else {
+          throw new Error('Data is not an array')
+        }
+      })
+      .catch((e) => {
+        console.error('Failed to fetch statements:', e)
         // Fallback static metadata if backend unreachable
         setStatements([
           { id: 'Statement9',  label: 'Statement 9',  salary: '₹50,000 / month', date_range: 'Apr – May 2026', transactions: 64, profile: 'Mid-income, Bangalore',    icon: '🏙️', color: '#8B6347' },
