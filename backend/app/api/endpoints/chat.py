@@ -26,7 +26,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from app.api.schemas import ChatRequest, ChatResponse, ChatMessage, SourceItem, ChatActionRequest, ChatActionResponse
-from app.services.retriever import retriever
+try:
+    from app.services.retriever import retriever as _retriever
+    _RETRIEVER_AVAILABLE = True
+except Exception as _retriever_err:
+    _retriever = None  # type: ignore
+    _RETRIEVER_AVAILABLE = False
+    logging.getLogger("dekho.chat").warning(f"FAISS retriever unavailable: {_retriever_err}")
 from app.services.gemini_service import generate_chat_response
 from app.core.database import get_db
 from app.models import User, Transaction, SavingsGoal, ChatSession
@@ -639,20 +645,22 @@ async def _process_chat(
     current_user: User,
 ) -> ChatResponse:
     try:
-        # 1. FAISS RAG retrieval
-        if not retriever.is_ready:
-            retriever.load()
-
-        retrieved_chunks = retriever.search_hybrid(
-            user_message,
-            data_k=0,          # Disable stale FAISS data chunks — live DB context is injected instead
-            knowledge_k=3,
-        )
-
-        # Only use knowledge articles from FAISS (general finance tips)
-        # Data/transaction chunks are intentionally excluded to prevent hallucination
-        knowledge_chunks = [c for c in retrieved_chunks if c.get('chunk_type') == 'knowledge']
-        knowledge_text = "\n---\n".join([c.get('text', '') for c in knowledge_chunks])
+        # 1. FAISS RAG retrieval (optional — skipped if sentence-transformers can't load)
+        knowledge_text = ""
+        if _RETRIEVER_AVAILABLE and _retriever is not None:
+            try:
+                if not _retriever.is_ready:
+                    _retriever.load()
+                retrieved_chunks = _retriever.search_hybrid(
+                    user_message,
+                    data_k=0,
+                    knowledge_k=3,
+                )
+                knowledge_chunks = [c for c in retrieved_chunks if c.get('chunk_type') == 'knowledge']
+                knowledge_text = "\n---\n".join([c.get('text', '') for c in knowledge_chunks])
+            except Exception as rag_err:
+                logger.warning(f"FAISS RAG skipped (likely OOM): {rag_err}")
+                knowledge_text = ""
 
         # 2. Global financial context (JWT-scoped via current_user.id)
         global_text = _get_global_context(db, current_user.id)
