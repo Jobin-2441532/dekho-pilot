@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Settings } from 'lucide-react'
+import { Settings, Info } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
 import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
 import { ReflectionCard } from '../components/ui/ReflectionCard'
+import DisclaimerModal from '../components/ui/DisclaimerModal'
 import styles from './Home.module.css'
 
 const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:8000`
@@ -44,6 +45,7 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<{role: 'user'|'dekho', text: string}[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
 
   async function handleAsk() {
     if (!chatInput.trim()) return
@@ -177,10 +179,17 @@ export default function Home() {
               <p className={styles.logoSub}>{getGreeting()}, {(profile?.name ?? 'Arjun').split(' ')[0]}</p>
             </div>
           </div>
-        <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings" style={{ marginTop: '16px' }}>
-          <Settings size={18} strokeWidth={1.75} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: '16px' }}>
+          <button className={styles.iconBtn} onClick={() => setShowInfo(true)} aria-label="App Info">
+            <Info size={18} strokeWidth={1.75} />
+          </button>
+          <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings">
+            <Settings size={18} strokeWidth={1.75} />
+          </button>
+        </div>
       </div>
+
+      {showInfo && <DisclaimerModal mode="sheet" onClose={() => setShowInfo(false)} />}
 
       {/* HERO CARD — dynamic mood-aware ReflectionCard */}
       <div className={styles.px}>

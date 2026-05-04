@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense, useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import AppShell from './components/layout/AppShell'
+import DisclaimerModal from './components/ui/DisclaimerModal'
 
 /* ── Auth (always needed immediately) ── */
 import Login from './pages/Login'
@@ -50,6 +51,33 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return (token && onboarded) ? <>{children}</> : <Navigate to="/login" replace />
 }
 
+/* ── Disclaimer wrapper — shows splash once per session ── */
+function DisclaimerWrapper({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem('dekho_token')
+    const seen  = localStorage.getItem('dekho_disclaimer_seen')
+    // Only show on authenticated routes, and only once per install
+    if (token && !seen && location.pathname !== '/login') {
+      setShow(true)
+    }
+  }, [])
+
+  const dismiss = () => {
+    localStorage.setItem('dekho_disclaimer_seen', '1')
+    setShow(false)
+  }
+
+  return (
+    <>
+      {children}
+      {show && <DisclaimerModal mode="splash" onClose={dismiss} />}
+    </>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -63,6 +91,7 @@ export default function App() {
           path="/*"
           element={
             <RequireAuth>
+              <DisclaimerWrapper>
               <AppShell>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
@@ -103,7 +132,8 @@ export default function App() {
                     <Route path="/opportunities" element={<Navigate to="/grow" replace />} />
                   </Routes>
                 </Suspense>
-              </AppShell>
+                </AppShell>
+              </DisclaimerWrapper>
             </RequireAuth>
           }
         />
