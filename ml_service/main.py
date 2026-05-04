@@ -23,8 +23,7 @@ Endpoints:
 import sys
 import traceback
 
-try:
-    import os
+import os
 import re
 import logging
 from datetime import datetime, date
@@ -601,11 +600,6 @@ def spending_pattern(user_id: int):
         "category_breakdown": categories,
         "total_spend_analysed": round(total_spend, 2),
     }
-
-except Exception as e:
-    print("FATAL ERROR IN ML_SERVICE MAIN.PY:", file=sys.stderr)
-    traceback.print_exc(file=sys.stderr)
-    raise
 
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":

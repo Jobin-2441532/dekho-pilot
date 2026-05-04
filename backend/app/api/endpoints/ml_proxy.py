@@ -36,7 +36,7 @@ from sqlalchemy.orm import Session
 logger = logging.getLogger("dekho.ml_proxy")
 router = APIRouter()
 
-ML_BASE = os.getenv("ML_SERVICE_URL", "http://localhost:8001")
+ML_BASE = os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001").replace("localhost", "127.0.0.1")
 ML_TIMEOUT = 5.0   # seconds — fail fast so the main app stays responsive
 
 

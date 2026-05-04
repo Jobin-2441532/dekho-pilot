@@ -36,7 +36,7 @@ from app.api.endpoints.auth import get_current_user
 logger = logging.getLogger("dekho.chat")
 router = APIRouter()
 
-ML_SERVICE_URL = os.getenv("ML_SERVICE_URL", "http://localhost:8001")
+ML_SERVICE_URL = os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001").replace("localhost", "127.0.0.1")
 
 
 # ---------------------------------------------------------------------------
