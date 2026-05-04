@@ -6,11 +6,28 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Main backend — use 127.0.0.1 explicitly (avoids Windows localhost→IPv6 issue)
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+            return 'react-vendor'
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons'
+          }
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
+            return 'charts'
+          }
+        }
+      }
+    }
+  }
 })
