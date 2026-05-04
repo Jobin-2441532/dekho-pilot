@@ -81,12 +81,12 @@ FAILED_KEYWORDS = [
 
 SMS_PATTERNS = [
     # Debit patterns
-    {"regex": r"(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)\s+debited",                        "direction": "debit"},
+    {"regex": r"(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)\s+(?:debited|paid|spent|sent|transferred)", "direction": "debit"},
     {"regex": r"debited\s+(?:by|with|of)?\s*(?:rs\.?|inr\.?|₹)?\s*([\d,]+\.?\d*)",     "direction": "debit"},
-    {"regex": r"(?:spent|paid|sent)\s+(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)",            "direction": "debit"},
-    {"regex": r"(?:amount|amt)\s+of\s+(?:inr|rs\.?|₹)\s*([\d,]+\.?\d*)\s+(?:spent|debited|paid)", "direction": "debit"},
+    {"regex": r"(?:spent|paid|sent|transferred)\s+(?:to|for)?\s*(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)", "direction": "debit"},
+    {"regex": r"(?:amount|amt)\s+of\s+(?:inr|rs\.?|₹)\s*([\d,]+\.?\d*)\s+(?:spent|debited|paid|transferred)", "direction": "debit"},
     # Credit patterns
-    {"regex": r"(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)\s+credited",                       "direction": "credit"},
+    {"regex": r"(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)\s+(?:credited|received)",                       "direction": "credit"},
     {"regex": r"credited\s+(?:by|with|of)?\s*(?:rs\.?|inr\.?|₹)?\s*([\d,]+\.?\d*)",   "direction": "credit"},
     {"regex": r"received\s+(?:rs\.?|inr\.?|₹)\s*([\d,]+\.?\d*)",                       "direction": "credit"},
 ]
@@ -229,7 +229,7 @@ def _classify_category(merchant: str, description: str) -> tuple[str, str, float
             return cat, sub, 0.88
     # Heuristic fallbacks
     if any(k in combined for k in ["upi", "transfer", "neft", "imps", "rtgs"]):
-        return "Personal Transfer", "UPI", 0.60
+        return "Uncategorised", "UPI Transfer", 0.40
     if any(k in combined for k in ["credit card", "card payment", "cc bill"]):
         return "Credit Card", "Payment", 0.75
     if any(k in combined for k in ["insurance", "premium"]):
