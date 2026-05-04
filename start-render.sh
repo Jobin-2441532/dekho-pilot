@@ -1,24 +1,19 @@
 #!/bin/bash
-# Exit on any error
-set -e
+# Render start script — dependencies already installed by buildCommand in render.yaml.
+# DO NOT pip install here; the build step handles it.
 
-echo "Skipping pip install on start..."
-# pip install --no-cache-dir -r backend/requirements.txt
-# ml_service just needs fastapi and uvicorn, which are already in backend/requirements.txt
-
-echo "Starting ML Service in the background on port 8001..."
+echo "==> Starting ML Service in background on 127.0.0.1:8001..."
 (
   cd ml_service
   export PYTHONPATH=$(pwd)
-  python -m uvicorn main:app --host 127.0.0.1 --port 8001
+  python -m uvicorn main:app --host 127.0.0.1 --port 8001 2>&1 | sed 's/^/[ML] /'
 ) &
 ML_PID=$!
 
-echo "Starting Main Backend on Render's assigned port..."
+# Give the ML service 3 seconds to bind before the main backend starts
+sleep 3
+
+echo "==> Starting Main Backend on port ${PORT:-10000}..."
 cd backend
 export PYTHONPATH=$(pwd)
-# Render passes the port to bind to via the PORT environment variable
-python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}
-
-# If the backend crashes, kill the ML service too
-kill $ML_PID
+exec python -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-10000}"
