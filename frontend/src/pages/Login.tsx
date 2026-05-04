@@ -124,7 +124,7 @@ export default function Login() {
   const navigate = useNavigate()
 
   // Step: 'pick' = choosing statement | 'auth' = credentials form
-  const [step,      setStep]      = useState<'pick' | 'auth'>('pick')
+  const [step,      setStep]      = useState<'pick' | 'auth'>('auth')
   const [isLogin,   setIsLogin]   = useState(true)
   const [name,      setName]      = useState('')
   const [email,     setEmail]     = useState('')
@@ -199,21 +199,23 @@ export default function Login() {
       localStorage.setItem('dekho_token', token)
       localStorage.setItem('dekho_onboarded', 'true')
 
-      // ── Import the selected bank statement ──────────────────────────────
-      setLoading(false)
-      setImporting(true)
-      const importRes = await fetch(`${BASE_URL}/api/v1/import/statement`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ statement: selected }),
-      })
-      if (!importRes.ok) {
-        const errData = await importRes.json()
-        console.warn('Import warning:', errData)
-        // Non-fatal — still proceed to home
+      // ── ONLY import the selected bank statement on registration ──────────────
+      if (!isLogin && selected) {
+        setLoading(false)
+        setImporting(true)
+        const importRes = await fetch(`${BASE_URL}/api/v1/import/statement`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ statement: selected }),
+        })
+        if (!importRes.ok) {
+          const errData = await importRes.json()
+          console.warn('Import warning:', errData)
+          // Non-fatal — still proceed to home
+        }
       }
 
       navigate('/home')
@@ -311,8 +313,8 @@ export default function Login() {
           <span className={styles.logoName}>Dekho</span>
         </div>
 
-        {/* Selected statement chip */}
-        {selectedMeta && (
+        {/* Selected statement chip (only for signup) */}
+        {!isLogin && selectedMeta && (
           <button
             onClick={() => setStep('pick')}
             style={{
@@ -367,13 +369,21 @@ export default function Login() {
         )}
 
         <div className={styles.navRow} style={{ flexDirection: 'column', gap: 16 }}>
-          <Button fullWidth onClick={handleSubmit} disabled={loading || importing}>
-            {importing ? 'Importing data...' : loading ? 'Please wait...' : (isLogin ? 'Sign In & Load Data' : 'Sign Up & Load Data')}
+          <Button fullWidth onClick={handleSubmit} disabled={loading || importing || (!isLogin && !selected)}>
+            {importing ? 'Importing data...' : loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up & Load Data')}
           </Button>
 
           <button
             style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 500 }}
-            onClick={() => { setIsLogin(!isLogin); setError('') }}
+            onClick={() => { 
+              if (isLogin) {
+                setIsLogin(false)
+                setStep('pick') // Go to pick statement for new accounts
+              } else {
+                setIsLogin(true)
+              }
+              setError('')
+            }}
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </button>
