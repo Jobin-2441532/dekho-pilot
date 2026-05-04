@@ -116,13 +116,18 @@ export default function Home() {
     setIngestStatus(null)
     try {
       const token = localStorage.getItem('dekho_token') || ''
-      const res = await fetch(`/api/v1/ml/classify`, {
+      const res = await fetch(`${API}/api/v1/ml/classify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ sms_text: smsText })
       })
       if (!res.ok) {
-        const err = await res.json()
+        let err;
+        try {
+          err = await res.json()
+        } catch {
+          err = { detail: `HTTP error! status: ${res.status}` }
+        }
         throw new Error(err.detail || 'Failed to process SMS')
       }
       const data = await res.json()
