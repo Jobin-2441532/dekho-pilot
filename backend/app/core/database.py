@@ -47,6 +47,35 @@ def get_db():
         db.close()
 
 
+def _create_database_if_not_exists() -> None:
+    """Connect to default 'postgres' database and create target database if missing."""
+    if settings.DATABASE_URL.startswith("sqlite"):
+        return
+    try:
+        from sqlalchemy.engine.url import make_url
+        from sqlalchemy import create_engine, text
+        
+        url = make_url(settings.DATABASE_URL)
+        db_name = url.database
+        if not db_name:
+            return
+            
+        default_url = url.set(database="postgres")
+        # Use AUTOCOMMIT to execute CREATE DATABASE outside a transaction
+        temp_engine = create_engine(default_url, isolation_level="AUTOCOMMIT")
+        
+        with temp_engine.connect() as conn:
+            result = conn.execute(text(f"SELECT 1 FROM pg_database WHERE datname='{db_name}'"))
+            if not result.scalar():
+                import logging
+                logging.getLogger("dekho").info(f"🐘 Database '{db_name}' does not exist. Creating it locally...")
+                conn.execute(text(f"CREATE DATABASE {db_name}"))
+        temp_engine.dispose()
+    except Exception as e:
+        import logging
+        logging.getLogger("dekho").warning(f"Could not verify/create database: {e}")
+
+
 def init_db() -> None:
     """
     Create all tables defined in ORM models.
@@ -54,11 +83,14 @@ def init_db() -> None:
     Called once at server startup from run.py.
     Also pings the DB to wake up Neon serverless compute before first request.
     """
-    # Import all models so SQLAlchemy knows about them before creating tables
+    # 1. Create database if it does not exist locally
+    _create_database_if_not_exists()
+
+    # 2. Import all models so SQLAlchemy knows about them before creating tables
     import app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)
 
-    # Warmup ping: wake up Neon if it was paused (can take 5-15s on free tier)
+    # 3. Warmup ping: wake up database and verify connection
     try:
         with engine.connect() as conn:
             from sqlalchemy import text

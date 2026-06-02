@@ -3,8 +3,18 @@ import psycopg2
 import psycopg2.extras
 from urllib.parse import urlparse
 
-LOCAL_DB_URL = "postgresql://dekho:dekho_password@localhost:5432/dekho_db"
-NEON_DB_URL = "postgresql://neondb_owner:npg_qi1nAyO9eIHx@ep-ancient-haze-aoiorosj-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+# Load database URL from backend/.env instead of hardcoding
+from dotenv import load_dotenv
+load_dotenv("backend/.env")
+
+LOCAL_DB_URL = os.getenv("LOCAL_DATABASE_URL", "postgresql://dekho:dekho_password@localhost:5432/dekho_pilot")
+NEON_DB_URL = os.getenv("DATABASE_URL")
+
+if not NEON_DB_URL or "ep-ancient-haze" in NEON_DB_URL:
+    print("Warning: Target DATABASE_URL is not set or points to the previous original project database.")
+    print("Migration aborted to protect the original production database.")
+    print("Please set a new fresh pilot DATABASE_URL in backend/.env to run this migration.")
+    exit(1)
 
 print(f"Source PG : {LOCAL_DB_URL}")
 print(f"Target PG : {NEON_DB_URL}")

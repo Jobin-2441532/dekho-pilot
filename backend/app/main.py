@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from app.core.config import settings
 from app.core.logging_config import logger
 from app.core.rate_limit import limiter
-from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import, home, expenses
+from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import, home, expenses, admin
 from app.services.retriever import retriever
 from app.core.database import get_db
 from app.services.storage import storage_service
@@ -133,3 +133,4 @@ app.include_router(ml_proxy.router,   prefix="/api/v1/ml",     tags=["ml"])
 app.include_router(csv_import.router, prefix="/api/v1/import", tags=["import"])
 app.include_router(home.router, prefix="/api/home", tags=["home"])
 app.include_router(expenses.router, prefix="/api/v1/expenses", tags=["expenses"])
+app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])

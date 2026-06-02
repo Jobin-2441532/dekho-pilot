@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_USER: dekho
       POSTGRES_PASSWORD: dekho_password
-      POSTGRES_DB: dekho_db
+      POSTGRES_DB: dekho_pilot
     ports:
       - "5432:5432"
     volumes:
@@ -77,7 +77,7 @@ services:
       - ./backend/.env          # load GEMINI_API_KEY, JWT_SECRET_KEY etc.
     environment:
       # Override local dev values with Docker-internal hostnames
-      - DATABASE_URL=postgresql://dekho:dekho_password@db:5432/dekho_db
+      - DATABASE_URL=postgresql://dekho:dekho_password@db:5432/dekho_pilot
       - REDIS_URL=redis://redis:6379/0
       - MINIO_ENDPOINT=minio:9000
       - ML_SERVICE_URL=http://ml_service:8001

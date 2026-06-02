@@ -41,6 +41,14 @@ async function request<T>(endpoint: string, options: ApiOptions = {}): Promise<T
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
+  // Inject admin headers for secure backend validation
+  const adminUser = sessionStorage.getItem('dekho_admin_user')
+  const adminPass = sessionStorage.getItem('dekho_admin_pass')
+  if (adminUser && adminPass) {
+    headers['X-Admin-User'] = adminUser
+    headers['X-Admin-Pass'] = adminPass
+  }
+
   const response = await fetch(url, {
     ...fetchOptions,
     headers,

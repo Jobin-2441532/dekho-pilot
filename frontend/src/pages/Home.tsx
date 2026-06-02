@@ -312,55 +312,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Add via SMS Section ── */}
-      <div className={styles.px} style={{ marginTop: '24px', paddingBottom: '32px' }}>
-        <div className={styles.smsCard}>
-          <div style={{ fontSize: '12px', color: 'var(--color-muted)', marginBottom: '-8px' }}>* this feature will be available only in the prototype</div>
-          <h2 className={styles.smsTitle}>Add via SMS</h2>
-          <p className={styles.smsSub}>Paste your bank SMS here to categorize automatically.</p>
-          <textarea
-            className={styles.smsTextarea}
-            placeholder="Paste your bank SMS here..."
-            value={smsText}
-            onChange={e => setSmsText(e.target.value)}
-          />
-          {ingestStatus && (
-            <p className={ingestStatus.type === 'success' ? styles.smsSuccess : styles.smsError}>
-              {ingestStatus.msg}
-            </p>
-          )}
-          <button
-            className={styles.smsBtn}
-            onClick={handleSmsSubmit}
-            disabled={isSubmitting || !smsText.trim()}
-          >
-            {isSubmitting ? 'Processing...' : 'Classify SMS'}
-          </button>
-
-          <div className={styles.quickAddWrap}>
-            {[
-              "Spent INR 450.00 on Zomato via UPI. Bal: INR 12,345",
-              "Your A/C XX1234 has been debited by Rs 1500 for Electricity Bill. Available Bal Rs 45,000",
-              "Paid INR 800.00 to Netflix via Credit Card. Outstanding: INR 5,400",
-              "INR 3,000.00 debited from a/c XX5678 for Loan EMI.",
-              "Amount of INR 120.00 spent on Uber via UPI.",
-              "INR 500.00 paid to Rahul Sharma via UPI. Available balance: INR 2,500.",
-              "Debited Rs 2,500 from A/C XX8901 for Amazon Shopping.",
-              "Rs 150 transferred to vendor via Paytm. Bal: Rs 8,400",
-              "Paid INR 1,200.00 at Apollo Pharmacy. A/c balance INR 33,000",
-              "Sent Rs 2,000 to John Doe for dinner split via UPI."
-            ].map((msg, idx) => (
-              <button
-                key={idx}
-                className={styles.quickAddChip}
-                onClick={() => setSmsText(msg)}
-              >
-                Sample {idx + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Spacing at the bottom of the page */}
+      <div style={{ height: '48px' }} />
 
 
 

@@ -294,6 +294,28 @@ export default function Login() {
             Continue →
           </Button>
 
+          {/* Skip button */}
+          <button
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-primary)',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              fontWeight: 500,
+              marginTop: 12,
+              textAlign: 'center',
+              width: '100%',
+              fontFamily: 'var(--font-body)',
+            }}
+            onClick={() => {
+              setSelected('')
+              setStep('auth')
+            }}
+          >
+            Skip statement import (Start empty)
+          </button>
+
           <div className={styles.privacyNote} style={{ marginTop: 20 }}>
             <Lock size={12} />
             <span>Statement data stays on your device only.</span>
@@ -369,8 +391,8 @@ export default function Login() {
         )}
 
         <div className={styles.navRow} style={{ flexDirection: 'column', gap: 16 }}>
-          <Button fullWidth onClick={handleSubmit} disabled={loading || importing || (!isLogin && !selected)}>
-            {importing ? 'Importing data...' : loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up & Load Data')}
+          <Button fullWidth onClick={handleSubmit} disabled={loading || importing}>
+            {importing ? 'Importing data...' : loading ? 'Please wait...' : (isLogin ? 'Sign In' : selected ? 'Sign Up & Load Data' : 'Sign Up')}
           </Button>
 
           <button
@@ -378,9 +400,11 @@ export default function Login() {
             onClick={() => { 
               if (isLogin) {
                 setIsLogin(false)
-                setStep('pick') // Go to pick statement for new accounts
+                setSelected('')
+                setStep('auth')
               } else {
                 setIsLogin(true)
+                setStep('auth')
               }
               setError('')
             }}

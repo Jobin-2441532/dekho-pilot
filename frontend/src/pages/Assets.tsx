@@ -1,222 +1,126 @@
-/* ── Assets Page — Stitch "Assets Overview - Updated Nav" ── */
-
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, Settings } from 'lucide-react'
-import { SkeletonCard } from '../components/ui/LoadingState'
-import { api } from '../lib/api'
-import styles from './Assets.module.css'
-
-const API = import.meta.env.VITE_API_URL ?? `http://${window.location.hostname}:8000`
-
-/* Mini sparkline using SVG */
-function Sparkline({ data, color = '#6C482D' }: { data: number[]; color?: string }) {
-  if (data.length < 2) return null
-  const min = Math.min(...data)
-  const max = Math.max(...data)
-  const range = max - min || 1
-  const w = 200, h = 60
-  const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * w
-    const y = h - ((v - min) / range) * h
-    return `${x},${y}`
-  }).join(' ')
-
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className={styles.sparkline} aria-hidden="true">
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+import { ArrowLeft, Landmark, Sparkles } from 'lucide-react'
+import Button from '../components/ui/Button'
 
 export default function Assets() {
   const navigate = useNavigate()
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'1W' | '1M' | '3M' | '1Y'>('1M')
-
-  // Static data matching Stitch prototype values
-  const netWorth = 342500
-  const savings = 120000
-  const investments = 205000
-  const liabilities = 17500
-  const monthGrowth = 12400
-
-  const sparkData: Record<string, number[]> = {
-    '1W': [335000, 337200, 336800, 338000, 340000, 341500, 342500],
-    '1M': [320000, 324000, 322500, 328000, 331000, 338000, 342500],
-    '3M': [295000, 305000, 310000, 315000, 325000, 335000, 342500],
-    '1Y': [240000, 260000, 270000, 285000, 300000, 320000, 342500],
-  }
-
-  const growthBreakdown = [
-    { label: 'Contributions', amount: 8000, bar: 65 },
-    { label: 'Market growth', amount: 3200, bar: 26 },
-    { label: 'Interest', amount: 1200, bar: 10 },
-  ]
-
-  useEffect(() => {
-    api.get('/api/v1/dashboard/profile')
-      .then((res: any) => setProfile(res))
-      .catch((err: any) => console.error("Failed to load profile", err))
-      .finally(() => setLoading(false))
-  }, [])
-
-  if (loading) return (
-    <div style={{ padding: 'var(--space-5)' }}>
-      <SkeletonCard />
-      <div style={{ height: 'var(--space-4)' }} />
-      <SkeletonCard />
-    </div>
-  )
-
-  const fmt = (n: number) => '₹' + n.toLocaleString('en-IN')
 
   return (
-    <div className={styles.page}>
-      {/* ── Top Bar ── */}
-      <div className={styles.topBar}>
-        <p style={{ fontFamily: 'var(--font-headline)', fontSize: '24px', fontWeight: 'bold', color: 'var(--color-on-surface)', margin: 0 }}>Assets</p>
-        <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings">
-          <Settings size={18} strokeWidth={1.75} />
-        </button>
-      </div>
-
-      {/* ── Net Worth Hero ── */}
-      <div className={styles.px}>
-        <div className={styles.heroCard}>
-          <p className={styles.heroLabel}>YOUR NET WORTH</p>
-          <h1 className={styles.heroAmount}>{fmt(netWorth)}</h1>
-          <div className={styles.heroChange}>
-            <span className={styles.heroPct}>+{fmt(monthGrowth)}</span>
-            <span className={styles.heroChangeSub}>this month</span>
-          </div>
-          <button className={styles.heroCTA}>Tap to see details →</button>
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--bg-app, #fbf9f6)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+      boxSizing: 'border-box',
+      textAlign: 'center',
+      fontFamily: 'var(--font-body, system-ui, sans-serif)'
+    }}>
+      <div style={{
+        maxWidth: '440px',
+        width: '100%',
+        background: 'var(--bg-surface, #ffffff)',
+        border: '1px solid var(--bg-surface-high, #eae5dd)',
+        borderRadius: '24px',
+        padding: '40px 32px',
+        boxShadow: '0 12px 32px rgba(139, 99, 71, 0.06)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '24px',
+        boxSizing: 'border-box'
+      }}>
+        {/* Icon container */}
+        <div style={{
+          width: '72px',
+          height: '72px',
+          borderRadius: '24px',
+          background: 'rgba(108, 139, 71, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#6C8B47',
+          marginBottom: '8px'
+        }}>
+          <Landmark size={36} strokeWidth={1.5} />
         </div>
-      </div>
 
-      {/* ── Performance Chart ── */}
-      <div className={styles.px}>
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <p className={styles.chartTitle}>Performance</p>
-            <div className={styles.tabRow} role="group" aria-label="Time period">
-              {(['1W', '1M', '3M', '1Y'] as const).map(t => (
-                <button
-                  key={t}
-                  className={`${styles.tab} ${activeTab === t ? styles.tabActive : ''}`}
-                  onClick={() => setActiveTab(t)}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+        {/* Text details */}
+        <div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'rgba(108, 139, 71, 0.12)',
+            borderRadius: '20px',
+            padding: '4px 12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: '#6C8B47',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '16px'
+          }}>
+            <Sparkles size={12} /> Coming Soon
           </div>
-          <div className={styles.chartArea}>
-            <Sparkline data={sparkData[activeTab]} color="var(--color-primary)" />
-          </div>
-          <p className={styles.chartInsight}>
-            💡 Most growth came from your investments this month
+          
+          <h1 style={{
+            fontFamily: 'var(--font-headline, Georgia, serif)',
+            fontSize: '28px',
+            fontWeight: 700,
+            color: 'var(--color-on-surface, #2d2621)',
+            margin: '0 0 12px 0',
+            lineHeight: 1.2
+          }}>
+            Asset Tracking
+          </h1>
+          
+          <p style={{
+            fontSize: '14px',
+            lineHeight: '1.6',
+            color: 'var(--color-muted, #7e7368)',
+            margin: 0,
+            padding: '0 8px'
+          }}>
+            We are designing a calm, holistic view to track your savings, investments, and liabilities. Our model will automatically compile your net worth progress.
           </p>
         </div>
-      </div>
 
-      {/* ── Asset Category Cards ── */}
-      <div className={styles.px}>
-        <div className={styles.assetList}>
+        {/* Divider */}
+        <div style={{
+          width: '40px',
+          height: '2px',
+          background: 'var(--bg-surface-high, #eae5dd)',
+          margin: '8px 0'
+        }} />
+
+        {/* CTA buttons */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <Button fullWidth onClick={() => navigate('/home')}>
+            Back to Dashboard
+          </Button>
+          
           <button
-            className={styles.assetCard}
-            onClick={() => navigate('/assets/savings')}
+            onClick={() => navigate(-1)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-muted, #7e7368)',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '8px',
+              fontFamily: 'inherit'
+            }}
           >
-            <div className={styles.assetLeft}>
-              <div className={styles.assetDot} data-type="savings" />
-              <div>
-                <p className={styles.assetName}>Savings</p>
-                <p className={styles.assetDesc}>Safe &amp; accessible</p>
-              </div>
-            </div>
-            <div className={styles.assetRight}>
-              <p className={styles.assetAmt}>{fmt(savings)}</p>
-              <ChevronRight size={16} className={styles.chevron} />
-            </div>
+            <ArrowLeft size={14} /> Go Back
           </button>
-
-          <div className={styles.assetDivider} />
-
-          <button
-            className={styles.assetCard}
-            onClick={() => navigate('/assets/investments')}
-          >
-            <div className={styles.assetLeft}>
-              <div className={styles.assetDot} data-type="investments" />
-              <div>
-                <p className={styles.assetName}>Investments</p>
-                <p className={styles.assetDesc}>Growing your money</p>
-              </div>
-            </div>
-            <div className={styles.assetRight}>
-              <p className={`${styles.assetAmt} ${styles.assetAmtGreen}`}>{fmt(investments)}</p>
-              <ChevronRight size={16} className={styles.chevron} />
-            </div>
-          </button>
-
-          <div className={styles.assetDivider} />
-
-          <button
-            className={styles.assetCard}
-            onClick={() => navigate('/assets/liabilities')}
-          >
-            <div className={styles.assetLeft}>
-              <div className={styles.assetDot} data-type="liabilities" />
-              <div>
-                <p className={styles.assetName}>Liabilities</p>
-                <p className={styles.assetDesc}>Money you owe</p>
-              </div>
-            </div>
-            <div className={styles.assetRight}>
-              <p className={`${styles.assetAmt} ${styles.assetAmtRed}`}>{fmt(liabilities)}</p>
-              <ChevronRight size={16} className={styles.chevron} />
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Growth Breakdown ── */}
-      <div className={styles.px}>
-        <div className={styles.breakdownCard}>
-          <div className={styles.breakdownHeader}>
-            <p className={styles.breakdownTitle}>Growth breakdown</p>
-            <p className={styles.breakdownSub}>{fmt(monthGrowth)} earned this month</p>
-          </div>
-          {growthBreakdown.map(item => (
-            <div key={item.label} className={styles.breakdownRow}>
-              <div className={styles.breakdownMeta}>
-                <p className={styles.breakdownLabel}>• {item.label}</p>
-                <p className={styles.breakdownAmt}>{fmt(item.amount)}</p>
-              </div>
-              <div className={styles.breakdownTrack}>
-                <div className={styles.breakdownFill} style={{ width: `${item.bar}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Insight Card ── */}
-      <div className={styles.px}>
-        <div className={styles.insightCard}>
-          <p className={styles.insightLabel}>TODAY'S INSIGHT</p>
-          <p className={styles.insightText}>
-            Your investments are performing well. 60% of your growth came from market gains this period.
-          </p>
-          <button className={styles.insightCTA}>Read full report</button>
         </div>
       </div>
     </div>

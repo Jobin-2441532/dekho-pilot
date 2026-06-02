@@ -1,201 +1,128 @@
-/* Grow page — Stitch "Grow Home" + "Readiness Guardrail" */
-
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, TrendingUp, Leaf, BarChart2, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react'
-import { useAppStore } from '../store/appStore'
-import styles from './Grow.module.css'
-
-const RECS = [
-  {
-    id: 'sip',
-    emoji: '📈',
-    title: 'Start a ₹5,000/mo SIP',
-    subtitle: 'Nifty 50 Index Fund',
-    risk: 'LOW RISK',
-    riskColor: '#2E7D32',
-    horizon: '7+ years',
-    why: 'Based on your savings buffer and income stability, you can start compounding now.',
-    to: '/grow/recommendations',
-  },
-  {
-    id: 'fd',
-    emoji: '🔒',
-    title: 'Open a 1-Year FD',
-    subtitle: 'HDFC Bank · 7.1% p.a.',
-    risk: 'NO RISK',
-    riskColor: '#1565C0',
-    horizon: '1 year',
-    why: 'Your emergency fund is sufficient — park extra cash in a high-yield FD.',
-    to: '/assets/savings',
-  },
-  {
-    id: 'cc',
-    emoji: '💳',
-    title: 'Clear Credit Card First',
-    subtitle: 'SBI Card · 36% p.a.',
-    risk: 'PRIORITY',
-    riskColor: '#B45309',
-    horizon: 'This month',
-    why: 'Paying 36% interest is worse than any investment return. Clear this first.',
-    to: '/assets/liabilities',
-  },
-]
-
-const READINESS_CHECKLIST = [
-  { label: '3+ months emergency fund', done: false },
-  { label: 'Consistent monthly savings > 20%', done: false },
-  { label: 'No high-interest debt (>12% p.a.)', done: true },
-  { label: 'Monthly income stable for 6 months', done: true },
-  { label: 'Basic insurance coverage', done: false },
-]
-
-function GrowHome() {
-  const navigate = useNavigate()
-  const suggestedAmount = 5000
-
-  return (
-    <div className={styles.page}>
-      {/* Top bar */}
-      <div className={styles.topBar}>
-        <p className={styles.pageTitle}>Grow</p>
-        <div className={styles.avatarBtn}>AK</div>
-      </div>
-
-      {/* Action center */}
-      <div className={styles.px}>
-        <div className={styles.actionCenterCard}>
-          <p className={styles.actionLabel}>ACTION CENTER</p>
-          <h1 className={styles.actionTitle}>Your next growth step</h1>
-        
-        <div className={styles.readinessBadge}>
-          <Sparkles size={18} className={styles.readinessIcon} strokeWidth={2} />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className={styles.readinessBadgeLabel}>SMART INSIGHT</span>
-            <span className={styles.readinessBadgeText}>Because your savings buffer is stable, you can safely start growing your wealth.</span>
-          </div>
-        </div>
-
-        <p className={styles.suggestedLabel}>Suggested monthly amount</p>
-        <p className={styles.suggestedAmt}>₹{suggestedAmount.toLocaleString('en-IN')}</p>
-        </div>
-      </div>
-
-      <div className={styles.px} style={{ marginTop: 'var(--space-4)' }}>
-        <div className={styles.aiRecCard}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-            <Sparkles size={18} color="rgba(255,255,255,0.8)" strokeWidth={1.75} />
-            <p className={styles.aiRecLabel}>AI RECOMMENDATIONS</p>
-          </div>
-          <h1 className={styles.aiRecTitle}>
-            Based on your financial health
-          </h1>
-          <p className={styles.aiRecSub}>
-            Dekho analysed your income, expenses, savings, and goals to suggest these next steps.
-          </p>
-        </div>
-      </div>
-
-
-      {/* Your Next Steps */}
-      <div className={styles.px} style={{ marginTop: 'var(--space-5)' }}>
-        <p className={styles.pathsTitle}>Your Next Steps</p>
-        <div className={styles.recList}>
-          {RECS.map((rec, i) => (
-            <button
-              key={rec.id}
-              className={styles.recCard}
-              onClick={() => navigate(rec.to)}
-            >
-              <div className={styles.recNum}>{i + 1}</div>
-              <div className={styles.recBody}>
-                <div className={styles.recHeader}>
-                  <div className={styles.recTitleRow}>
-                    <span className={styles.recEmoji}>{rec.emoji}</span>
-                    <div>
-                      <p className={styles.recTitle}>{rec.title}</p>
-                      <p className={styles.recSub}>{rec.subtitle}</p>
-                    </div>
-                  </div>
-                  <span className={styles.recRisk} style={{ color: rec.riskColor }}>{rec.risk}</span>
-                </div>
-                <p className={styles.recWhy}>{rec.why}</p>
-                <div className={styles.recMeta}>
-                  <span>⏱ {rec.horizon}</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA button */}
-      <div className={styles.px} style={{ marginTop: 'var(--space-6)' }}>
-        <button
-          className={styles.ctaBtn}
-          onClick={() => navigate('/grow/recommendations')}
-        >
-          Get Personalized recommendations by<br/>Dekho
-        </button>
-        <p className={styles.poweredBy}>POWERED BY GROWW BROKERAGE SERVICES</p>
-      </div>
-    </div>
-  )
-}
-
-function ReadinessGuardrail() {
-  const navigate = useNavigate()
-  const doneCount = READINESS_CHECKLIST.filter(c => c.done).length
-  const pct = Math.round((doneCount / READINESS_CHECKLIST.length) * 100)
-
-  return (
-    <div className={styles.page}>
-      <div className={styles.topBar}>
-        <p className={styles.pageTitle}>Grow</p>
-        <div className={styles.avatarBtn}>AK</div>
-      </div>
-
-      {/* Not ready card */}
-      <div className={styles.px}>
-        <div className={styles.guardrailCard}>
-          <AlertTriangle size={24} color="#B45309" strokeWidth={1.75} />
-          <h1 className={styles.guardrailTitle}>Almost ready to invest</h1>
-          <p className={styles.guardrailSub}>
-            Complete a few financial health checks before you start growing your wealth.
-          </p>
-          <div className={styles.guardrailTrack}>
-            <div className={styles.guardrailFill} style={{ width: `${pct}%` }} />
-          </div>
-          <p className={styles.guardrailPct}>{doneCount} of {READINESS_CHECKLIST.length} criteria met ({pct}%)</p>
-        </div>
-      </div>
-
-      {/* Checklist */}
-      <div className={styles.px}>
-        <p className={styles.pathsTitle}>Your Readiness Checklist</p>
-        <div className={styles.checkList}>
-          {READINESS_CHECKLIST.map((item, i) => (
-            <div key={i} className={`${styles.checkItem} ${item.done ? styles.checkDone : ''}`}>
-              {item.done
-                ? <CheckCircle2 size={18} color="var(--color-positive)" strokeWidth={1.75} />
-                : <div className={styles.checkCircle} />
-              }
-              <p className={styles.checkLabel}>{item.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Go to budgets CTA */}
-      <div className={styles.px}>
-        <button className={styles.ctaBtn} onClick={() => navigate('/budgets')}>
-          Work on missing criteria →
-        </button>
-      </div>
-    </div>
-  )
-}
+import { ArrowLeft, TrendingUp, Sparkles } from 'lucide-react'
+import Button from '../components/ui/Button'
 
 export default function Grow() {
-  const { user } = useAppStore()
-  return user.isInvestmentEligible ? <GrowHome /> : <ReadinessGuardrail />
+  const navigate = useNavigate()
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--bg-app, #fbf9f6)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+      boxSizing: 'border-box',
+      textAlign: 'center',
+      fontFamily: 'var(--font-body, system-ui, sans-serif)'
+    }}>
+      <div style={{
+        maxWidth: '440px',
+        width: '100%',
+        background: 'var(--bg-surface, #ffffff)',
+        border: '1px solid var(--bg-surface-high, #eae5dd)',
+        borderRadius: '24px',
+        padding: '40px 32px',
+        boxShadow: '0 12px 32px rgba(139, 99, 71, 0.06)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '24px',
+        boxSizing: 'border-box'
+      }}>
+        {/* Icon container */}
+        <div style={{
+          width: '72px',
+          height: '72px',
+          borderRadius: '24px',
+          background: 'rgba(139, 99, 71, 0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--color-primary, #8B6347)',
+          marginBottom: '8px'
+        }}>
+          <TrendingUp size={36} strokeWidth={1.5} />
+        </div>
+
+        {/* Text details */}
+        <div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'rgba(139, 99, 71, 0.1)',
+            borderRadius: '20px',
+            padding: '4px 12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: 'var(--color-primary, #8B6347)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '16px'
+          }}>
+            <Sparkles size={12} /> Coming Soon
+          </div>
+          
+          <h1 style={{
+            fontFamily: 'var(--font-headline, Georgia, serif)',
+            fontSize: '28px',
+            fontWeight: 700,
+            color: 'var(--color-on-surface, #2d2621)',
+            margin: '0 0 12px 0',
+            lineHeight: 1.2
+          }}>
+            Grow Wealth
+          </h1>
+          
+          <p style={{
+            fontSize: '14px',
+            lineHeight: '1.6',
+            color: 'var(--color-muted, #7e7368)',
+            margin: 0,
+            padding: '0 8px'
+          }}>
+            Advanced investment recommendations, SIP planning guides, and long-term compounding pathfinders are being prepared. We are refining these models with financial wisdom.
+          </p>
+        </div>
+
+        {/* Divider */}
+        <div style={{
+          width: '40px',
+          height: '2px',
+          background: 'var(--bg-surface-high, #eae5dd)',
+          margin: '8px 0'
+        }} />
+
+        {/* CTA buttons */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <Button fullWidth onClick={() => navigate('/home')}>
+            Back to Dashboard
+          </Button>
+          
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-muted, #7e7368)',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '8px',
+              fontFamily: 'inherit'
+            }}
+          >
+            <ArrowLeft size={14} /> Go Back
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }

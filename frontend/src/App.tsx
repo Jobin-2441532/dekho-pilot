@@ -33,6 +33,7 @@ const Goals       = lazy(() => import('./pages/Goals'))
 const MonthlyWrap = lazy(() => import('./pages/MonthlyWrap'))
 const Settings    = lazy(() => import('./pages/Settings'))
 const AskDekho    = lazy(() => import('./pages/AskDekho'))
+const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 
 /* ── Tiny spinner for Suspense fallback ── */
 function PageLoader() {
@@ -85,6 +86,13 @@ export default function App() {
         {/* ── Login — outside shell ── */}
         <Route path="/login"      element={<Login />} />
         <Route path="/onboarding" element={<Navigate to="/login" replace />} />
+
+        {/* ── Admin Portal — outside AppShell, but still authenticated ── */}
+        <Route path="/admin"      element={
+          <RequireAuth>
+            <Suspense fallback={<PageLoader />}><AdminPortal /></Suspense>
+          </RequireAuth>
+        } />
 
         {/* ── Authenticated app — inside shell ── */}
         <Route

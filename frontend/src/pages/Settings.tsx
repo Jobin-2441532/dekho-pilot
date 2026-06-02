@@ -71,6 +71,13 @@ export default function Settings() {
               </div>
               <ChevronRight size={20} className={styles.chevron} />
             </button>
+            <div style={{ height: '1px', background: 'var(--bg-surface-high, #eae5dd)', margin: '0 16px', opacity: 0.5 }} />
+            <button className={styles.rowBtn} onClick={() => navigate('/admin')}>
+              <div className={styles.rowLeft}>
+                <span>Admin Portal</span>
+              </div>
+              <ChevronRight size={20} className={styles.chevron} />
+            </button>
           </div>
         </div>
 
