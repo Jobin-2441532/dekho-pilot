@@ -78,6 +78,7 @@ ALLOWED_ORIGINS = [
     "https://dekho.vercel.app",
     "https://dekho-app.vercel.app",
     "https://dekhoapp.vercel.app",
+    "https://dekhofin.vercel.app",
 ]
 
 # Allow custom domain from env var if provided
