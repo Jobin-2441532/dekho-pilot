@@ -311,6 +311,8 @@ async def stream_generator(
 
     except Exception as e:
         logger.error("Stream error: %s", e, exc_info=True)
+        fallback = "Sorry, I encountered an internal error. Please try again."
+        yield _sse_event("token", json.dumps({"text": fallback}))
         yield _sse_event("error", json.dumps({"message": "Something went wrong. Please try again."}))
 
 

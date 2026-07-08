@@ -368,6 +368,13 @@ export default function ChatPanel() {
         return arr
       })
     } finally {
+      setMessages((prev) => {
+        const arr = [...prev]
+        if (arr.length > 0 && arr[arr.length - 1].content === '' && arr[arr.length - 1].role === 'assistant') {
+          arr[arr.length - 1].content = "Sorry, I couldn't generate a response. Please try again."
+        }
+        return arr
+      })
       setIsLoading(false)
     }
   }
