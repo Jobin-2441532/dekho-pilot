@@ -71,6 +71,7 @@ export default function TransactionsList() {
 
   const handleCorrect = async () => {
     if (!newCat || !editTx) return
+    try {
       const token = localStorage.getItem('dekho_token')
       await fetch(`${API}/dashboard/feedback/correct`, {
         method: 'POST',

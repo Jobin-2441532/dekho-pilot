@@ -152,9 +152,9 @@ export default function Login() {
         console.error('Failed to fetch statements:', e)
         // Fallback static metadata if backend unreachable
         setStatements([
-          { id: 'Statement9',  label: 'Statement 9',  date_range: 'Apr – May 2026', transactions: 64, profile: 'Mid-tier, Bangalore',    icon: '🏙️', color: '#8B6347' },
-          { id: 'Statement10', label: 'Statement 10', date_range: 'Apr – May 2026', transactions: 64, profile: 'Upper-mid, Hyderabad',    icon: '💼', color: '#6C8B47' },
-          { id: 'Statement11', label: 'Statement 11', date_range: 'Apr – May 2026', transactions: 64, profile: 'Moderate spend, Chennai', icon: '🌊', color: '#47688B' },
+          { id: 'Statement9',  label: 'Statement 9',  salary: 'Variable', date_range: 'Apr – May 2026', transactions: 64, profile: 'Mid-tier, Bangalore',    icon: '🏙️', color: '#8B6347' },
+          { id: 'Statement10', label: 'Statement 10', salary: 'Variable', date_range: 'Apr – May 2026', transactions: 64, profile: 'Upper-mid, Hyderabad',    icon: '💼', color: '#6C8B47' },
+          { id: 'Statement11', label: 'Statement 11', salary: 'Variable', date_range: 'Apr – May 2026', transactions: 64, profile: 'Moderate spend, Chennai', icon: '🌊', color: '#47688B' },
         ])
       })
   }, [])
