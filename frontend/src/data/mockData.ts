@@ -11,6 +11,7 @@ export interface Transaction {
   category: string
   paymentMode: string
   notes?: string
+  direction?: 'debit' | 'credit'
 }
 
 export interface SavingsGoal {
@@ -41,8 +42,6 @@ export interface Asset {
 export const USER_PROFILE = {
   name: 'Arjun',
   fullName: 'Arjun Sharma',
-  incomeRange: '₹60k – ₹1L',
-  monthlyIncome: 75000,
   stage: 'Early career',
   purposes: ['Track spending', 'Build emergency fund', 'Save for a goal'],
   monthlyBudget: 45000,
@@ -240,9 +239,9 @@ export const OPPORTUNITIES = [
   {
     id: 'op4',
     emoji: '🏠',
-    title: 'Track your rent-to-income ratio',
-    description: 'Your rent is 24% of monthly income. Financial guides suggest keeping it under 30%.',
-    why: 'You\'re within the healthy range — this gives room for other goals.',
+    title: 'Track your rent-to-expense ratio',
+    description: 'Your rent is a significant portion of your expenses.',
+    why: 'Keeping housing costs balanced gives room for other goals.',
     cta: 'See full breakdown',
     tag: 'You\'re on track',
     tagColor: 'positive' as const,

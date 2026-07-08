@@ -133,3 +133,20 @@
 [data-theme="dark"] .center:hover {
   box-shadow: 0 8px 32px rgba(78, 222, 163, 0.45);
 }
+
+/* ── Coming Soon Badge ── */
+.comingSoonBadge {
+  position: absolute;
+  top: 0px;
+  right: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  padding: 1px 4px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

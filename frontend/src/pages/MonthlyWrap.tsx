@@ -6,14 +6,6 @@ import styles from './SubPage.module.css'
 
 const SLIDES = [
   {
-    id: 'income',
-    label: 'INCOME',
-    title: 'You earned ₹82,000 this month',
-    subtitle: '↑ ₹5,000 more than last month',
-    emoji: '💼',
-    color: '#2E7D32',
-  },
-  {
     id: 'expenses',
     label: 'SPENDING',
     title: 'You spent ₹24,500',
@@ -40,7 +32,6 @@ const SLIDES = [
 ]
 
 const HIGHLIGHTS = [
-  { label: 'Income', value: '₹82,000', icon: '💼', positive: true },
   { label: 'Expenses', value: '₹24,500', icon: '💸', positive: false },
   { label: 'Saved', value: '₹57,500', icon: '🏦', positive: true },
   { label: 'Net Worth', value: '₹3,42,500', icon: '📊', positive: true },

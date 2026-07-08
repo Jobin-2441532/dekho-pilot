@@ -1,8 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import AppShell from './components/layout/AppShell'
-import DisclaimerModal from './components/ui/DisclaimerModal'
-
 /* ── Auth (always needed immediately) ── */
 import Login from './pages/Login'
 
@@ -10,6 +8,7 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 const Expenses     = lazy(() => import('./pages/Expenses'))
 const Budgets      = lazy(() => import('./pages/Budgets'))
+const BudgetInsights = lazy(() => import('./pages/BudgetInsights'))
 const Assets       = lazy(() => import('./pages/Assets'))
 const Grow         = lazy(() => import('./pages/Grow'))
 const Behavior     = lazy(() => import('./pages/Behavior'))
@@ -33,16 +32,13 @@ const Goals       = lazy(() => import('./pages/Goals'))
 const MonthlyWrap = lazy(() => import('./pages/MonthlyWrap'))
 const Settings    = lazy(() => import('./pages/Settings'))
 const AskDekho    = lazy(() => import('./pages/AskDekho'))
-const AdminPortal = lazy(() => import('./pages/AdminPortal'))
+
+
+import GlobalLoader from './components/ui/GlobalLoader'
 
 /* ── Tiny spinner for Suspense fallback ── */
 function PageLoader() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-      <div style={{ width: 28, height: 28, borderRadius: '50%', border: '3px solid var(--color-primary)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  )
+  return <GlobalLoader />
 }
 
 /* ── Auth guard — checks for JWT token ── */
@@ -52,47 +48,36 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return (token && onboarded) ? <>{children}</> : <Navigate to="/login" replace />
 }
 
-/* ── Disclaimer wrapper — shows splash once per session ── */
+/* ── Disclaimer wrapper — shows splash once per session (REMOVED) ── */
 function DisclaimerWrapper({ children }: { children: React.ReactNode }) {
-  const location = useLocation()
-  const [show, setShow] = useState(false)
+  return <>{children}</>
+}
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
   useEffect(() => {
-    const token = localStorage.getItem('dekho_token')
-    const seen  = localStorage.getItem('dekho_disclaimer_seen')
-    // Only show on authenticated routes, and only once per install
-    if (token && !seen && location.pathname !== '/login') {
-      setShow(true)
-    }
-  }, [])
-
-  const dismiss = () => {
-    localStorage.setItem('dekho_disclaimer_seen', '1')
-    setShow(false)
-  }
-
-  return (
-    <>
-      {children}
-      {show && <DisclaimerModal mode="splash" onClose={dismiss} />}
-    </>
-  )
+    // Scroll the main content container instead of the window
+    // Use setTimeout to ensure DOM is updated after Suspense/layout resolves
+    setTimeout(() => {
+      const mainContainer = document.getElementById('main-scroll-container')
+      if (mainContainer) {
+        mainContainer.scrollTo(0, 0)
+      } else {
+        window.scrollTo(0, 0)
+      }
+    }, 50)
+  }, [pathname])
+  return null
 }
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ── Login — outside shell ── */}
         <Route path="/login"      element={<Login />} />
         <Route path="/onboarding" element={<Navigate to="/login" replace />} />
-
-        {/* ── Admin Portal — outside AppShell, but still authenticated ── */}
-        <Route path="/admin"      element={
-          <RequireAuth>
-            <Suspense fallback={<PageLoader />}><AdminPortal /></Suspense>
-          </RequireAuth>
-        } />
 
         {/* ── Authenticated app — inside shell ── */}
         <Route
@@ -110,6 +95,7 @@ export default function App() {
                     <Route path="/home"         element={<Home />} />
                     <Route path="/expenses"     element={<Expenses />} />
                     <Route path="/budgets"      element={<Budgets />} />
+                    <Route path="/budgets/insights" element={<BudgetInsights />} />
                     <Route path="/assets"       element={<Assets />} />
                     <Route path="/grow"         element={<Grow />} />
                     <Route path="/behavior"     element={<Behavior />} />

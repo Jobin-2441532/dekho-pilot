@@ -25,7 +25,6 @@ class RegisterRequest(BaseModel):
     name: str
     email: str
     password: str
-    income_range: str = "5-10L"
     monthly_budget: float = 50000
 
 class TokenResponse(BaseModel):
@@ -78,7 +77,6 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
         name=req.name,
         email=req.email,
         password_hash=hash_password(req.password),
-        income_range=req.income_range,
         monthly_budget=req.monthly_budget,
         financial_stage="starter",
         goal_type="savings",
@@ -148,6 +146,5 @@ def get_me(current_user: User = Depends(get_current_user)):
         "id": current_user.id,
         "name": current_user.name,
         "email": current_user.email,
-        "income_range": current_user.income_range,
         "financial_stage": current_user.financial_stage,
     }

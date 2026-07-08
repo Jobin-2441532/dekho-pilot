@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import FloatingDock from '../navigation/FloatingDock'
 import ChatbotFAB from '../chat/ChatbotFAB'
 import AddTransactionFAB from '../transactions/AddTransactionFAB'
@@ -13,25 +14,31 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   // Ensure theme is applied and synced on mount
   useTheme()
+  const location = useLocation()
+  const isInsightsPage = location.pathname.includes('/insights')
 
   return (
     <div className={styles.shell}>
       {/* Main scrollable content */}
-      <main className={styles.content}>
+      <main id="main-scroll-container" className={styles.content}>
         {children}
       </main>
 
-      {/* Add Offline Spending FAB — sits above Chatbot FAB */}
-      <AddTransactionFAB />
+      {!isInsightsPage && (
+        <>
+          {/* Add Offline Spending FAB — sits above Chatbot FAB */}
+          <AddTransactionFAB />
 
-      {/* Global chatbot FAB — always rendered above the dock */}
-      <ChatbotFAB />
+          {/* Global chatbot FAB — always rendered above the dock */}
+          <ChatbotFAB />
+        </>
+      )}
 
       {/* Chat panel drawer — controlled by Zustand isChatOpen */}
       <ChatPanel />
 
       {/* Bottom navigation */}
-      <FloatingDock />
+      {!isInsightsPage && <FloatingDock />}
     </div>
   )
 }
@@ -52,7 +59,9 @@ export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
         <h1 className={styles.pageTitle}>{title}</h1>
         {subtitle && <p className={styles.pageSubtitle}>{subtitle}</p>}
       </div>
-      {action && <div className={styles.pageHeaderAction}>{action}</div>}
+      <div className={styles.pageHeaderAction}>
+        {action}
+      </div>
     </div>
   )
 }

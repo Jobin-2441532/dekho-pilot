@@ -43,18 +43,20 @@ export default function ChatBubble({
         {showAvatar && (
           <div className={styles.avatarRow}>
             <div className={styles.avatar}>D</div>
-            <div className={styles.typing}>
-              <span className={styles.dot} />
-              <span className={styles.dot} />
-              <span className={styles.dot} />
+            <div className={styles.container}>
+              <span />
+              <span />
+              <span />
+              <span />
             </div>
           </div>
         )}
         {!showAvatar && (
-          <div className={styles.typing}>
-            <span className={styles.dot} />
-            <span className={styles.dot} />
-            <span className={styles.dot} />
+          <div className={styles.container}>
+            <span />
+            <span />
+            <span />
+            <span />
           </div>
         )}
       </div>

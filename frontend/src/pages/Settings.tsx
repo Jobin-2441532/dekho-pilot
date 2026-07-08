@@ -5,10 +5,13 @@ import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import styles from './Settings.module.css'
 
+import { subscribeUserToPush } from '../services/pushService'
+
 export default function Settings() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
   const [profile, setProfile] = useState<{ name: string, email: string }>({ name: 'User', email: '' })
+  const [pushEnabled, setPushEnabled] = useState(Notification.permission === 'granted')
 
   useEffect(() => {
     api.get<any>('/api/v1/dashboard/profile')
@@ -22,6 +25,20 @@ export default function Settings() {
       })
       .catch(() => {})
   }, [])
+
+  const togglePush = async () => {
+    if (pushEnabled) {
+      alert("To disable push notifications, please revoke permission in your browser settings.")
+    } else {
+      try {
+        await subscribeUserToPush()
+        setPushEnabled(true)
+      } catch (e: any) {
+        console.error(e)
+        alert(`Could not enable push notifications: ${e.message}`)
+      }
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -40,7 +57,7 @@ export default function Settings() {
           </div>
           <div>
             <h2 className={styles.userName}>{profile.name}</h2>
-            <p className={styles.userPhone}>{profile.email || '+91 98765 43210'}</p>
+            {profile.email && <p className={styles.userPhone}>{profile.email}</p>}
           </div>
         </div>
       </div>
@@ -59,25 +76,34 @@ export default function Settings() {
                 <span className={styles.slider}></span>
               </label>
             </div>
+            <div style={{ height: '1px', background: 'var(--bg-surface-high, #eae5dd)', margin: '0 16px', opacity: 0.5 }} />
+            <div className={styles.row}>
+              <div className={styles.rowLeft}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                <span>Push Notifications</span>
+              </div>
+              <label className={styles.switch}>
+                <input 
+                  type="checkbox" 
+                  checked={pushEnabled} 
+                  onChange={togglePush} 
+                />
+                <span className={styles.slider}></span>
+              </label>
+            </div>
           </div>
         </div>
 
         <div className={styles.section}>
           <p className={styles.sectionTitle}>Highlights</p>
           <div className={styles.card}>
-            <button className={styles.rowBtn} onClick={() => navigate('/monthly-wrap')}>
+            <div className={styles.rowBtn} style={{ cursor: 'default' }}>
               <div className={styles.rowLeft}>
                 <span>Monthly Wrap</span>
               </div>
-              <ChevronRight size={20} className={styles.chevron} />
-            </button>
-            <div style={{ height: '1px', background: 'var(--bg-surface-high, #eae5dd)', margin: '0 16px', opacity: 0.5 }} />
-            <button className={styles.rowBtn} onClick={() => navigate('/admin')}>
-              <div className={styles.rowLeft}>
-                <span>Admin Portal</span>
-              </div>
-              <ChevronRight size={20} className={styles.chevron} />
-            </button>
+              <span style={{ fontSize: '12px', color: 'var(--color-primary)', background: 'var(--color-primary-bg)', padding: '2px 8px', borderRadius: '12px' }}>Coming soon</span>
+            </div>
+
           </div>
         </div>
 

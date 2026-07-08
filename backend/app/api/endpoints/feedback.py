@@ -87,6 +87,11 @@ def correct_category(
     tx.sub_category = body.corrected_sub_category
     tx.review_status = "reviewed"
     tx.confidence = 1.0
+    
+    # PMF Analytics tracking fields
+    from datetime import datetime, timezone
+    tx.was_corrected = True
+    tx.corrected_at = datetime.now(timezone.utc)
 
     db.commit()
 

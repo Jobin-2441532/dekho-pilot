@@ -1,16 +1,14 @@
-/* ── Home Page — Daily Reflection (Stitch: "Daily Reflection Updated Nav") ── */
-
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Settings, Info } from 'lucide-react'
+import { Settings, Check } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
 import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
 import { ReflectionCard } from '../components/ui/ReflectionCard'
-import DisclaimerModal from '../components/ui/DisclaimerModal'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import styles from './Home.module.css'
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:8000`
+const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -31,9 +29,12 @@ export default function Home() {
   const [todaySpend, setTodaySpend] = useState(0)
   const [monthTotal, setMonthTotal] = useState(0)
   const [savingGoals, setSavingGoals] = useState<any[]>([])
-  const [topCategory, setTopCategory] = useState<{ name: string; total: number; pct: number }>({ name: 'None', total: 0, pct: 0 })
+  const [budgets, setBudgets] = useState<any[]>([])
+  const [topCategory, setTopCategory] = useState<{ name: string; total: number; pct: number | null }>({ name: 'None', total: 0, pct: null })
   const [transactions, setTransactions] = useState<any[]>([])
   const [reviewCount, setReviewCount] = useState(0)
+  const [categorySpends, setCategorySpends] = useState<Record<string, number>>({})
+  const [totalAiChats, setTotalAiChats] = useState(0)
   
   const [smsText, setSmsText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -45,7 +46,7 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<{role: 'user'|'dekho', text: string}[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
-  const [showInfo, setShowInfo] = useState(false)
+  const [stats, setStats] = useState<any>(null)
 
   async function handleAsk() {
     if (!chatInput.trim()) return
@@ -72,37 +73,81 @@ export default function Home() {
 
   const fetchData = () => {
     const now = new Date()
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-    const today = now.toISOString().slice(0, 10)
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const today = `${year}-${month}-${String(now.getDate()).padStart(2, '0')}`
+    const monthStart = `${year}-${month}-01`
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const thirtyDaysAgoDate = `${thirtyDaysAgo.getFullYear()}-${String(thirtyDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(thirtyDaysAgo.getDate()).padStart(2, '0')}`
 
     Promise.all([
       api.get<any>('/api/v1/dashboard/profile').catch(() => null),
-      api.get<any>('/api/v1/dashboard/transactions', { limit: 200, from_date: monthStart }).catch(() => ({ data: [] })),
+      api.get<any>('/api/v1/dashboard/transactions', { limit: 500, from_date: thirtyDaysAgoDate }).catch(() => ({ data: [] })),
       api.get<any[]>('/api/v1/dashboard/goals').catch(() => []),
       api.get<any[]>('/api/v1/dashboard/review/queue').catch(() => []),
-    ]).then(([prof, txRes, goals, revData]) => {
+      api.get<any[]>('/api/v1/chat/history').catch(() => []),
+      api.get<any[]>('/api/v1/dashboard/budgets').catch(() => []),
+    ]).then(([prof, txRes, goals, revData, chatHistRes, budgetsRes]) => {
       if (prof) setProfile({ ...prof, name: prof.fullName || prof.name || 'User' })
       if (Array.isArray(goals)) setSavingGoals(goals)
       if (Array.isArray(revData)) setReviewCount(revData.length)
+      if (Array.isArray(budgetsRes)) setBudgets(budgetsRes)
+      if (Array.isArray(chatHistRes)) {
+        const userMsgs = chatHistRes.filter((m: any) => m.role === 'user').length;
+        setTotalAiChats(userMsgs);
+      }
 
       const txList: any[] = txRes?.data || []
       if (Array.isArray(txList)) {
         setTransactions(txList)
-        const total = txList.reduce((s: number, t: any) => s + (t.direction === 'debit' ? (t.amount ?? 0) : 0), 0)
+        
+        const thisMonthTxs = txList.filter(t => (t.date || '') >= monthStart)
+        const total = thisMonthTxs.reduce((s: number, t: any) => s + (t.direction === 'debit' ? (t.amount ?? 0) : 0), 0)
         setMonthTotal(total)
 
         const todayStr = today
         const todayTxs = txList.filter((t: any) => String(t.date || '').startsWith(todayStr) && t.direction === 'debit')
         setTodaySpend(todayTxs.reduce((s: number, t: any) => s + (t.amount ?? 0), 0))
 
+        const dayOfWeek = now.getDay(); // 0 is Sunday, 6 is Saturday
+        
+        // This week started on the most recent Sunday
+        const startOfThisWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+        startOfThisWeek.setHours(0, 0, 0, 0);
+
+        const startOfLastWeek = new Date(startOfThisWeek.getFullYear(), startOfThisWeek.getMonth(), startOfThisWeek.getDate() - 7);
+        const endOfLastWeek = new Date(startOfThisWeek.getFullYear(), startOfThisWeek.getMonth(), startOfThisWeek.getDate() - 1);
+        endOfLastWeek.setHours(23, 59, 59, 999);
+
+        const last7DaysTotal = txList.filter(t => {
+          if (t.direction !== 'debit' || !t.date) return false;
+          const d = new Date(t.date);
+          return d >= startOfThisWeek && d <= now;
+        }).reduce((sum, t) => sum + (t.amount || 0), 0);
+
+        const prev7DaysTotal = txList.filter(t => {
+          if (t.direction !== 'debit' || !t.date) return false;
+          const d = new Date(t.date);
+          return d >= startOfLastWeek && d <= endOfLastWeek;
+        }).reduce((sum, t) => sum + (t.amount || 0), 0);
+
+        let pct: number | null = null;
+        if (prev7DaysTotal > 0) {
+          pct = Math.round(((last7DaysTotal - prev7DaysTotal) / prev7DaysTotal) * 100);
+        }
+
         // Top category this month
         const catMap: Record<string, number> = {}
-        txList.filter((t: any) => t.direction === 'debit').forEach((t: any) => {
-          catMap[t.category || 'Others'] = (catMap[t.category || 'Others'] || 0) + (t.amount || 0)
+        txList.forEach((t: any) => {
+          if (t.direction === 'debit' && t.date >= monthStart) {
+            const c = t.category || 'Others'
+            catMap[c] = (catMap[c] || 0) + (t.amount || 0)
+          }
         })
+        setCategorySpends(catMap)
         const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1])
         if (sorted.length > 0) {
-          setTopCategory({ name: sorted[0][0], total: sorted[0][1], pct: 12 })
+          setTopCategory({ name: sorted[0][0], total: sorted[0][1], pct: pct })
         }
       }
     }).finally(() => setLoading(false))
@@ -110,6 +155,23 @@ export default function Home() {
 
   useEffect(() => {
     fetchData()
+    const handleUpdate = () => fetchData()
+    window.addEventListener('dekho_data_updated', handleUpdate)
+    
+    // PostHog Tracking
+    import('posthog-js').then((ph) => {
+      ph.default.capture('dashboard_viewed', { platform: 'web', display_mode: 'light' })
+      
+      const today = new Date().toDateString();
+      if (localStorage.getItem('ph_last_streak_checkin') !== today) {
+        ph.default.capture('streak_checkin', { platform: 'web' })
+        localStorage.setItem('ph_last_streak_checkin', today)
+      }
+
+      ph.default.capture('safe_budgets_viewed', { platform: 'web' })
+    })
+
+    return () => window.removeEventListener('dekho_data_updated', handleUpdate)
   }, [])
 
   const handleSmsSubmit = async () => {
@@ -143,23 +205,67 @@ export default function Home() {
     }
   }
 
-  if (loading) return (
-    <div style={{ padding: 'var(--space-5)' }}>
-      <SkeletonCard />
-      <div style={{ height: 'var(--space-4)' }} />
-      <SkeletonCard />
-    </div>
-  )
+  if (loading && transactions.length === 0) return <GlobalLoader />
 
-  const budget    = profile?.monthlyBudget ?? profile?.monthly_budget ?? 50000
-  const budgetPct  = Math.min(Math.round((monthTotal / budget) * 100), 100)
+  const budget = budgets.length > 0 ? budgets.reduce((sum, cat) => sum + (cat.budget || 0), 0) : (profile?.monthlyBudget ?? profile?.monthly_budget ?? 50000)
+  const budgetPct  = Math.min(Math.round((monthTotal / (budget || 1)) * 100), 100)
   const goalPct    = savingGoals.length > 0
     ? Math.min(Math.round((savingGoals[0].current_amount / savingGoals[0].target_amount) * 100), 100) : 42
   const remaining  = Math.max(budget - monthTotal, 0)
   const isOverBudget = monthTotal > budget
   
-  const uniqueDays = new Set(transactions.map((t: any) => t.date?.slice(0, 10))).size || 1
+  const uniqueDays = Math.max(1, new Date().getDate())
   const avgSpend = Math.round(monthTotal / uniqueDays)
+
+  const getCalendarDays = () => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const day = today.getDay(); 
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1); 
+    const monday = new Date(today.getFullYear(), today.getMonth(), diff);
+    return ['M','T','W','T','F','S','S'].map((label, i) => {
+      const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+      d.setHours(0,0,0,0);
+      const isToday = d.getTime() === today.getTime();
+      const diffDays = Math.round((today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+      const isCompleted = diffDays >= 0 && diffDays < (profile?.streak_days || 0);
+      return { label, dateNum: d.getDate(), isCompleted, isToday };
+    });
+  };
+  const calendarDays = getCalendarDays();
+
+  let safeBudgetsCount = 0;
+  let totalBudgetsCount = 0;
+  
+  if (budgets.length > 0) {
+    budgets.forEach(cat => {
+      cat.subcategories.forEach((sub: any) => {
+        totalBudgetsCount++;
+        const spent = categorySpends[sub.label] || 0;
+        if (spent <= sub.budget) {
+          safeBudgetsCount++;
+        }
+      });
+    });
+  } else {
+    // Fallback if budgets not loaded
+    const categoryBudgets: Record<string, number> = {
+      'Housing & Household': 12000, 'Utilities': 2000, 'Bills': 1500,
+      'Food & Dining': 6000, 'Groceries': 2000, 'Transport': 1500,
+      'Health': 0, 'Personal Care': 0, 'Insurance': 0, 'Loan EMI': 0, 'Credit Card': 0,
+      'Shopping': 4000, 'Entertainment': 2000, 'Travel': 3000,
+      'Subscriptions': 500, 'Telecom': 500, 'Investment': 5000,
+      'Others': 2000, 'Services': 2000, 'Uncategorised': 1000
+    };
+    totalBudgetsCount = Object.keys(categoryBudgets).length;
+    safeBudgetsCount = Object.entries(categoryBudgets).filter(([cat, budgetLimit]) => {
+      return (categorySpends[cat] || 0) <= budgetLimit;
+    }).length;
+  }
+  
+  // Combine local session chats with the fetched backend history chats
+  const localSessionChats = chatHistory.filter(c => c.role === 'user').length;
+  const userAiChatsCount = totalAiChats + localSessionChats;
 
   const narrativeText = todaySpend > avgSpend
     ? 'Today was a comfort spending day.'
@@ -180,18 +286,13 @@ export default function Home() {
             </div>
           </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: '16px' }}>
-          <button className={styles.iconBtn} onClick={() => setShowInfo(true)} aria-label="App Info">
-            <Info size={18} strokeWidth={1.75} />
-          </button>
           <button className={styles.iconBtn} onClick={() => navigate('/settings')} aria-label="Settings">
             <Settings size={18} strokeWidth={1.75} />
           </button>
         </div>
       </div>
 
-      {showInfo && <DisclaimerModal mode="sheet" onClose={() => setShowInfo(false)} />}
-
-      {/* HERO CARD — dynamic mood-aware ReflectionCard */}
+      {/* Main Content Area (Scrollable) */}
       <div className={styles.px}>
         <ReflectionCard />
       </div>
@@ -224,14 +325,16 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.focusCard}>
-            <p className={styles.focusLabel}>VS LAST MONTH</p>
-            <div className={styles.focusVal}>
-              <span className={styles.focusPct} data-up={topCategory.pct > 0}>
-                +{topCategory.pct}%
+            <p className={styles.focusLabel}>VS LAST WEEK</p>
+            <div className={styles.focusMeta}>
+              <span className={styles.focusPct} data-up={(topCategory.pct || 0) > 0}>
+                {topCategory.pct !== null ? `${topCategory.pct > 0 ? '+' : (topCategory.pct < 0 ? '-' : '')}${Math.abs(topCategory.pct)}%` : 'N/A'}
               </span>
-              <span className={styles.trendArrow} data-up={topCategory.pct > 0}>
-                {topCategory.pct > 0 ? '↗' : '↘'}
-              </span>
+              {topCategory.pct !== null && (
+                <span className={styles.trendArrow} data-up={topCategory.pct > 0}>
+                  {topCategory.pct > 0 ? '↗' : '↘'}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -248,6 +351,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+
 
       {/* ── Progress Bars ── */}
       <div className={styles.px}>
@@ -274,13 +379,7 @@ export default function Home() {
 
           <div style={{ height: 'var(--space-4)' }} />
 
-          <div className={styles.progressRow}>
-            <p className={styles.progressLabel}>INVESTMENT GOAL</p>
-            <p className={styles.progressPct}>{goalPct}%</p>
-          </div>
-          <div className={styles.track}>
-            <div className={styles.fill} style={{ width: `${goalPct}%` }} />
-          </div>
+
 
           <div className={styles.remainingRow}>
             <p className={styles.progressLabel}>
@@ -296,19 +395,117 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── AI Nudge Card ── */}
-      <div className={styles.px}>
-        <div className={styles.reviewCard} onClick={() => navigate('/review')}>
-          <div className={styles.reviewLeft}>
-            <div className={styles.reviewIcon}>📝</div>
-            <div>
-              <div className={styles.reviewDots}>
-                <span /> <span /> <span />
-              </div>
-              <p className={styles.reviewText}>{reviewCount} transaction{reviewCount !== 1 ? 's' : ''} need review</p>
-            </div>
+
+
+      {/* ── Gamification & Stats (Streak Section) ── */}
+      <div className={styles.px} style={{ marginTop: '32px', marginBottom: '32px' }}>
+        <div style={{
+          background: 'var(--bg-card, #FFFFFF)',
+          borderRadius: 'var(--radius-xl, 24px)',
+          padding: '32px 16px 24px',
+          boxShadow: 'var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.05))',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}>
+          {/* Top Section */}
+          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90px', height: '90px', borderRadius: '50%', border: '1px solid var(--color-border, #EAEAEA)', marginBottom: '16px' }}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ zIndex: 1, filter: 'drop-shadow(0 4px 6px rgba(255, 107, 0, 0.3))' }}>
+              <defs>
+                <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FFA07A" />
+                  <stop offset="100%" stopColor="#FF6347" />
+                </linearGradient>
+              </defs>
+              <path d="M12 2C12 2 7 7 7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12C17 7 12 2 12 2Z" fill="url(#flameGrad)" />
+              <path d="M12 10C12 10 10.5 11.5 10.5 13C10.5 13.8284 11.1716 14.5 12 14.5C12.8284 14.5 13.5 13.8284 13.5 13C13.5 11.5 12 10 12 10Z" fill="white" />
+            </svg>
           </div>
-          <div className={styles.reviewChevron}>›</div>
+          
+          <div style={{ 
+            fontSize: '56px', 
+            fontWeight: 'var(--font-bold, 800)', 
+            lineHeight: 1, 
+            marginTop: '-28px', 
+            color: 'var(--color-on-surface)',
+            zIndex: 2,
+            fontFamily: 'var(--font-headline, sans-serif)'
+          }}>
+            {profile?.streak_days || 0}
+          </div>
+          
+          <div style={{ fontSize: '20px', fontWeight: 'var(--font-bold, 800)', color: 'var(--color-on-surface)', marginTop: '8px', fontFamily: 'var(--font-headline, sans-serif)' }}>
+            Mindful Streak
+          </div>
+          
+          <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginTop: '4px', fontWeight: 'var(--font-medium, 500)' }}>
+            You are doing really great, {(profile?.name ?? 'User').split(' ')[0]}!
+          </div>
+
+          {/* Middle Section: Weekly Calendar */}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '24px', width: '100%', justifyContent: 'space-between', padding: '0 8px' }}>
+            {calendarDays.map((day, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--color-muted)', fontWeight: 600 }}>{day.label}</span>
+                {day.isCompleted ? (
+                  <div style={{ 
+                    width: '32px', height: '32px', borderRadius: '50%', 
+                    background: 'linear-gradient(135deg, #FFA07A 0%, #FF6347 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 8px rgba(255, 99, 71, 0.3)'
+                  }}>
+                    <Check size={16} strokeWidth={3} color="white" />
+                  </div>
+                ) : (
+                  <div style={{ 
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    fontSize: '13px', fontWeight: 700, 
+                    color: day.isToday ? 'var(--color-on-surface)' : 'var(--color-muted)',
+                    background: day.isToday ? 'rgba(0,0,0,0.03)' : 'transparent'
+                  }}>
+                    {day.dateNum}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: '100%', height: '1px', background: 'var(--color-border, #EAEAEA)', margin: '24px 0' }} />
+
+          {/* Bottom Section: Stats */}
+          <div style={{ fontSize: '11px', color: 'var(--color-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
+            Your Stats
+          </div>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            width: '100%',
+            gap: '8px'
+          }}>
+            {[
+              { label: 'Spends Logged', val: transactions.length.toString() },
+              { label: 'Safe Budgets', val: `${safeBudgetsCount}/${totalBudgetsCount}` },
+              { label: 'Check-ins', val: uniqueDays.toString() },
+              { label: 'AI Chats', val: userAiChatsCount.toString() }
+            ].map((stat, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                borderRight: i === 3 ? 'none' : '1px solid var(--color-border, #EAEAEA)',
+              }}>
+                <div style={{ fontSize: '11px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '4px', textAlign: 'center', lineHeight: 1.2 }}>
+                  {stat.label.split(' ')[0]}<br/>{stat.label.split(' ')[1] || ''}
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 'var(--font-bold, 800)', color: 'var(--color-on-surface)', fontFamily: 'var(--font-headline, sans-serif)' }}>
+                  {stat.val}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

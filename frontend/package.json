@@ -23,6 +23,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
+    "posthog-js": "^1.396.7",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hook-form": "^7.73.1",

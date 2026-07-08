@@ -127,7 +127,7 @@ export default function ReviewQueue() {
                         })
                       : "—"}
                     {" · "}
-                    {tx.paymentMode || "Unknown method"}
+                    {tx.paymentMode || tx.payment_mode || "Unknown method"}
                     {tx.vpa && ` · ${tx.vpa}`}
                   </div>
 

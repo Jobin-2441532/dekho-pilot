@@ -4,6 +4,7 @@ import MetricBlock from '../components/ui/MetricBlock'
 import Chip from '../components/ui/Chip'
 import { PageHeader, Section, Grid2 } from '../components/layout/AppShell'
 import { SkeletonCard, ErrorState } from '../components/ui/LoadingState'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import { api } from '../lib/api'
 import {
   CATEGORY_COLOR, CATEGORY_BG, CATEGORY_EMOJI,
@@ -41,36 +42,46 @@ const PATTERNS = [
 ]
 
 export default function Behavior() {
-  const [period, setPeriod] = useState<'april' | 'march'>('april')
+  const [period, setPeriod] = useState<'current' | 'prev'>('current')
   
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    api.get<Transaction[]>('/api/transactions')
-      .then(setTransactions)
+    api.get<any>('/api/v1/dashboard/transactions', { limit: 500 })
+      .then(res => setTransactions(res.data || []))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
 
-  const aprilTx = useMemo(() => transactions.filter(t => t.date.startsWith('2026-04')), [transactions])
-  const marchTx = useMemo(() => transactions.filter(t => t.date.startsWith('2026-03')), [transactions])
+  const now = new Date()
+  const currentMonthStr = now.toISOString().slice(0, 7)
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const prevMonthStr = prevDate.toISOString().slice(0, 7)
 
-  const aprilTotal = aprilTx.reduce((s,t) => s+t.amount, 0)
-  const marchTotal = marchTx.reduce((s,t) => s+t.amount, 0)
+  const currentMonthName = now.toLocaleString('default', { month: 'short' }) + ' ' + now.getFullYear()
+  const prevMonthName = prevDate.toLocaleString('default', { month: 'short' }) + ' ' + prevDate.getFullYear()
+  const currentMonthShort = now.toLocaleString('default', { month: 'short' })
+  const prevMonthShort = prevDate.toLocaleString('default', { month: 'short' })
 
-  const aprilCats = useMemo(() => getCategoryTotals(aprilTx), [aprilTx])
-  const marchCats = useMemo(() => getCategoryTotals(marchTx), [marchTx])
+  const currentTx = useMemo(() => transactions.filter(t => t.date && t.date.startsWith(currentMonthStr)), [transactions, currentMonthStr])
+  const prevTx = useMemo(() => transactions.filter(t => t.date && t.date.startsWith(prevMonthStr)), [transactions, prevMonthStr])
 
-  const cats = period === 'april' ? aprilCats : marchCats
+  const currentTotal = currentTx.reduce((s,t) => s+(t.direction !== 'credit' ? t.amount : 0), 0)
+  const prevTotal = prevTx.reduce((s,t) => s+(t.direction !== 'credit' ? t.amount : 0), 0)
+
+  const currentCats = useMemo(() => getCategoryTotals(currentTx.filter(t => t.direction !== 'credit')), [currentTx])
+  const prevCats = useMemo(() => getCategoryTotals(prevTx.filter(t => t.direction !== 'credit')), [prevTx])
+
+  const cats = period === 'current' ? currentCats : prevCats
   const maxCatAmt  = cats[0]?.total ?? 1
-  const total = period === 'april' ? aprilTotal : marchTotal
+  const total = period === 'current' ? currentTotal : prevTotal
 
-  const heatmap = useMemo(() => buildHeatmap(aprilTx), [aprilTx])
+  const heatmap = useMemo(() => buildHeatmap(currentTx.filter(t => t.direction !== 'credit')), [currentTx])
   const maxHeat = Math.max(...heatmap.flat())
 
-  if (loading) return <div><PageHeader title="Behavior" subtitle="Your spending patterns and habits" /><Section><SkeletonCard /></Section></div>
+  if (loading) return <GlobalLoader />
   if (error) return <div><PageHeader title="Behavior" subtitle="Your spending patterns and habits" /><ErrorState message={error} /></div>
 
   return (
@@ -82,8 +93,8 @@ export default function Behavior() {
 
       {/* Month picker */}
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
-        <Chip variant="filter" active={period === 'april'} onClick={() => setPeriod('april')}>April 2026</Chip>
-        <Chip variant="filter" active={period === 'march'} onClick={() => setPeriod('march')}>March 2026</Chip>
+        <Chip variant="filter" active={period === 'current'} onClick={() => setPeriod('current')}>{currentMonthName}</Chip>
+        <Chip variant="filter" active={period === 'prev'} onClick={() => setPeriod('prev')}>{prevMonthName}</Chip>
       </div>
 
       {/* Summary row */}
@@ -91,30 +102,30 @@ export default function Behavior() {
         <Grid2>
           <Card variant="brand">
             <MetricBlock
-              label={period === 'april' ? 'Spent so far (Apr)' : 'Total spend (Mar)'}
+              label={period === 'current' ? `Spent so far (${currentMonthShort})` : `Total spend (${prevMonthShort})`}
               value={total}
               size="md"
               inverted
-              subtext={period === 'april' ? 'Apr 1–14, ₹2,000/day avg' : 'Full March'}
+              subtext={period === 'current' ? `${currentMonthShort} so far` : `Full ${prevMonthShort}`}
             />
           </Card>
           <Card>
             <MetricBlock
               label="Month-over-month"
-              value={Math.abs(aprilTotal - marchTotal)}
+              value={Math.abs(currentTotal - prevTotal)}
               size="md"
               change={{
-                value: `${Math.round(Math.abs((aprilTotal - marchTotal) / marchTotal) * 100)}% less than March`,
-                direction: 'down',
+                value: `${prevTotal > 0 ? Math.round(Math.abs((currentTotal - prevTotal) / prevTotal) * 100) : 100}% ${currentTotal <= prevTotal ? 'less' : 'more'} than ${prevMonthShort}`,
+                direction: currentTotal <= prevTotal ? 'down' : 'up',
               }}
-              subtext="Comparing Apr pace vs Mar full"
+              subtext={`Comparing ${currentMonthShort} vs ${prevMonthShort}`}
             />
           </Card>
         </Grid2>
       </Section>
 
       {/* Spending heatmap */}
-      <Section label="Daily spending intensity — April">
+      <Section label={`Daily spending intensity — ${currentMonthName}`}>
         <Card>
           <div style={{ overflowX: 'auto' }}>
             {/* Day headers */}
@@ -153,8 +164,8 @@ export default function Behavior() {
         <Card>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             {cats.map(({ category, total: amt }) => {
-              const marchAmt = marchCats.find(c => c.category === category)?.total ?? 0
-              const pct = Math.round((amt / (period === 'april' ? maxCatAmt : marchCats[0]?.total ?? 1)) * 100)
+              const prevAmt = prevCats.find(c => c.category === category)?.total ?? 0
+              const pct = Math.round((amt / (period === 'current' ? maxCatAmt : prevCats[0]?.total ?? 1)) * 100)
               return (
                 <div key={category} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -169,9 +180,9 @@ export default function Behavior() {
                       </span>
                       <div>
                         <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>{category}</p>
-                        {period === 'april' && marchAmt > 0 && (
-                          <p style={{ fontSize: '11px', color: amt > marchAmt ? 'var(--color-warning)' : 'var(--color-positive)' }}>
-                            {amt > marchAmt ? '↑' : '↓'} vs ₹{marchAmt.toLocaleString('en-IN')} in Mar
+                        {period === 'current' && prevAmt > 0 && (
+                          <p style={{ fontSize: '11px', color: amt > prevAmt ? 'var(--color-warning)' : 'var(--color-positive)' }}>
+                            {amt > prevAmt ? '↑' : '↓'} vs ₹{prevAmt.toLocaleString('en-IN')} in {prevMonthShort}
                           </p>
                         )}
                       </div>

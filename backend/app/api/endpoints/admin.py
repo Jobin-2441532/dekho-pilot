@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.core.database import get_db
-from app.models import User, Transaction, RawRecord, UploadedFile
+from app.models import User, Transaction, RawRecord, UploadedFile, Budget, ChatSession
 from app.api.endpoints.auth import get_current_user
 
 router = APIRouter()
@@ -19,8 +19,7 @@ def verify_admin(
 # ── GET /api/v1/admin/stats ───────────────────────────────────────────────
 @router.get("/stats", dependencies=[Depends(verify_admin)])
 def get_admin_stats(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Return overall metrics of the system for admin dashboard."""
     # Note: In a production app, we would verify if current_user.is_admin is True.
@@ -46,8 +45,7 @@ def get_admin_stats(
 # ── GET /api/v1/admin/users ───────────────────────────────────────────────
 @router.get("/users", dependencies=[Depends(verify_admin)])
 def get_admin_users(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Return summary list of all registered users and their transaction/SMS counts."""
     users = db.query(User).order_by(User.created_at.desc()).all()
@@ -63,7 +61,7 @@ def get_admin_users(
             "name": u.name,
             "email": u.email,
             "monthly_budget": u.monthly_budget,
-            "income_range": u.income_range,
+            "goal_type": u.goal_type,
             "risk_comfort": u.risk_comfort,
             "financial_stage": u.financial_stage,
             "created_at": u.created_at.isoformat() if u.created_at else None,
@@ -78,8 +76,7 @@ def get_admin_users(
 @router.get("/users/{user_id}/details", dependencies=[Depends(verify_admin)])
 def get_user_admin_details(
     user_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Return detailed financial and raw data profile of a specific user."""
     target_user = db.query(User).filter(User.id == user_id).first()
@@ -127,16 +124,36 @@ def get_user_admin_details(
             "created_at": s.created_at.isoformat() if s.created_at else None
         })
 
+    # Calculate stats
+    budgets = db.query(Budget).filter(Budget.user_id == user_id).all()
+    total_budgets = len(budgets)
+    safe_budgets = 0
+    cat_spent = {cat: amount for cat, amount in category_totals}
+    for b in budgets:
+        spent = cat_spent.get(b.category, 0)
+        if spent <= b.monthly_limit:
+            safe_budgets += 1
+            
+    unique_days = len(set(t.date for t in transactions))
+    chat_sessions_count = db.query(ChatSession).filter(ChatSession.user_id == user_id).count()
+
     return {
         "user": {
             "id": target_user.id,
             "name": target_user.name,
             "email": target_user.email,
             "monthly_budget": target_user.monthly_budget,
-            "income_range": target_user.income_range,
+            "goal_type": target_user.goal_type,
             "risk_comfort": target_user.risk_comfort,
             "financial_stage": target_user.financial_stage,
             "created_at": target_user.created_at.isoformat() if target_user.created_at else None,
+            "stats": {
+                "streak_days": target_user.current_streak_days,
+                "spends_logged": len(transactions),
+                "safe_budgets": f"{safe_budgets}/{total_budgets}",
+                "check_ins": unique_days,
+                "ai_chats": chat_sessions_count
+            }
         },
         "transactions": tx_list,
         "sms_logs": sms_list,

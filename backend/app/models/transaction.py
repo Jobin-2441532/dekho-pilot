@@ -29,6 +29,11 @@ class Transaction(Base):
     sub_category = Column(String)
     confidence = Column(Float, default=0.0)     # ML confidence 0.0–1.0
     review_status = Column(String, default="pending")  # pending/reviewed/auto_assigned
+    
+    # Correction Tracking (PostHog PMF Analytics)
+    auto_category = Column(String)
+    was_corrected = Column(Boolean, default=False)
+    corrected_at = Column(DateTime, nullable=True)
 
     # Source tracking
     source_type = Column(String)        # pdf / csv / sms

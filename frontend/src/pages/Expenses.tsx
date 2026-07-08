@@ -5,6 +5,7 @@ import { Filter, Search, Edit2, Trash2, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import api from '../lib/api'
 import styles from './Expenses.module.css'
 
@@ -25,7 +26,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 const CATEGORIES = [
   "Food & Dining","Transport","Shopping","Groceries","Entertainment",
   "Travel","Health","Utilities","Telecom","Insurance","Investment",
-  "Loan EMI","Credit Card","Income","Refund","Cash Withdrawal",
+  "Loan EMI","Credit Card","Refund","Cash Withdrawal",
   "Wallet","Personal Transfer","Personal Care","Household","Services","Uncategorised",
 ];
 
@@ -113,6 +114,7 @@ export default function Expenses() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [insightTab, setInsightTab] = useState<InsightTab>('Total')
+  const [listFilter, setListFilter] = useState<'Month' | 'By Category'>('Month')
 
   // All transactions fetched (unfiltered)
   const [allTransactions, setAllTransactions] = useState<any[]>([])
@@ -166,6 +168,16 @@ export default function Expenses() {
     return txMonth === selectedMonth && tx.direction === 'debit'
   })
 
+  // ── Derived: Transactions list to display based on filter ─────────────────
+  let displayTransactions = allTransactions.filter(tx => tx.direction === 'debit');
+
+  if (listFilter === 'Month') {
+    displayTransactions = displayTransactions.filter(tx => String(tx.date || '').startsWith(selectedMonth));
+  } else if (listFilter === 'By Category') {
+    displayTransactions = displayTransactions.filter(tx => String(tx.date || '').startsWith(selectedMonth));
+    displayTransactions.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+  }
+
   // ── Available months from all transactions (newest first) ──────────────────
   const availableMonths: string[] = Array.from(
     new Set(allTransactions.map(tx => String(tx.date || '').slice(0, 7)).filter(Boolean))
@@ -211,15 +223,17 @@ export default function Expenses() {
     const pmTotals: Record<string, number> = {}
     monthDebits.forEach((tx: any) => {
       const raw = tx.paymentMode || tx.payment_mode || 'Unknown'
-      const key = raw.toUpperCase().includes('UPI')        ? 'UPI'
-                : raw.toUpperCase().includes('CREDIT')     ? 'Credit Card'
-                : raw.toUpperCase().includes('DEBIT')      ? 'Debit Card'
-                : raw.toUpperCase().includes('CARD')       ? 'Card'
-                : raw.toUpperCase().includes('NEFT')       ? 'NEFT'
-                : raw.toUpperCase().includes('NETBANKING') ? 'NEFT'
-                : raw.toUpperCase().includes('AUTOPAY')    ? 'AutoPay'
-                : raw.toUpperCase().includes('IMPS')       ? 'IMPS'
-                : raw.toUpperCase().includes('ATM')        ? 'ATM'
+      const upperRaw = raw.toUpperCase()
+      const key = upperRaw.includes('UPI')        ? 'UPI'
+                : upperRaw.includes('CREDIT')     ? 'Credit Card'
+                : upperRaw.includes('DEBIT')      ? 'Debit Card'
+                : upperRaw.includes('CARD')       ? 'Card'
+                : upperRaw.includes('NEFT')       ? 'NEFT'
+                : upperRaw.includes('NETBANKING') || upperRaw.includes('NET BANKING') ? 'Net Banking'
+                : upperRaw.includes('AUTOPAY')    ? 'AutoPay'
+                : upperRaw.includes('IMPS')       ? 'IMPS'
+                : upperRaw.includes('ATM')        ? 'ATM'
+                : upperRaw.includes('CASH')       ? 'Cash'
                 : 'Other'
       pmTotals[key] = (pmTotals[key] || 0) + (tx.amount || 0)
     })
@@ -275,15 +289,10 @@ export default function Expenses() {
             amount: c.total ?? c.amount ?? 0,
           }))
           const totalExpense = sumData.total_spend  ?? 0
-          const totalIncome  = sumData.total_credit ?? 0
           setDashboardSummary({
             ...sumData,
             category_breakdown: normalized,
-            total_income:  totalIncome,
             total_expense: totalExpense,
-            net_savings:   totalIncome - totalExpense,
-            savings_rate_pct: totalIncome > 0
-              ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0,
           })
         })
         .catch(() => {})
@@ -338,13 +347,7 @@ export default function Expenses() {
   const topCat = pieData.length > 0 ? pieData[0] : { category: 'None', amount: 0 }
   const topCatPct = monthTotal > 0 ? Math.round((topCat.amount / monthTotal) * 100) : 0
 
-  if (loading) return (
-    <div style={{ padding: 'var(--space-5)' }}>
-      <SkeletonCard />
-      <div style={{ height: 'var(--space-4)' }} />
-      <SkeletonCard />
-    </div>
-  )
+  if (loading && allTransactions.length === 0) return <GlobalLoader />
 
   return (
     <div className={styles.page}>
@@ -367,8 +370,6 @@ export default function Expenses() {
               ))
             )}
           </select>
-          <button className={styles.iconBtn} aria-label="Search"><Search size={16} /></button>
-          <button className={styles.iconBtn} aria-label="Filter"><Filter size={16} /></button>
         </div>
       </div>
 
@@ -526,33 +527,7 @@ export default function Expenses() {
               )}
             </div>
 
-            <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ fontFamily: 'var(--font-headline)', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)' }}>📊 Monthly Health</div>
-              {[
-                { label: "Income",   value: dashboardSummary?.total_income  || 0, color: "var(--color-primary)", icon: "💰" },
-                { label: "Expenses", value: dashboardSummary?.total_expense || 0, color: "var(--color-negative)", icon: "💸" },
-                { label: "Savings",  value: dashboardSummary?.net_savings   || 0, color: "var(--color-secondary)", icon: "🏦" },
-              ].map((item) => (
-                <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--bg-surface)", borderRadius: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 18 }}>{item.icon}</span>
-                    <span style={{ fontSize: 13, color: "var(--color-muted)", fontFamily: 'var(--font-body)' }}>{item.label}</span>
-                  </div>
-                  <span style={{ fontWeight: 700, color: item.color, fontSize: 15, fontFamily: 'var(--font-headline)' }}>
-                    ₹{Number(item.value).toLocaleString("en-IN")}
-                  </span>
-                </div>
-              ))}
-              <div style={{ marginTop: '8px' }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--color-muted)", marginBottom: 6, fontFamily: 'var(--font-body)' }}>
-                  <span>Savings Rate</span>
-                  <span style={{ color: "var(--color-secondary)", fontWeight: 700 }}>{dashboardSummary?.savings_rate_pct || 0}%</span>
-                </div>
-                <div style={{ height: 8, background: "var(--bg-surface-high)", borderRadius: 4, overflow: "hidden" }}>
-                  <div style={{ height: "100%", borderRadius: 4, background: "var(--color-secondary)", width: `${Math.max(0, Math.min(100, dashboardSummary?.savings_rate_pct || 0))}%`, transition: "width 0.6s ease" }} />
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -560,49 +535,9 @@ export default function Expenses() {
       {/* ── Committed Spend & Review Cards ── */}
       <div className={styles.px}>
         <div className={styles.committedCardsContainer}>
-          <div className={styles.committedCard}>
-            <div className={styles.committedTop}>
-              <div className={styles.committedIcon}>📅</div>
-              <div className={styles.committedHeaderData}>
-                <p className={styles.committedLabel}>COMMITTED SPEND</p>
-                <p className={styles.committedAmt}>₹{committedSpend.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-            
-            <div className={styles.committedBreakdown}>
-              <div className={styles.progressRow}>
-                <div className={styles.progressLabels}>
-                  <span>Subscriptions</span>
-                  <span>₹{subscriptionsAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className={styles.progressTrack}>
-                  <div className={styles.progressFillSub} style={{ width: `${subPct}%` }} />
-                </div>
-              </div>
-              <div className={styles.progressRow}>
-                <div className={styles.progressLabels}>
-                  <span>EMI / Bills</span>
-                  <span>₹{emiBillsAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className={styles.progressTrack}>
-                  <div className={styles.progressFillEmi} style={{ width: `${emiPct}%` }} />
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className={styles.reviewCard} onClick={() => navigate('/review')}>
-            <div className={styles.reviewLeft}>
-              <div className={styles.reviewIcon}>📝</div>
-              <div>
-                <div className={styles.reviewDots}>
-                  <span /> <span /> <span />
-                </div>
-                <p className={styles.reviewText}>{reviewCount} transaction{reviewCount !== 1 ? 's' : ''} need review</p>
-              </div>
-            </div>
-            <div className={styles.reviewChevron}>›</div>
-          </div>
+
+
         </div>
       </div>
 
@@ -611,7 +546,7 @@ export default function Expenses() {
       <div className={styles.px}>
         <div className={styles.sectionHeader}>
           <p className={styles.sectionTitle}>Spending Pattern</p>
-          <p className={styles.heatmapSub}>You tend to spend more on weekends</p>
+          <p className={styles.heatmapSub}></p>
         </div>
         <div className={styles.heatmapCard}>
           <SpendingHeatmap data={heatmapData} />
@@ -628,14 +563,19 @@ export default function Expenses() {
         
         {/* Transaction Filters */}
         <div className={styles.scrollRow}>
-          <button className={`${styles.filterPill} ${styles.filterPillActive}`}>Month</button>
-          <button className={styles.filterPill}>By Category</button>
-          <button className={styles.filterPill}>vs Prev Period</button>
-          <button className={styles.filterPill}>Yearly</button>
+          {['Month', 'By Category'].map(f => (
+            <button 
+              key={f}
+              className={`${styles.filterPill} ${listFilter === f ? styles.filterPillActive : ''}`}
+              onClick={() => setListFilter(f as any)}
+            >
+              {f}
+            </button>
+          ))}
         </div>
 
         <div className={styles.txList}>
-          {transactions.map((tx: any) => (
+          {displayTransactions.map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
                 {CATEGORY_EMOJI[tx.category] ?? '💰'}
@@ -646,7 +586,7 @@ export default function Expenses() {
                   {tx.category} • {typeof tx.date === 'string' && !tx.date.includes('-')
                     ? tx.date
                     : new Date(tx.date || tx.tx_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.paymentMode || tx.payment_method || 'UPI'}</span>
+                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.paymentMode || tx.payment_mode || tx.payment_method || 'UPI'}</span>
                 </p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>

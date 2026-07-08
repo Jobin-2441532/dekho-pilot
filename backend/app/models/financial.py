@@ -19,18 +19,6 @@ class SavingsGoal(Base):
 
     user = relationship("User", back_populates="savings_goals")
 
-class IncomeEntry(Base):
-    __tablename__ = "income_entries"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    date = Column(String, nullable=False)
-    source = Column(String)
-    amount = Column(Float, nullable=False)
-    notes = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
-
-    user = relationship("User", back_populates="income_entries")
 
 class Budget(Base):
     __tablename__ = "budgets"
@@ -38,6 +26,7 @@ class Budget(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     category = Column(String, nullable=False)
+    section = Column(String, default="Buffer")
     monthly_limit = Column(Float, nullable=False)
     month = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())

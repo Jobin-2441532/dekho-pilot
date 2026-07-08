@@ -6,7 +6,7 @@ import Button from '../components/ui/Button'
 import FloatingInput from '../components/ui/FloatingInput'
 import styles from './Onboarding.module.css'
 
-const BASE_URL = import.meta.env.VITE_API_URL || ''
+const BASE_URL = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
 
 /* ── Types ───────────────────────────────────────────────────────────────── */
 interface StatementMeta {
@@ -81,14 +81,12 @@ function StatementCard({
           </span>
         </div>
         <div style={{ fontSize: 12, color: 'var(--color-muted)', fontFamily: 'var(--font-body)' }}>
-          Income: {meta.salary}
+          Profile: {meta.profile}
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 4, alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--color-muted)' }}>
             📊 {meta.transactions} transactions
           </span>
-          <span style={{ fontSize: 11, color: 'var(--color-muted)' }}>·</span>
-          <span style={{ fontSize: 11, color: 'var(--color-muted)' }}>{meta.profile}</span>
         </div>
         {/* Sample data highlight */}
         <div style={{
@@ -154,9 +152,9 @@ export default function Login() {
         console.error('Failed to fetch statements:', e)
         // Fallback static metadata if backend unreachable
         setStatements([
-          { id: 'Statement9',  label: 'Statement 9',  salary: '₹50,000 / month', date_range: 'Apr – May 2026', transactions: 64, profile: 'Mid-income, Bangalore',    icon: '🏙️', color: '#8B6347' },
-          { id: 'Statement10', label: 'Statement 10', salary: '₹52,000 / month', date_range: 'Apr – May 2026', transactions: 64, profile: 'Upper-mid, Hyderabad',    icon: '💼', color: '#6C8B47' },
-          { id: 'Statement11', label: 'Statement 11', salary: '₹47,000 / month', date_range: 'Apr – May 2026', transactions: 64, profile: 'Moderate spend, Chennai', icon: '🌊', color: '#47688B' },
+          { id: 'Statement9',  label: 'Statement 9',  date_range: 'Apr – May 2026', transactions: 64, profile: 'Mid-tier, Bangalore',    icon: '🏙️', color: '#8B6347' },
+          { id: 'Statement10', label: 'Statement 10', date_range: 'Apr – May 2026', transactions: 64, profile: 'Upper-mid, Hyderabad',    icon: '💼', color: '#6C8B47' },
+          { id: 'Statement11', label: 'Statement 11', date_range: 'Apr – May 2026', transactions: 64, profile: 'Moderate spend, Chennai', icon: '🌊', color: '#47688B' },
         ])
       })
   }, [])
@@ -189,11 +187,16 @@ export default function Login() {
         const res  = await fetch(`${BASE_URL}/api/v1/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name.trim(), email, password, income_range: '5-10L', monthly_budget: 50000 }),
+          body: JSON.stringify({ name: name.trim(), email, password, monthly_budget: 50000 }),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(parseApiError(data, 'Registration failed'))
         token = data.access_token
+        
+        // Track signup
+        import('posthog-js').then((ph) => {
+          ph.default.capture('signup_completed', { platform: 'web', source: 'signup_form' })
+        })
       }
 
       localStorage.setItem('dekho_token', token)

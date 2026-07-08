@@ -31,7 +31,7 @@ export default function PersonalizedRecommendations() {
           <div className={styles.rationaleBody}>
             <div className={styles.rationaleSection}>
               <p className={styles.rationaleLabel}>STABILITY PROFILE</p>
-              <p className={styles.rationaleText}>Your <strong>stable income</strong> patterns suggest a higher capacity for consistent monthly compounding.</p>
+              <p className={styles.rationaleText}>Your <strong>stable spending</strong> patterns suggest a higher capacity for consistent monthly compounding.</p>
             </div>
             <div className={styles.rationaleSection}>
               <p className={styles.rationaleLabel}>SAFETY NET</p>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, func
+from sqlalchemy import Column, Integer, String, Float, DateTime, Date, func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -9,7 +9,6 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True)
     password_hash = Column(String, nullable=True)  # nullable for existing seeded users
-    income_range = Column(String)
     goal_type = Column(String)
     risk_comfort = Column(String)
     monthly_budget = Column(Float)
@@ -17,9 +16,13 @@ class User(Base):
     dekho_wallet_balance = Column(Float, default=0.0)
     created_at = Column(DateTime, server_default=func.now())
 
+    current_streak_days = Column(Integer, default=0)
+    last_checkin_date = Column(Date, nullable=True)
+    last_hero_mode = Column(String, nullable=True)
+    last_mode_d_date = Column(Date, nullable=True)
+
     transactions = relationship("Transaction", back_populates="user")
     savings_goals = relationship("SavingsGoal", back_populates="user")
-    income_entries = relationship("IncomeEntry", back_populates="user")
     budgets = relationship("Budget", back_populates="user")
     assets = relationship("Asset", back_populates="user")
     uploaded_files = relationship("UploadedFile", back_populates="user")

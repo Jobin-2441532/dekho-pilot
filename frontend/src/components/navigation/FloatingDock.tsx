@@ -12,27 +12,37 @@ const navItems = [
   { to: '/budgets',  icon: PiggyBank,   label: 'Budgets'  },
   { to: '/expenses', icon: Receipt,     label: 'Expenses' },
   { to: '/home',     icon: Home,        label: 'Home',    center: true },
+  { to: '#grow',     icon: TrendingUp,  label: 'Grow',    comingSoon: true },
 ]
 
 export default function FloatingDock() {
   return (
     <nav className={styles.dock} aria-label="Main navigation">
       <div className={styles.inner}>
-        {navItems.map(({ to, icon: Icon, label, center }) => (
+        {navItems.map(({ to, icon: Icon, label, center, comingSoon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              [styles.item, center ? styles.center : '', isActive ? styles.active : '']
+              [styles.item, center ? styles.center : '', isActive && !comingSoon ? styles.active : '']
                 .filter(Boolean)
                 .join(' ')
             }
+            onClick={(e) => {
+              if (comingSoon) {
+                e.preventDefault()
+              }
+            }}
             aria-label={label}
+            style={{ position: 'relative' }}
           >
             <span className={styles.iconWrap}>
               <Icon size={center ? 22 : 20} strokeWidth={1.75} />
             </span>
             <span className={styles.label}>{label}</span>
+            {comingSoon && (
+              <span className={styles.comingSoonBadge}>Soon</span>
+            )}
           </NavLink>
         ))}
       </div>

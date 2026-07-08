@@ -15,8 +15,10 @@ import {
   AlertCircle,
   HelpCircle
 } from 'lucide-react'
-import api from '../lib/api'
-import Button from '../components/ui/Button'
+import Card from "./components/ui/Card";
+import GlobalLoader from "./components/ui/GlobalLoader";
+import api from "./lib/api";
+import Button from './components/ui/Button'
 
 interface AdminStats {
   total_users: number
@@ -32,7 +34,7 @@ interface UserSummary {
   name: string
   email: string
   monthly_budget: number
-  income_range: string
+  goal_type: string
   risk_comfort: string
   financial_stage: string
   created_at: string
@@ -47,10 +49,17 @@ interface UserDetails {
     name: string
     email: string
     monthly_budget: number
-    income_range: string
+    goal_type: string
     risk_comfort: string
     financial_stage: string
     created_at: string
+    stats?: {
+      streak_days: number
+      spends_logged: number
+      safe_budgets: string
+      check_ins: number
+      ai_chats: number
+    }
   }
   transactions: Array<{
     id: number
@@ -447,7 +456,7 @@ export default function AdminPortal() {
                 </div>
 
                 <div style={boxStyle}>
-                  <h3 style={boxTitleStyle}>Credit / Income Volume</h3>
+                  <h3 style={boxTitleStyle}>Credit Volume</h3>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '16px' }}>
                     <TrendingUp size={28} color="#6C8B47" />
                     <div>
@@ -592,7 +601,7 @@ export default function AdminPortal() {
 
                           <div style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
                             <div style={badgeStyle}>
-                              Income Range: {userDetails.user.income_range || 'Not Set'}
+                              Goal: {userDetails.user.goal_type || 'Not Set'}
                             </div>
                             <div style={badgeStyle}>
                               Risk Level: {userDetails.user.risk_comfort || 'Not Set'}
@@ -625,6 +634,40 @@ export default function AdminPortal() {
                             </span>
                           </div>
                         </div>
+
+                        {/* Gamification and App Stats */}
+                        {userDetails.user.stats && (
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(5, 1fr)',
+                            gap: '12px',
+                            marginTop: '20px',
+                            borderTop: '1px solid var(--bg-surface-high, #eae5dd)',
+                            paddingTop: '16px',
+                            textAlign: 'center'
+                          }}>
+                            <div>
+                              <span style={{ fontSize: '11px', color: 'var(--color-muted)', display: 'block', textTransform: 'uppercase' }}>Mindful Streak</span>
+                              <span style={{ fontWeight: 600, fontSize: '16px', color: '#FF6347' }}>🔥 {userDetails.user.stats.streak_days}</span>
+                            </div>
+                            <div>
+                              <span style={{ fontSize: '11px', color: 'var(--color-muted)', display: 'block', textTransform: 'uppercase' }}>Spends Logged</span>
+                              <span style={{ fontWeight: 600, fontSize: '16px' }}>{userDetails.user.stats.spends_logged}</span>
+                            </div>
+                            <div>
+                              <span style={{ fontSize: '11px', color: 'var(--color-muted)', display: 'block', textTransform: 'uppercase' }}>Safe Budgets</span>
+                              <span style={{ fontWeight: 600, fontSize: '16px' }}>{userDetails.user.stats.safe_budgets}</span>
+                            </div>
+                            <div>
+                              <span style={{ fontSize: '11px', color: 'var(--color-muted)', display: 'block', textTransform: 'uppercase' }}>Check-ins</span>
+                              <span style={{ fontWeight: 600, fontSize: '16px' }}>{userDetails.user.stats.check_ins}</span>
+                            </div>
+                            <div>
+                              <span style={{ fontSize: '11px', color: 'var(--color-muted)', display: 'block', textTransform: 'uppercase' }}>AI Chats</span>
+                              <span style={{ fontWeight: 600, fontSize: '16px' }}>{userDetails.user.stats.ai_chats}</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Spend Breakdown & Data Tabs */}

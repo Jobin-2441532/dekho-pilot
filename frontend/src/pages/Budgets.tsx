@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Bell, Plus, Edit2, Trash2 } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Bell, Plus, Edit2, Trash2, Wallet, Shield, Percent, Home, ShoppingBag, Target, PiggyBank, Settings2, Activity } from 'lucide-react'
 import { useAppStore } from '../store/appStore'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
 import styles from './Budgets.module.css'
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:8000`
+const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
 
 interface BudgetCategory {
   label: string
@@ -23,7 +25,100 @@ const GOAL_IMAGES = [
   "https://picsum.photos/seed/dekho_goal5/800/400"
 ];
 
+const PULSE_GRADIENTS: Record<string, string> = {
+  cruising: 'linear-gradient(135deg, #3d675d 0%, #2f4d45 100%)',
+  on_track: 'linear-gradient(135deg, #2E5C46 0%, #1A3C2A 100%)',
+  mindful: 'linear-gradient(135deg, #7A612D 0%, #4D3D18 100%)',
+  tight: 'linear-gradient(135deg, #8B4A23 0%, #572A10 100%)',
+  stretched: 'linear-gradient(135deg, #8B2323 0%, #571010 100%)',
+  underspent: 'linear-gradient(135deg, #2A495E 0%, #182C3A 100%)',
+}
+
+const pulseBgStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  zIndex: 1,
+  pointerEvents: 'none'
+}
+
+const PulseIllustration = ({ mood }: { mood: string }) => {
+  if (mood === 'cruising') {
+    return (
+      <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="340" cy="50" r="20" fill="#fceb9c" opacity="0.9" />
+        <path d="M100 140 Q 200 120 300 140 T 400 140 L 400 200 L 0 200 L 0 140 Q 50 150 100 140 Z" fill="rgba(255,255,255,0.05)" />
+        <path d="M50 160 Q 150 140 250 160 T 400 160 L 400 200 L 0 200 L 0 160 Q 25 170 50 160 Z" fill="rgba(255,255,255,0.1)" />
+        {/* Boat */}
+        <path d="M240 145 L 340 145 L 315 170 L 255 170 Z" fill="#4B3B36" />
+        <path d="M290 145 L 290 50 L 220 135 Z" fill="#FFFFFF" opacity="0.9" />
+        <path d="M300 145 L 300 70 L 350 135 Z" fill="#F0F0F0" opacity="0.8" />
+      </svg>
+    )
+  }
+  if (mood === 'on_track') {
+    return (
+      <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="330" cy="60" r="24" fill="#fceb9c" opacity="0.8" />
+        <path d="M 0 200 L 400 200 L 400 120 Q 300 90 200 140 T 0 150 Z" fill="rgba(255,255,255,0.05)" />
+        <path d="M 0 200 L 400 200 L 400 150 Q 240 120 120 170 T 0 180 Z" fill="rgba(255,255,255,0.1)" />
+        {/* Trees */}
+        <path d="M330 150 L 330 180" stroke="#4B3B36" strokeWidth="6" />
+        <circle cx="330" cy="130" r="25" fill="#5E8C6A" />
+        <circle cx="310" cy="140" r="18" fill="#4A7555" />
+        <circle cx="350" cy="140" r="18" fill="#4A7555" />
+      </svg>
+    )
+  }
+  if (mood === 'mindful') {
+    return (
+      <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="100" r="70" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+        <circle cx="300" cy="100" r="55" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8,8" />
+        <path d="M300 30 L 300 170" stroke="#fceb9c" strokeWidth="3" opacity="0.8" />
+        <circle cx="300" cy="30" r="6" fill="#fceb9c" />
+        <circle cx="300" cy="170" r="6" fill="#fceb9c" />
+      </svg>
+    )
+  }
+  if (mood === 'tight') {
+    return (
+      <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 240 200 L 340 200 L 320 60 L 260 60 Z" fill="rgba(255,255,255,0.1)" />
+        <path d="M 180 200 L 230 200 L 250 90 L 200 90 Z" fill="rgba(255,255,255,0.05)" />
+        <path d="M 360 200 L 310 200 L 290 90 L 340 90 Z" fill="rgba(255,255,255,0.05)" />
+        <circle cx="290" cy="40" r="14" fill="#FFB085" opacity="0.9" />
+      </svg>
+    )
+  }
+  if (mood === 'stretched') {
+    return (
+      <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 0 200 L 400 200 L 400 150 Q 300 100 200 170 T 0 130 Z" fill="rgba(255,255,255,0.05)" />
+        <path d="M 0 200 L 400 200 L 400 170 Q 240 180 100 150 T 0 170 Z" fill="rgba(255,255,255,0.1)" />
+        {/* Warning shape */}
+        <circle cx="330" cy="60" r="30" fill="#FFA5A5" opacity="0.8" />
+        <path d="M 290 80 L 370 80" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
+        <path d="M 300 100 L 360 100" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
+      </svg>
+    )
+  }
+  // underspent
+  return (
+    <svg style={pulseBgStyle} viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 0 200 L 400 200 L 400 100 C 300 100 240 70 200 70 C 120 70 80 130 0 130 Z" fill="rgba(255,255,255,0.05)" />
+      <path d="M 0 200 L 400 200 L 400 130 C 320 130 280 100 200 100 C 100 100 60 170 0 170 Z" fill="rgba(255,255,255,0.1)" />
+      <circle cx="100" cy="50" r="16" fill="#A5D6FF" opacity="0.8" />
+      <path d="M 280 60 Q 300 40 320 60 Q 340 60 340 80 L 260 80 Q 260 60 280 60 Z" fill="#FFFFFF" opacity="0.2" />
+      <path d="M 360 30 Q 370 20 380 30 Q 390 30 390 40 L 350 40 Q 350 30 360 30 Z" fill="#FFFFFF" opacity="0.2" />
+    </svg>
+  )
+}
+
 export default function Budgets() {
+  const navigate = useNavigate()
   const { toggleChat } = useAppStore()
   const [loading, setLoading] = useState(true)
   const [goals, setGoals] = useState<any[]>([])
@@ -33,16 +128,11 @@ export default function Budgets() {
   const { insights, loading: insightsLoading } = useInsights()
 
   const [totalSpent, setTotalSpent] = useState(0)
-  const [totalBudget, setTotalBudget] = useState(45000)
-
-  // Edit Budget State
-  const [isEditingBudget, setIsEditingBudget] = useState(false)
-  const [newBudget, setNewBudget] = useState("")
-  
-  // Edit Category Budget State
-  const [editCategoryBudget, setEditCategoryBudget] = useState<{label: string, budget: string} | null>(null)
-
-  // Add Goal State
+  // Unified Edit Category Budget State
+  const [editingCatData, setEditingCatData] = useState<any | null>(null)
+  const [newCatLabel, setNewCatLabel] = useState('')
+  const [newCatEmoji, setNewCatEmoji] = useState('📌')
+  const [newCatBudget, setNewCatBudget] = useState('')
   const [isAddingGoal, setIsAddingGoal] = useState(false)
   const [goalName, setGoalName] = useState('')
   const [goalTarget, setGoalTarget] = useState('')
@@ -61,8 +151,6 @@ export default function Budgets() {
   const [autoPayAmount, setAutoPayAmount] = useState('')
   const [autoPayDate, setAutoPayDate] = useState('')
 
-  const buffer = Math.max(totalBudget - totalSpent, 0)
-  const overallPct = Math.min(Math.round((totalSpent / (totalBudget || 1)) * 100), 100)
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
@@ -70,44 +158,48 @@ export default function Budgets() {
     {
       label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 25000,
       subcategories: [
-        { label: 'Housing & Household', emoji: '🏠', amount: 0, match: ['Housing', 'Household'] },
-        { label: 'Utilities', emoji: '⚡', amount: 0, match: ['Utilities'] },
-        { label: 'Bills', emoji: '🧾', amount: 0, match: ['Bills'] },
-        { label: 'Food & Dining', emoji: '🍴', amount: 0, match: ['Food & Dining'] },
-        { label: 'Groceries', emoji: '🛒', amount: 0, match: ['Groceries'] },
-        { label: 'Transport', emoji: '🚗', amount: 0, match: ['Transport'] },
-        { label: 'Health', emoji: '💊', amount: 0, match: ['Health'] },
-        { label: 'Personal Care', emoji: '🧴', amount: 0, match: ['Personal Care'] },
-        { label: 'Insurance', emoji: '🛡️', amount: 0, match: ['Insurance'] },
-        { label: 'Loan EMI', emoji: '💳', amount: 0, match: ['Loan EMI'] },
-        { label: 'Credit Card', emoji: '💳', amount: 0, match: ['Credit Card'] },
+        { label: 'Housing & Household', emoji: '🏠', amount: 0, budget: 12000, match: ['Housing', 'Household'] },
+        { label: 'Utilities', emoji: '⚡', amount: 0, budget: 2000, match: ['Utilities'] },
+        { label: 'Bills', emoji: '🧾', amount: 0, budget: 1500, match: ['Bills'] },
+        { label: 'Food & Dining', emoji: '🍴', amount: 0, budget: 6000, match: ['Food & Dining'] },
+        { label: 'Groceries', emoji: '🛒', amount: 0, budget: 2000, match: ['Groceries'] },
+        { label: 'Transport', emoji: '🚗', amount: 0, budget: 1500, match: ['Transport'] },
+        { label: 'Health', emoji: '💊', amount: 0, budget: 0, match: ['Health'] },
+        { label: 'Personal Care', emoji: '🧴', amount: 0, budget: 0, match: ['Personal Care'] },
+        { label: 'Insurance', emoji: '🛡️', amount: 0, budget: 0, match: ['Insurance'] },
+        { label: 'Loan EMI', emoji: '💳', amount: 0, budget: 0, match: ['Loan EMI'] },
+        { label: 'Credit Card', emoji: '💳', amount: 0, budget: 0, match: ['Credit Card'] },
       ]
     },
     {
       label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 10000,
       subcategories: [
-        { label: 'Shopping', emoji: '🛍️', amount: 0, match: ['Shopping'] },
-        { label: 'Entertainment', emoji: '🎬', amount: 0, match: ['Entertainment'] },
-        { label: 'Travel', emoji: '✈️', amount: 0, match: ['Travel'] },
-        { label: 'Subscriptions', emoji: '📺', amount: 0, match: ['Subscriptions'] },
-        { label: 'Telecom', emoji: '📱', amount: 0, match: ['Telecom'] },
+        { label: 'Shopping', emoji: '🛍️', amount: 0, budget: 4000, match: ['Shopping'] },
+        { label: 'Entertainment', emoji: '🎬', amount: 0, budget: 2000, match: ['Entertainment'] },
+        { label: 'Travel', emoji: '✈️', amount: 0, budget: 3000, match: ['Travel'] },
+        { label: 'Subscriptions', emoji: '📺', amount: 0, budget: 500, match: ['Subscriptions'] },
+        { label: 'Telecom', emoji: '📱', amount: 0, budget: 500, match: ['Telecom'] },
       ]
     },
     {
       label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 5000,
       subcategories: [
-        { label: 'Investment', emoji: '💰', amount: 0, match: ['Investment'] },
+        { label: 'Investment', emoji: '💰', amount: 0, budget: 5000, match: ['Investment'] },
       ]
     },
     {
       label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 5000,
       subcategories: [
-        { label: 'Others', emoji: '🔮', amount: 0, match: ['Others'] },
-        { label: 'Services', emoji: '🛠️', amount: 0, match: ['Services'] },
-        { label: 'Uncategorised', emoji: '❓', amount: 0, match: ['Uncategorised'] },
+        { label: 'Others', emoji: '🔮', amount: 0, budget: 2000, match: ['Others'] },
+        { label: 'Services', emoji: '🛠️', amount: 0, budget: 2000, match: ['Services'] },
+        { label: 'Uncategorised', emoji: '❓', amount: 0, budget: 1000, match: ['Uncategorised'] },
       ]
     },
   ])
+
+  const totalBudget = categoriesData.reduce((sum, cat) => sum + (cat.budget || 0), 0)
+  const buffer = Math.max(totalBudget - totalSpent, 0)
+  const overallPct = Math.min(Math.round((totalSpent / (totalBudget || 1)) * 100), 100)
 
   // ── Monthly Pulse Mood ──────────────────────────────────────────────────
   const now2 = new Date()
@@ -197,13 +289,16 @@ export default function Budgets() {
     Promise.all([
       api.get<any[]>('/api/v1/dashboard/goals').catch(() => []),
       api.get<any>('/api/v1/dashboard/profile').catch(() => null),
+      api.get<any[]>('/api/v1/dashboard/budgets').catch(() => []),
       api.get<any>('/api/v1/dashboard/transactions', { limit: 200 }).catch(() => ({ data: [] })),
-    ]).then(([g, p, txRes]) => {
+    ]).then(([g, p, bRes, txRes]) => {
       if (Array.isArray(g)) setGoals(g)
-      if (p) {
-        setProfile(p)
-        setTotalBudget(p.monthlyBudget || p.monthly_budget || 45000)
+      if (p) setProfile(p)
+      
+      if (Array.isArray(bRes) && bRes.length > 0) {
+        setCategoriesData(bRes)
       }
+
       const txList = txRes?.data || []
       if (Array.isArray(txList)) {
         const now = new Date()
@@ -217,33 +312,6 @@ export default function Budgets() {
           s + (tx.direction === 'credit' ? 0 : (tx.amount ?? 0)), 0
         )
         setTotalSpent(total)
-
-        // Calculate categories from real transaction data
-        const newCats = [...categoriesData]
-        newCats.forEach(cat => {
-          const savedBudget = localStorage.getItem(`dekho_budget_${cat.label}`)
-          if (savedBudget) cat.budget = parseFloat(savedBudget)
-          cat.spent = 0
-          cat.subcategories.forEach((sub: any) => { sub.amount = 0 })
-        })
-        thisMonthTxs.forEach((tx: any) => {
-          if (tx.direction === 'credit' || (tx.amount ?? 0) < 0) return
-          let found = false
-          newCats.forEach(cat => {
-            cat.subcategories.forEach((sub: any) => {
-              if (sub.match.includes(tx.category)) {
-                sub.amount += (tx.amount || 0)
-                cat.spent += (tx.amount || 0)
-                found = true
-              }
-            })
-          })
-          if (!found) {
-            newCats[3].subcategories[0].amount += (tx.amount || 0)
-            newCats[3].spent += (tx.amount || 0)
-          }
-        })
-        setCategoriesData(newCats)
       }
     }).finally(() => setLoading(false))
   }
@@ -255,18 +323,21 @@ export default function Budgets() {
     return () => window.removeEventListener('dekho_data_updated', handleUpdate)
   }, [])
 
+  const location = useLocation()
+  useEffect(() => {
+    if (location.hash === '#goals' && !loading) {
+      setTimeout(() => {
+        document.getElementById('goals-section')?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [location.hash, loading])
+
   const fmt = (n: number | null | undefined) => {
     if (n == null || isNaN(n)) return '₹0';
     return '₹' + n.toLocaleString('en-IN');
   }
 
-  if (loading) return (
-    <div style={{ padding: 'var(--space-5)' }}>
-      <SkeletonCard />
-      <div style={{ height: 'var(--space-4)' }} />
-      <SkeletonCard />
-    </div>
-  )
+  if (loading && transactions.length === 0) return <GlobalLoader />
 
   const displayGoals = goals
 
@@ -277,381 +348,164 @@ export default function Budgets() {
         <p style={{ fontFamily: 'var(--font-headline)', fontSize: '24px', fontWeight: 'bold', color: 'var(--color-on-surface)', margin: 0 }}>Budgets & Goals</p>
       </div>
 
-      {/* ── Pulse Card ── */}
       <div className={styles.px}>
-        <div className={styles.pulseCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <div className={styles.pulseLabel} style={{ margin: 0 }}>MONTHLY PULSE</div>
-            <button 
-              onClick={() => { setNewBudget(totalBudget.toString()); setIsEditingBudget(true); }}
-              style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-              aria-label="Edit Budget"
-            >
-              <Edit2 size={16} />
-            </button>
+        <div className={styles.pulseCard} style={{ background: PULSE_GRADIENTS[pulseMood] || PULSE_GRADIENTS['cruising'] }}>
+          <PulseIllustration mood={pulseMood} />
+
+          <div className={styles.pulseHeader}>
+            <div className={styles.pulseLabel}>
+              Monthly Pulse <Activity size={16} />
+            </div>
           </div>
-          <div className={styles.pulseHeadline}>{PULSE_HEADLINES[pulseMood]}</div>
-          <div className={styles.pulseMeta}>
-            <span>SPENT: {fmt(totalSpent)}</span>
-            <span>BUDGET: {fmt(totalBudget)}</span>
+          <div className={styles.pulseHeadlineText}>{PULSE_HEADLINES[pulseMood]}</div>
+          <div className={styles.pulseSublineText}>{PULSE_SUBS[pulseMood]}</div>
+          <div className={styles.pulseAmounts}>
+            <div className={styles.pulseAmountCol}>
+              <span className={styles.pulseAmountLabel}>Spent</span>
+              <span className={styles.pulseAmountVal}>{fmt(totalSpent)}</span>
+            </div>
+            <div className={`${styles.pulseAmountCol} ${styles.right}`}>
+              <span className={styles.pulseAmountLabel}>Budget</span>
+              <span className={styles.pulseAmountVal}>{fmt(totalBudget)}</span>
+            </div>
           </div>
           <div className={styles.pulseBar}>
-            <div className={styles.pulseBarFill} style={{ width: `${overallPct}%` }} />
+            <div className={styles.pulseBarFill} style={{ width: `${overallPct}%` }}>
+              <div className={styles.pulseBarDot} />
+            </div>
           </div>
-          <div className={styles.pulseSafe}>
-            Safe to spend: <strong>{fmt(buffer)}</strong>
+          <div className={styles.pulseSafeRow}>
+            <div className={styles.pulseSafe}>
+              Safe to spend: {fmt(buffer)}
+            </div>
+            <div className={styles.pulseUsedPct}>
+              {overallPct}% used
+            </div>
           </div>
-          <div className={styles.pulseSubtext}>{PULSE_SUBS[pulseMood]}</div>
         </div>
-      </div>
 
-      {/* ── Categories ── */}
-      <div className={styles.px}>
+        {/* ── Summary Row ── */}
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryCol}>
+            <div className={`${styles.summaryIcon} ${styles.spent}`}><Wallet size={16} strokeWidth={2.5} /></div>
+            <div className={styles.summaryText}>
+              <span className={styles.summaryLabel}>Spent</span>
+              <span className={styles.summaryVal}>{fmt(totalSpent)}</span>
+            </div>
+          </div>
+          <div className={styles.summaryCol}>
+            <div className={`${styles.summaryIcon} ${styles.rem}`}><Shield size={16} strokeWidth={2.5} /></div>
+            <div className={styles.summaryText}>
+              <span className={styles.summaryLabel}>Remaining</span>
+              <span className={styles.summaryVal}>{fmt(buffer)}</span>
+            </div>
+          </div>
+          <div className={styles.summaryCol}>
+            <div className={`${styles.summaryIcon} ${styles.used}`}><Percent size={16} strokeWidth={2.5} /></div>
+            <div className={styles.summaryText}>
+              <span className={styles.summaryLabel}>Used</span>
+              <span className={styles.summaryVal}>{overallPct}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Categories ── */}
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionTitle}>Your Budget</p>
+        </div>
+
         <div className={styles.categoryList}>
           {categoriesData.map((cat) => {
             const pct = Math.min(Math.round((cat.spent / (cat.budget || 1)) * 100), 100)
             const isOver = cat.spent > cat.budget
             const isExpanded = expandedCategory === cat.label
+            
+            let IconComponent = Home
+            if (cat.label === 'Lifestyle') IconComponent = ShoppingBag
+            if (cat.label === 'Future-oriented') IconComponent = Target
+            if (cat.label === 'Buffer') IconComponent = PiggyBank
+
             return (
               <div 
                 key={cat.label} 
                 className={styles.categoryCard}
                 onClick={() => setExpandedCategory(isExpanded ? null : cat.label)}
               >
-                <div className={styles.catHeader}>
-                  <div className={styles.catTitleRow}>
-                    <span className={styles.catLabel} style={{ display: 'flex', alignItems: 'center' }}>
-                      {cat.label}
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setEditCategoryBudget({ label: cat.label, budget: cat.budget.toString() }) }}
-                        style={{ background: 'none', border: 'none', marginLeft: '8px', cursor: 'pointer', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', opacity: 0.7 }}
-                        aria-label="Edit Section Budget"
-                      >
-                        <Edit2 size={12} />
-                      </button>
-                    </span>
-                    <span className={styles.catAmts}>{fmt(cat.spent)} / {fmt(cat.budget)}</span>
+                <div className={styles.categoryRow}>
+                  <div className={`${styles.catIcon} ${styles['cat_' + cat.label]}`}>
+                    <IconComponent size={20} strokeWidth={2.5} />
                   </div>
-                  <div className={styles.catSubRow}>
+                  
+                  <div className={styles.catInfo}>
+                    <span className={styles.catName}>{cat.label}</span>
                     <span className={styles.catSub}>{cat.subtitle}</span>
-                    <span className={styles.catChevron}>
-                      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
                   </div>
+                  
+                  <div className={styles.catProgressCol}>
+                    <div className={styles.catAmts}>
+                      {fmt(cat.spent)} <span>/ {fmt(cat.budget)}</span>
+                    </div>
+                    <div className={styles.catTrack}>
+                      <div
+                        className={`${styles.catFill} ${styles['cat_' + cat.label]}`}
+                        style={{ width: `${pct}%`, background: isOver ? 'var(--color-negative)' : '' }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className={`${styles.catPctPill} ${styles['cat_' + cat.label]}`}>
+                    {pct}%
+                  </div>
+                  
+                  <button 
+                    className={styles.catEditBtn}
+                    onClick={(e) => { e.stopPropagation(); setEditingCatData(JSON.parse(JSON.stringify(cat))) }}
+                    aria-label="Edit Section Budget"
+                  >
+                    <Edit2 size={14} />
+                  </button>
                 </div>
-                <div className={styles.catTrack}>
-                  <div
-                    className={styles.catFill}
-                    style={{
-                      width: `${pct}%`,
-                      background: isOver ? 'var(--color-negative)' : 'var(--color-primary)',
-                    }}
-                  />
-                </div>
-                <p className={styles.catMicroInsight}>{getCatInsight(cat.label, pct)}</p>
+                
                 {isExpanded && (
                   <div className={styles.subCatList}>
-                    {cat.subcategories.map((sub: any) => (
-                      <div key={sub.label} className={styles.subCatRow}>
-                        <span className={styles.subCatLabel}>{sub.emoji} {sub.label}</span>
-                        <span className={styles.subCatAmt}>{fmt(sub.amount)}</span>
-                      </div>
-                    ))}
+                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold', color: 'var(--color-on-surface)', paddingLeft: '12px', gridColumn: '1 / -1' }}>Subcategories</p>
+                    {cat.subcategories.map((sub: any) => {
+                      const subPct = Math.min(Math.round((sub.amount / (sub.budget || 1)) * 100), 100)
+                      const isOver = sub.amount > sub.budget
+                      const dashOffset = 87.96 - (subPct / 100) * 87.96
+                      return (
+                        <div key={sub.label} className={styles.subCatGridItem}>
+                          <div style={{ position: 'relative', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="32" height="32" viewBox="0 0 32 32" style={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)' }}>
+                              <circle cx="16" cy="16" r="14" stroke="var(--bg-surface-high)" strokeWidth="3" fill="none" />
+                              <circle cx="16" cy="16" r="14" stroke={isOver ? 'var(--color-negative)' : 'var(--color-primary)'} strokeWidth="3" fill="none" strokeDasharray="87.96" strokeDashoffset={dashOffset} style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
+                            </svg>
+                            <span style={{ fontSize: '14px' }}>{sub.emoji}</span>
+                          </div>
+                          <span className={styles.subCatLabel}>{sub.label}</span>
+                          <span className={styles.subCatAmt}>{fmt(sub.amount)}<br/><span style={{ color: 'var(--color-muted)', fontWeight: 'normal' }}>/ {fmt(sub.budget)}</span></span>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </div>
             )
           })}
         </div>
+
+        {/* ── Insight Card ── */}
+        <div className={styles.insightCard}>
+          <div className={styles.insightIcon}>🪴</div>
+          <div className={styles.insightContent}>
+            <span className={styles.insightTitle}>You're doing great! 🌟</span>
+            <span className={styles.insightText}>Keep going like this and you'll smash your goals in no time.</span>
+          </div>
+          <button className={styles.insightBtn} onClick={() => navigate('/budgets/insights')}>View Insights</button>
+        </div>
       </div>
 
-      {/* ── Goals ── */}
-      <div className={styles.px}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionTitle}>Your Goals</p>
-          <button className={styles.addBtn} onClick={() => setIsAddingGoal(true)} aria-label="Add goal">
-            <Plus size={14} />
-            + New Goal
-          </button>
-        </div>
 
-        {insights?.budgets.goal_card && (
-          <div className={styles.goalHeadline}>
-            {insights.budgets.goal_card.headline}
-          </div>
-        )}
-
-
-        {displayGoals.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '32px 24px', background: 'var(--bg-surface)', borderRadius: '16px', border: '2px dashed var(--color-outline)', marginBottom: '16px' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🎯</div>
-            <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'var(--color-on-surface)', marginBottom: '6px' }}>What are you saving towards?</p>
-            <p style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '16px' }}>A trip, a gadget, a rainy day — give your money a direction.</p>
-            <button onClick={() => setIsAddingGoal(true)} style={{ padding: '10px 24px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>
-              + Set your first goal
-            </button>
-          </div>
-        )}
-
-        {displayGoals.map((goal: any, index: number) => {
-          const currentAmt = goal.currentAmount ?? goal.current_amount ?? 0;
-          const targetAmt = goal.targetAmount ?? goal.target_amount ?? 1;
-          const pct = Math.min(Math.round((currentAmt / targetAmt) * 100), 100)
-          let deadline = 'No date'
-          try {
-            if (goal.deadline) {
-              deadline = new Date(goal.deadline).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
-            }
-          } catch (e) {
-            console.error("Invalid date for goal:", goal)
-          }
-          return (
-            <div key={goal.id} className={styles.goalCard}>
-              {/* Goal image header */}
-              <div className={styles.goalImageWrap}>
-                <div className={styles.goalImageBg} style={{ backgroundImage: `url(${GOAL_IMAGES[index % GOAL_IMAGES.length]})` }} />
-                <div className={styles.goalImageOverlay}>
-                  <p className={styles.goalImageTitle}>{goal.name} is getting closer ✨</p>
-                </div>
-                <button 
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    if (window.confirm('Are you sure you want to delete this goal?')) {
-                      try {
-                        const rawId = String(goal.id).replace(/^g/, '')
-                        await api.delete(`/api/v1/dashboard/goals/${rawId}`)
-                        loadData()
-                      } catch (err) {
-                        console.error('Failed to delete goal', err)
-                      }
-                    }
-                  }}
-                  style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer', zIndex: 10 }}
-                  aria-label="Delete Goal"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-
-              {/* Goal details */}
-              <div className={styles.goalDetails}>
-                <div className={styles.goalMeta}>
-                  <p className={styles.goalStatus} style={{ fontStyle: 'italic', color: '#9B7E6A' }}>{getGoalMood(pct, goal.deadline || null)}</p>
-                  <div className={styles.goalDeadlineWrap}>
-                    <span className={styles.goalDeadlineLabel}>TARGET</span>
-                    <span className={styles.goalDeadline}>{deadline}</span>
-                  </div>
-                </div>
-
-                <div className={styles.goalName}>{goal.name}</div>
-
-                <div className={styles.goalProgress}>
-                  <span className={styles.goalCurrent}>{fmt(currentAmt)}</span>
-                  <span className={styles.goalSep}> /{fmt(targetAmt).replace('₹', '')}</span>
-                  <span className={styles.goalPct}>{pct}%</span>
-                </div>
-
-                <div className={styles.goalTrack}>
-                  <div className={styles.goalFill} style={{ width: `${pct}%` }} />
-                </div>
-
-                <div className={styles.goalContribCard} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {goal.autoPayStatus === 'active' ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div className={styles.goalContribIcon}>⚡</div>
-                      <p className={styles.goalContribText}>
-                        <strong>₹{(goal.autoPayAmount || 0).toLocaleString('en-IN')}/month</strong> auto-pay on the {goal.autoPayDate}th
-                      </p>
-                    </div>
-                  ) : (
-                    <p className={styles.goalContribText} style={{ color: 'var(--color-muted)' }}>Set up auto-save to reach this goal on autopilot.</p>
-                  )}
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <button onClick={() => setAddingMoneyGoal(goal)} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Add Money</button>
-                    <button onClick={() => {
-                      setAutoPayGoal(goal)
-                      setAutoPayAmount(goal.autoPayAmount ? String(goal.autoPayAmount) : '')
-                      setAutoPayDate(goal.autoPayDate ? String(goal.autoPayDate) : '')
-                    }} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Auto Pay</button>
-                    <button onClick={() => {
-                      setEditingGoal(goal)
-                      setEditGoalName(goal.name)
-                      setEditGoalTarget(goal.targetAmount)
-                      setEditGoalDeadline(goal.deadline || '')
-                    }} style={{ flex: 1, padding: '8px', fontSize: '12px', background: 'var(--bg-surface-highest)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Edit</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Modals */}
-      {isEditingBudget && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Edit Monthly Budget</h3>
-            <input type="number" value={newBudget} onChange={e => setNewBudget(e.target.value)} placeholder="Amount (e.g. 50000)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setIsEditingBudget(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={async () => {
-                try {
-                  await api.post('/api/v1/dashboard/profile/budget', { monthly_budget: parseFloat(newBudget) })
-                } catch { /* non-fatal */ }
-                setTotalBudget(parseFloat(newBudget) || totalBudget)
-                setIsEditingBudget(false)
-                loadData()
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {editCategoryBudget && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Edit {editCategoryBudget.label} Budget</h3>
-            <input type="number" value={editCategoryBudget.budget} onChange={e => setEditCategoryBudget({...editCategoryBudget, budget: e.target.value})} placeholder="Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setEditCategoryBudget(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={() => {
-                const updatedCats = categoriesData.map(c => 
-                  c.label === editCategoryBudget.label ? { ...c, budget: parseFloat(editCategoryBudget.budget) || 0 } : c
-                )
-                setCategoriesData(updatedCats)
-                localStorage.setItem(`dekho_budget_${editCategoryBudget.label}`, editCategoryBudget.budget)
-                setEditCategoryBudget(null)
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isAddingGoal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Add New Goal</h3>
-            <input type="text" value={goalName} onChange={e => setGoalName(e.target.value)} placeholder="Goal Name (e.g. New Laptop)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <input type="number" value={goalTarget} onChange={e => setGoalTarget(e.target.value)} placeholder="Target Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <input type="date" value={goalDeadline} onChange={e => setGoalDeadline(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setIsAddingGoal(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={async () => {
-                try {
-                  await api.post('/api/v1/dashboard/goals', {
-                    name: goalName,
-                    target_amount: parseFloat(goalTarget),
-                    deadline: goalDeadline || null,
-                  })
-                  setIsAddingGoal(false)
-                  setGoalName(''); setGoalTarget(''); setGoalDeadline('')
-                  loadData()
-                } catch { alert('Failed to save goal') }
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save Goal</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Adding Money Modal */}
-      {addingMoneyGoal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Add Money to {addingMoneyGoal.name}</h3>
-            <input type="number" value={addMoneyAmount} onChange={e => setAddMoneyAmount(e.target.value)} placeholder="Amount (₹)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setAddingMoneyGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={async () => {
-                try {
-                  const rawId = String(addingMoneyGoal.id).replace(/^g/, '')
-                  await api.post(`/api/v1/dashboard/goals/${rawId}/add_money`, { amount: parseFloat(addMoneyAmount) })
-                  setAddingMoneyGoal(null)
-                  setAddMoneyAmount('')
-                  loadData()
-                } catch (err: any) {
-                    const msg = err?.message || ''
-                    if (msg.includes('404') || msg.includes('not found')) {
-                      alert('Goal not found. Try logging out and back in.')
-                    } else if (msg.includes('401')) {
-                      alert('Session expired. Please log in again.')
-                    } else {
-                      alert('Failed to add money: ' + msg)
-                    }
-                  }
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Add</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Editing Goal Modal */}
-      {editingGoal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Edit Goal</h3>
-            <input type="text" value={editGoalName} onChange={e => setEditGoalName(e.target.value)} placeholder="Goal Name" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <input type="number" value={editGoalTarget} onChange={e => setEditGoalTarget(e.target.value)} placeholder="Target Amount" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <input type="date" value={editGoalDeadline} onChange={e => setEditGoalDeadline(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setEditingGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={async () => {
-                try {
-                  const rawId = String(editingGoal.id).replace(/^g/, '')
-                  await api.put(`/api/v1/dashboard/goals/${rawId}`, {
-                    name: editGoalName,
-                    target_amount: parseFloat(editGoalTarget),
-                    deadline: editGoalDeadline || null,
-                  })
-                  setEditingGoal(null)
-                  loadData()
-                } catch { alert('Failed to edit goal') }
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Auto Pay Modal */}
-      {autoPayGoal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Auto Pay Settings</h3>
-            <input type="number" value={autoPayAmount} onChange={e => setAutoPayAmount(e.target.value)} placeholder="Amount (₹)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            <input type="number" min="1" max="31" value={autoPayDate} onChange={e => setAutoPayDate(e.target.value)} placeholder="Day of month (1-31)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)' }} />
-            
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setAutoPayGoal(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
-              <button onClick={async () => {
-                try {
-                  const rawId = String(autoPayGoal.id).replace(/^g/, '')
-                  await api.put(`/api/v1/dashboard/goals/${rawId}/auto_pay`, {
-                    auto_pay_amount: parseFloat(autoPayAmount) || 0,
-                    auto_pay_date: parseInt(autoPayDate) || 1,
-                    auto_pay_status: 'inactive'
-                  })
-                  setAutoPayGoal(null)
-                  loadData()
-                } catch { alert('Failed to update auto pay') }
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ff4444', background: 'transparent', color: '#ff4444', fontWeight: 'bold' }}>Pause / Remove</button>
-              <button onClick={async () => {
-                try {
-                  const rawId = String(autoPayGoal.id).replace(/^g/, '')
-                  await api.put(`/api/v1/dashboard/goals/${rawId}/auto_pay`, {
-                    auto_pay_amount: parseFloat(autoPayAmount) || 0,
-                    auto_pay_date: parseInt(autoPayDate) || 1,
-                    auto_pay_status: 'active'
-                  })
-                  setAutoPayGoal(null)
-                  loadData()
-                } catch { alert('Failed to update auto pay') }
-              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save Auto Pay</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

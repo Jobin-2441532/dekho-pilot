@@ -8,122 +8,116 @@ from app.api.endpoints.auth import get_current_user
 
 router = APIRouter()
 
+from pydantic import BaseModel
+from app.services.insight_engine_v2 import UserData, SpendingPattern, EmotionalTrigger
+from app.services.insight_engine_hero import get_hero_card_mode
+
 @router.get("/reflection")
 def get_home_reflection(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    Generate today's reflection data for the Home screen ReflectionCard.
-    Analyzes today's spending versus average and determines the "mood".
-    """
-    today_str = date.today().isoformat()
-    
-    # Get all debits for this user
+    # Process streak check-in
+    today = date.today()
+    if current_user.last_checkin_date != today:
+        if current_user.last_checkin_date:
+            days_since = (today - current_user.last_checkin_date).days
+            if days_since == 1:
+                current_user.current_streak_days = (current_user.current_streak_days or 0) + 1
+            elif days_since > 1:
+                current_user.current_streak_days = 1
+        else:
+            current_user.current_streak_days = 1
+        
+        current_user.last_checkin_date = today
+        db.commit()
+
+    # Get user transactions for data populating
     all_txns = db.query(Transaction).filter(
         Transaction.user_id == current_user.id, 
         Transaction.direction == 'debit'
     ).all()
     
-    # Calculate average daily spend
-    unique_days = len(set(t.date[:10] for t in all_txns if t.date)) or 1
-    total_spend = sum(t.amount for t in all_txns)
-    avg_daily_spend = total_spend / unique_days
-    
-    # Today's transactions
+    today_str = today.isoformat()
     today_txns = [t for t in all_txns if t.date and t.date.startswith(today_str)]
     today_spend = sum(t.amount for t in today_txns)
     
-    vs_average_percent = 0
-    if avg_daily_spend > 0:
-        vs_average_percent = round(((today_spend - avg_daily_spend) / avg_daily_spend) * 100)
-    
-    # Determine top category today
-    category_totals = {}
+    cat_totals = {}
     for t in today_txns:
         cat = t.category or "Others"
-        category_totals[cat] = category_totals.get(cat, 0) + t.amount
-        
-    top_category = None
-    if category_totals:
-        top_category = max(category_totals.items(), key=lambda x: x[1])[0]
-        
-    # Logic to determine mood
-    # 'quiet': Zero or near-zero spend
-    if today_spend < 50:
-        return {
-            "mood": "quiet",
-            "headline": "A quiet day for your wallet.",
-            "subtext": "Barely anything went out today. Rest days matter.",
-            "top_category": top_category or "None",
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
-    
-    # 'big_ticket': Single transaction > 40% of daily average
-    if any(t.amount > (avg_daily_spend * 0.4) for t in today_txns) and len(today_txns) > 0 and avg_daily_spend > 500:
-        return {
-            "mood": "big_ticket",
-            "headline": "One big move today. That's okay.",
-            "subtext": "A larger purchase came through. Everything else stayed steady.",
-            "top_category": top_category,
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
-        
-    # 'generous': Transfer or gift transaction detected
-    if any(c in str(t.category).lower() for c in ["transfer", "gift", "donation", "family"] for t in today_txns):
-        return {
-            "mood": "generous",
-            "headline": "You showed up for someone today.",
-            "subtext": "A transfer went out — generosity is part of your story too.",
-            "top_category": top_category,
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
+        cat_totals[cat] = cat_totals.get(cat, 0) + t.amount
+    top_cat = max(cat_totals.items(), key=lambda x: x[1])[0] if cat_totals else "Others"
+    top_cat_amount = cat_totals.get(top_cat, 0)
 
-    # 'productive': Essentials only, low spend
-    essential_cats = ["groceries", "bills", "utilities", "housing", "essentials", "health"]
-    if top_category and top_category.lower() in essential_cats and today_spend <= avg_daily_spend:
-        return {
-            "mood": "productive",
-            "headline": "A clean, intentional day.",
-            "subtext": f"Only essentials like {top_category.lower()} today. Your wallet thanks you.",
-            "top_category": top_category,
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
-        
-    # 'weekend': Weekend day + leisure category
-    today_weekday = date.today().weekday()
-    leisure_cats = ["food & dining", "entertainment", "shopping", "leisure", "travel"]
-    if today_weekday >= 5 and top_category and top_category.lower() in leisure_cats:
-        return {
-            "mood": "weekend",
-            "headline": "Weekend mode — earned and enjoyed.",
-            "subtext": f"A bit of leisure spending on {top_category.lower()}. You've worked for it.",
-            "top_category": top_category,
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
-        
-    # 'comfort': Food or Entertainment spike
-    if top_category and top_category.lower() in leisure_cats and today_spend > avg_daily_spend:
-        return {
-            "mood": "comfort",
-            "headline": "Today was a comfort spending day.",
-            "subtext": f"You spent a little more on {top_category.lower()} than usual. That's okay.",
-            "top_category": top_category,
-            "today_spend": today_spend,
-            "vs_average_percent": vs_average_percent
-        }
-        
-    # Fallback to 'calm'
-    return {
-        "mood": "calm",
-        "headline": "Nothing unusual — just a regular day.",
-        "subtext": f"{top_category or 'Everything'} was within normal range.",
-        "top_category": top_category or "None",
-        "today_spend": today_spend,
-        "vs_average_percent": vs_average_percent
-    }
+    # Current month spend
+    current_month_prefix = today_str[:7] # YYYY-MM
+    month_txns = [t for t in all_txns if t.date and t.date.startswith(current_month_prefix)]
+    month_spend = sum(t.amount for t in month_txns)
+
+    # Week spend vs last week (Sunday to Saturday)
+    from datetime import timedelta
+    days_since_sunday = (today.weekday() + 1) % 7
+    start_of_this_week = today - timedelta(days=days_since_sunday)
+    this_week_days = [(start_of_this_week + timedelta(days=i)).isoformat() for i in range(days_since_sunday + 1)]
+    
+    start_of_last_week = start_of_this_week - timedelta(days=7)
+    last_week_days = [(start_of_last_week + timedelta(days=i)).isoformat() for i in range(7)]
+    
+    week_spend = sum(t.amount for t in all_txns if t.date and t.date[:10] in this_week_days)
+    last_week_spend = sum(t.amount for t in all_txns if t.date and t.date[:10] in last_week_days)
+    
+    week_vs_last_week_pct = 0
+    if last_week_spend > 0:
+        week_vs_last_week_pct = int(((week_spend - last_week_spend) / last_week_spend) * 100)
+    elif week_spend > 0:
+        week_vs_last_week_pct = 100  # Default to 100% when there's spend but no previous week baseline
+
+    total_spend = sum(t.amount for t in all_txns)
+    unique_days = len(set(t.date[:10] for t in all_txns if t.date)) or 1
+    avg_daily_spend = total_spend / unique_days
+
+    created_date = current_user.created_at.date() if hasattr(current_user, "created_at") and current_user.created_at else today
+    days_on_app = max((today - created_date).days, 1)
+
+    from app.models import Budget
+    monthly_budget_sum = db.query(func.sum(Budget.monthly_limit)).filter(Budget.user_id == current_user.id).scalar()
+    monthly_budget = monthly_budget_sum if monthly_budget_sum else (current_user.monthly_budget or 0)
+    remaining_budget = monthly_budget - month_spend
+
+    # Populate UserData
+    user_data = UserData(
+        name=current_user.name.split(" ")[0] if current_user.name else "there",
+        days_on_app=days_on_app,
+        streak_days=current_user.current_streak_days or 0,
+        today_spend=today_spend,
+        today_top_category=top_cat,
+        today_top_amount=top_cat_amount,
+        avg_daily_spend=avg_daily_spend,
+        week_spend=week_spend,
+        week_vs_last_week_pct=week_vs_last_week_pct,
+        remaining_budget=remaining_budget,
+        primary_pattern=SpendingPattern.COMFORT_SPENDING,
+    )
+    
+    response = get_hero_card_mode(user_data, current_user.last_hero_mode, current_user.last_mode_d_date)
+    
+    # Update last shown mode if not Mode D (Mode D doesn't repeat anyway)
+    current_user.last_hero_mode = response["mode"]
+    if response["mode"] == "Mode D":
+        current_user.last_mode_d_date = today
+    db.commit()
+
+    return response
+
+class ModeDResponse(BaseModel):
+    answer: str
+
+@router.post("/reflection/answer")
+def post_reflection_answer(
+    payload: ModeDResponse,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Store the response (in a real app, this goes to feedback_logs or ML pipeline)
+    # For now, just return success
+    return {"status": "success", "message": "Feedback noted."}

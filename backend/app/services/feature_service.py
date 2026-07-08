@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import func, extract
 from sqlalchemy.orm import Session
 
-from app.models import Transaction, SavingsGoal, IncomeEntry, Budget
+from app.models import Transaction, SavingsGoal, Budget
 
 
 # ---------------------------------------------------------------------------

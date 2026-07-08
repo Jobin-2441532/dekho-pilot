@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from app.core.config import settings
 from app.core.logging_config import logger
 from app.core.rate_limit import limiter
-from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import, home, expenses, admin
+from app.api.endpoints import chat, dashboard, ingestion, features, auth, jobs, feedback, insights, ml_proxy, csv_import, home, expenses, admin, notifications, push
 from app.services.retriever import retriever
 from app.core.database import get_db
 from app.services.storage import storage_service
@@ -25,14 +25,17 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Dekho API...")
     # Ensure all DB tables exist on every startup (safe: CREATE TABLE IF NOT EXISTS)
     from app.core.database import init_db
+    from app.tasks.notification_engine import start_scheduler
+    
     init_db()
     logger.info("Database tables ready (Neon warmup complete).")
-    # Removed FAISS pre-loading to prevent memory limits/hangs on Render free tier
-    # if not retriever.is_ready:
-    #     retriever.load()
-    # logger.info("FAISS Initialized!")
+    
+    scheduler = start_scheduler()
+    logger.info("APScheduler started.")
+    
     logger.info(f"MinIO available: {storage_service.is_available()}")
     yield
+    scheduler.shutdown()
     logger.info("Dekho API shutting down.")
 
 
@@ -71,6 +74,7 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    "http://192.168.1.11:5173",
     "https://dekho.vercel.app",
     "https://dekho-app.vercel.app",
     "https://dekhoapp.vercel.app",
@@ -86,13 +90,47 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "X-Admin-User", "X-Admin-Pass"],
     expose_headers=["X-Request-ID"],
 )
 
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+import httpx
+from starlette.responses import StreamingResponse
+
+@app.api_route("/api/chat/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], tags=["chat_proxy"])
+async def chatbot_proxy(request: Request, path: str):
+    url = f"http://127.0.0.1:8002/api/chat/{path}"
+    query = request.url.query
+    if query:
+        url += f"?{query}"
+
+    client = httpx.AsyncClient(timeout=120.0)
+    req = client.build_request(
+        request.method,
+        url,
+        headers=request.headers.raw,
+        content=await request.body()
+    )
+    
+    r = await client.send(req, stream=True)
+    
+    async def stream_generator():
+        try:
+            async for chunk in r.aiter_raw():
+                yield chunk
+        finally:
+            await r.aclose()
+            await client.aclose()
+            
+    return StreamingResponse(
+        stream_generator(),
+        status_code=r.status_code,
+        headers={k: v for k, v in r.headers.items() if k.lower() not in ("content-length", "transfer-encoding", "content-encoding") and not k.lower().startswith("access-control-")}
+    )
+
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "Welcome to Ask Dekho API", "version": "0.1.0"}
@@ -134,3 +172,5 @@ app.include_router(csv_import.router, prefix="/api/v1/import", tags=["import"])
 app.include_router(home.router, prefix="/api/home", tags=["home"])
 app.include_router(expenses.router, prefix="/api/v1/expenses", tags=["expenses"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
+app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["notifications"])
+app.include_router(push.router, prefix="/api/v1/push", tags=["push"])

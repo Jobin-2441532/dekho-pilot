@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, Edit2, Trash2, X, Search, Filter } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import { useInsights } from '../hooks/useInsights'
 import styles from './Expenses.module.css'
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:8000`
+const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
 
 const CATEGORY_EMOJI: Record<string, string> = {
   'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
@@ -16,7 +17,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
 const CATEGORIES = [
   "Food & Dining","Transport","Shopping","Groceries","Entertainment",
   "Travel","Health","Utilities","Telecom","Insurance","Investment",
-  "Loan EMI","Credit Card","Income","Refund","Cash Withdrawal",
+  "Loan EMI","Credit Card","Refund","Cash Withdrawal",
   "Wallet","Personal Transfer","Personal Care","Household","Services","Uncategorised",
 ];
 
@@ -25,6 +26,7 @@ export default function TransactionsList() {
   const [loading, setLoading] = useState(true)
   const [transactions, setTransactions] = useState<any[]>([])
   const [filterMode, setFilterMode] = useState<"All" | "Credit" | "Debit" | "UPI" | "Card">("All")
+  const [sortMode, setSortMode] = useState<"Newest" | "Oldest" | "High to Low" | "Low to High">("Newest")
   
   const { insights } = useInsights()
   const [page, setPage] = useState(1)
@@ -69,17 +71,17 @@ export default function TransactionsList() {
 
   const handleCorrect = async () => {
     if (!newCat || !editTx) return
-    const userId = localStorage.getItem('dekho_user_id') || 1
-    try {
-      await fetch(`${API}/ml/api/feedback/correct`, {
+      const token = localStorage.getItem('dekho_token')
+      await fetch(`${API}/dashboard/feedback/correct`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
         body: JSON.stringify({
-          user_id: userId,
           transaction_id: editTx.id,
-          category: newCat,
-          sub_category: "General",
-          is_reimbursement: isReimbursement
+          corrected_category: newCat,
+          corrected_sub_category: "General"
         })
       })
       setEditTx(null)
@@ -104,13 +106,7 @@ export default function TransactionsList() {
     }
   }
 
-  if (loading && page === 1) return (
-    <div style={{ padding: 'var(--space-5)' }}>
-      <SkeletonCard />
-      <div style={{ height: 'var(--space-4)' }} />
-      <SkeletonCard />
-    </div>
-  )
+  if (loading && page === 1) return <GlobalLoader />
 
   return (
     <div className={styles.page}>
@@ -122,8 +118,6 @@ export default function TransactionsList() {
           <p className={styles.pageTitle}>All Transactions</p>
         </div>
         <div className={styles.headerRight}>
-          <button className={styles.iconBtn} aria-label="Search"><Search size={16} /></button>
-          <button className={styles.iconBtn} aria-label="Filter"><Filter size={16} /></button>
         </div>
       </div>
 
@@ -158,7 +152,7 @@ export default function TransactionsList() {
         )}
 
         <div className={styles.txList} style={{ marginTop: '16px' }}>
-          <div className={styles.scrollRow} style={{ padding: '16px 16px 0' }}>
+          <div className={styles.scrollRow} style={{ padding: '16px 16px 8px' }}>
             {["All", "Credit", "Debit", "UPI", "Card"].map((f) => (
               <button
                 key={f}
@@ -169,14 +163,54 @@ export default function TransactionsList() {
               </button>
             ))}
           </div>
+          
+          <div style={{ padding: '0 16px 12px', display: 'flex', justifyContent: 'flex-end' }}>
+            <select
+              value={sortMode}
+              onChange={e => setSortMode(e.target.value as any)}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '16px',
+                border: '1px solid var(--color-outline-var)',
+                background: 'var(--bg-surface-high)',
+                color: 'var(--color-on-surface)',
+                fontSize: '12px',
+                outline: 'none'
+              }}
+            >
+              <option value="Newest">Newest First</option>
+              <option value="Oldest">Oldest First</option>
+              <option value="High to Low">Amount: High to Low</option>
+              <option value="Low to High">Amount: Low to High</option>
+            </select>
+          </div>
 
           {transactions.filter(tx => {
             if (filterMode === "All") return true;
-            if (filterMode === "Credit") return (tx.type || "").toLowerCase() === "credit";
-            if (filterMode === "Debit") return (tx.type || "").toLowerCase() === "debit";
-            if (filterMode === "UPI") return (tx.payment_method || "").toLowerCase().includes("upi");
-            if (filterMode === "Card") return (tx.payment_method || "").toLowerCase().includes("card");
+            
+            const direction = (tx.direction || tx.type || "").toLowerCase()
+            if (filterMode === "Credit") return direction === "credit";
+            if (filterMode === "Debit") return direction === "debit";
+            
+            const pm = (tx.paymentMode || tx.payment_mode || tx.payment_method || "").toLowerCase()
+            if (filterMode === "UPI") return pm.includes("upi");
+            if (filterMode === "Card") return pm.includes("card") || pm.includes("credit") || pm.includes("debit");
+            
             return true;
+          }).sort((a, b) => {
+            if (sortMode === "Newest") {
+              return new Date(b.date || b.tx_date).getTime() - new Date(a.date || a.tx_date).getTime();
+            }
+            if (sortMode === "Oldest") {
+              return new Date(a.date || a.tx_date).getTime() - new Date(b.date || b.tx_date).getTime();
+            }
+            if (sortMode === "High to Low") {
+              return (b.amount || 0) - (a.amount || 0);
+            }
+            if (sortMode === "Low to High") {
+              return (a.amount || 0) - (b.amount || 0);
+            }
+            return 0;
           }).map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
@@ -188,7 +222,7 @@ export default function TransactionsList() {
                   {tx.category} • {typeof tx.date === 'string' && !tx.date.includes('-')
                     ? tx.date
                     : new Date(tx.date || tx.tx_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.payment_method || 'UPI'}</span>
+                  {' • '}<span style={{background: 'var(--bg-surface-highest)', padding: '2px 6px', borderRadius: '4px', fontSize: '10px'}}>{tx.paymentMode || tx.payment_mode || tx.payment_method || 'UPI'}</span>
                 </p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>

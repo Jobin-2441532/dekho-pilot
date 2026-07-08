@@ -4,7 +4,7 @@
  * Automatically attaches JWT Bearer token from localStorage.
  * Uses the Vite proxy in dev (/api → http://localhost:8000)
  */
-const BASE_URL = import.meta.env.VITE_API_URL || ''   // Use Render API URL in prod, or Vite proxy in dev
+const BASE_URL = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
 
 interface ApiOptions extends RequestInit {
   params?: Record<string, string | number | boolean>
@@ -41,13 +41,7 @@ async function request<T>(endpoint: string, options: ApiOptions = {}): Promise<T
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  // Inject admin headers for secure backend validation
-  const adminUser = sessionStorage.getItem('dekho_admin_user')
-  const adminPass = sessionStorage.getItem('dekho_admin_pass')
-  if (adminUser && adminPass) {
-    headers['X-Admin-User'] = adminUser
-    headers['X-Admin-Pass'] = adminPass
-  }
+
 
   const response = await fetch(url, {
     ...fetchOptions,
@@ -68,21 +62,41 @@ async function request<T>(endpoint: string, options: ApiOptions = {}): Promise<T
   return response.json()
 }
 
+const cache = new Map<string, { data: any, timestamp: number }>();
+const CACHE_DURATION = 60 * 1000; // 60 seconds
+const clearCache = () => cache.clear();
+
 export const api = {
-  get: <T>(endpoint: string, params?: Record<string, string | number | boolean>) =>
-    request<T>(endpoint, { method: 'GET', params }),
+  get: async <T>(endpoint: string, params?: Record<string, string | number | boolean>) => {
+    const key = endpoint + JSON.stringify(params || {});
+    const cached = cache.get(key);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data as T;
+    }
+    const res = await request<T>(endpoint, { method: 'GET', params });
+    cache.set(key, { data: res, timestamp: Date.now() });
+    return res;
+  },
 
-  post: <T>(endpoint: string, body: unknown) =>
-    request<T>(endpoint, { method: 'POST', body: JSON.stringify(body) }),
+  post: <T>(endpoint: string, body: unknown) => {
+    clearCache();
+    return request<T>(endpoint, { method: 'POST', body: JSON.stringify(body) });
+  },
 
-  put: <T>(endpoint: string, body: unknown) =>
-    request<T>(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
+  put: <T>(endpoint: string, body: unknown) => {
+    clearCache();
+    return request<T>(endpoint, { method: 'PUT', body: JSON.stringify(body) });
+  },
 
-  patch: <T>(endpoint: string, body: unknown) =>
-    request<T>(endpoint, { method: 'PATCH', body: JSON.stringify(body) }),
+  patch: <T>(endpoint: string, body: unknown) => {
+    clearCache();
+    return request<T>(endpoint, { method: 'PATCH', body: JSON.stringify(body) });
+  },
 
-  delete: <T>(endpoint: string) =>
-    request<T>(endpoint, { method: 'DELETE' }),
+  delete: <T>(endpoint: string) => {
+    clearCache();
+    return request<T>(endpoint, { method: 'DELETE' });
+  },
 }
 
 export default api

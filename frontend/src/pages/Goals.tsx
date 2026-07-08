@@ -7,6 +7,7 @@ import Chip from '../components/ui/Chip'
 import FloatingInput from '../components/ui/FloatingInput'
 import { PageHeader, Section, Grid2 } from '../components/layout/AppShell'
 import { SkeletonCard, ErrorState } from '../components/ui/LoadingState'
+import GlobalLoader from '../components/ui/GlobalLoader'
 import { api } from '../lib/api'
 import { BUDGETS, CATEGORY_EMOJI, CATEGORY_BG, CATEGORY_COLOR, type SavingsGoal } from '../data/mockData'
 import { Plus, X } from 'lucide-react'
@@ -30,12 +31,7 @@ export default function Goals() {
   const totalSaved = goals.reduce((s, g) => s + g.currentAmount, 0)
   const totalTarget = goals.reduce((s, g) => s + g.targetAmount, 0)
 
-  if (loading) return (
-    <div>
-      <PageHeader title="Goals & Budget" subtitle="Track your savings and spending limits" />
-      <Section><SkeletonCard /></Section>
-    </div>
-  )
+  if (loading) return <GlobalLoader />
 
   if (error) return (
     <div>
@@ -49,7 +45,7 @@ export default function Goals() {
         title="Goals & Budget"
         subtitle="Track your savings and spending limits"
         action={
-          <Button size="sm" iconLeft={<Plus size={14} />} onClick={() => setShowForm(v => !v)}>
+          <Button size="sm" onClick={() => setShowForm(v => !v)}>
             New goal
           </Button>
         }

@@ -49,13 +49,92 @@ logger = logging.getLogger("dekho.ml")
 # ── DB connection ─────────────────────────────────────────────────────────────
 _DB_URL = os.getenv("DATABASE_URL", "postgresql://dekho:dekho_password@localhost:5432/dekho_db")
 
+# Resolve SQLite URL path to absolute relative to backend root
+if _DB_URL.startswith("sqlite:///"):
+    sqlite_db_file = _DB_URL.replace("sqlite:///", "", 1)
+    if not os.path.isabs(sqlite_db_file):
+        backend_root = Path(__file__).parent.parent / "backend"
+        sqlite_db_file = (backend_root / sqlite_db_file).resolve()
+        _DB_URL = f"sqlite:///{sqlite_db_file}"
+
+import sqlite3
+
+class SQLiteDictCursor:
+    def __init__(self, sqlite_cursor, real_dict=False):
+        self.cursor = sqlite_cursor
+        self.real_dict = real_dict
+
+    def execute(self, query, params=None):
+        if params is not None:
+            # PostgreSQL uses %s, SQLite uses ?
+            query = query.replace('%s', '?')
+            if not isinstance(params, (list, tuple)):
+                params = (params,)
+        else:
+            params = ()
+        
+        # Translate dialect specific functions
+        query = query.replace('NOW()', "datetime('now')")
+        query = query.replace("to_char(date::date, 'YYYY-MM')", "strftime('%Y-%m', date)")
+        query = query.replace('ILIKE', 'LIKE')
+
+        self.cursor.execute(query, params)
+        return self
+
+    def fetchone(self):
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        if self.real_dict:
+            return dict(row)
+        return row
+
+    def fetchall(self):
+        rows = self.cursor.fetchall()
+        if self.real_dict:
+            return [dict(r) for r in rows]
+        return rows
+
+    @property
+    def lastrowid(self):
+        return self.cursor.lastrowid
+
+    def close(self):
+        self.cursor.close()
+
+class SQLiteConnWrapper:
+    def __init__(self, sqlite_conn):
+        self.conn = sqlite_conn
+
+    def cursor(self, cursor_factory=None):
+        real_dict = (cursor_factory is not None)
+        return SQLiteDictCursor(self.conn.cursor(), real_dict=real_dict)
+
+    def commit(self):
+        self.conn.commit()
+
+    def rollback(self):
+        self.conn.rollback()
+
+    def close(self):
+        self.conn.close()
+
 def get_conn():
-    """Return a psycopg2 connection using DATABASE_URL from environment."""
-    try:
-        conn = psycopg2.connect(_DB_URL)
-        return conn
-    except Exception as e:
-        raise HTTPException(503, f"Database connection failed: {e}")
+    """Return a psycopg2 connection or a SQLite wrapper connection based on DATABASE_URL."""
+    if _DB_URL.startswith("sqlite:///"):
+        db_file = _DB_URL.replace("sqlite:///", "", 1)
+        try:
+            conn = sqlite3.connect(db_file)
+            conn.row_factory = sqlite3.Row
+            return SQLiteConnWrapper(conn)
+        except Exception as e:
+            raise HTTPException(503, f"SQLite database connection failed: {e}")
+    else:
+        try:
+            conn = psycopg2.connect(_DB_URL)
+            return conn
+        except Exception as e:
+            raise HTTPException(503, f"Database connection failed: {e}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -369,7 +448,7 @@ def monthly_summary(
     month_str = f"{year}-{month:02d}"
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT direction, category, amount
             FROM transactions
@@ -408,7 +487,7 @@ def recurring_transactions(user_id: int = Query(...)):
     """Detect recurring/subscription transactions based on merchant frequency."""
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT merchant, category, amount, date
             FROM transactions
@@ -448,7 +527,7 @@ def top_merchants(user_id: int = Query(...), month: int = Query(default=date.tod
     month_str = f"{year}-{month:02d}"
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT merchant, SUM(amount) as total, COUNT(*) as txn_count
             FROM transactions
@@ -497,7 +576,7 @@ def cashback_savings(user_id: int = Query(...)):
     """Simple cashback tracking placeholder."""
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT SUM(amount) as total FROM transactions
             WHERE user_id = %s AND direction = 'credit'
@@ -534,7 +613,7 @@ def review_queue(user_id: int = Query(...), limit: int = Query(default=20)):
     """Transactions flagged for user review (low ML confidence)."""
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT id, date, merchant, amount, direction,
                    category, sub_category, payment_mode, vpa,
@@ -557,7 +636,7 @@ def spending_pattern(user_id: int):
     """Return ML-computed spending pattern for the user."""
     try:
         conn = get_conn()
-        cur = conn.cursor(psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT category, SUM(amount) as total, COUNT(*) as count
             FROM transactions

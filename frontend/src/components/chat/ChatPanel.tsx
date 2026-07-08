@@ -50,6 +50,10 @@ export default function ChatPanel() {
   useEffect(() => {
     if (!isChatOpen) return
 
+    import('posthog-js').then((ph) => {
+      ph.default.capture('chatbot_opened', { platform: 'web' })
+    })
+
     // Fetch goals for disambiguation
     api.get<any[]>('/api/v1/dashboard/goals')
       .then(rows => setUserGoals(
@@ -184,6 +188,13 @@ export default function ChatPanel() {
     return { action: null, goalName: '', amount: 0, isAmbiguous: false }
   }
 
+  const generateId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  }
+
   const sendMessage = async () => {
     const text = input.trim()
     if (!text || isLoading) return
@@ -191,7 +202,7 @@ export default function ChatPanel() {
     const userMsg: Message = {
       role: 'user',
       content: text,
-      id: crypto.randomUUID(),
+      id: generateId(),
       timestamp: new Date().toISOString(),
     }
 
@@ -210,18 +221,114 @@ export default function ChatPanel() {
     setInput('')
     setIsLoading(true)
 
-    try {
-      const history = [...messages, userMsg].map(({ role, content, id, timestamp }) => ({
-        role,
-        content,
-        id: id ?? crypto.randomUUID(),
-        timestamp: timestamp ?? new Date().toISOString(),
-      }))
+    import('posthog-js').then((ph) => {
+      ph.default.capture('chatbot_message_sent', { 
+        platform: 'web', 
+        intent: intent.action 
+      })
+    })
 
-      const data = await api.post<any>('/api/v1/chat', { messages: history })
+    try {
+      const botMsgId = generateId()
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: '',
+        id: botMsgId,
+        timestamp: new Date().toISOString(),
+      }])
+
+      const token = localStorage.getItem('dekho_token')
+      const res = await fetch(`${API_URL}/api/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        // We pass empty user_id if token is used, or a dummy if testing
+        body: JSON.stringify({ user_id: 'user_1', message: text }),
+      })
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+
+      let fullText = ''
+      if (res.body) {
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          
+          const events = buffer.split('\n\n')
+          buffer = events.pop() ?? ''
+
+          for (const eventStr of events) {
+            if (!eventStr.trim()) continue
+            const lines = eventStr.split('\n')
+            let evType = 'message'
+            let evData = ''
+            for (const line of lines) {
+              if (line.startsWith('event: ')) evType = line.slice(7).trim()
+              if (line.startsWith('data: ')) evData = line.slice(6).trim()
+            }
+            if (!evData) continue
+            try {
+              const payload = JSON.parse(evData)
+              if (evType === 'token') {
+                fullText += (payload.text ?? '')
+                setMessages(prev => {
+                  const newArr = [...prev]
+                  const last = newArr[newArr.length - 1]
+                  if (last && last.role === 'assistant' && last.id === botMsgId) {
+                    last.content = fullText
+                  }
+                  return newArr
+                })
+              } else if (evType === 'chart_data') {
+                // If chart data is returned, we can format it as a macro for ChatBubble to parse
+                // The ChatBubble parses [UI: CHART | type | title | label:value,label:value]
+                let type = payload.type === 'pie' ? 'Pie' : 'Bar'
+                let title = payload.title
+                let dataStr = ''
+                
+                if (payload.type === 'progress' && payload.data && payload.data.length > 0) {
+                  type = 'Pie'
+                  const goal = payload.data[0]
+                  const saved = goal.current || 0
+                  const target = goal.target || 0
+                  const remaining = Math.max(target - saved, 0)
+                  dataStr = `Saved:${saved},Remaining:${remaining}`
+                  title = `${goal.name || 'Goal'} Progress`
+                } else {
+                  dataStr = (payload.data || []).map((d: any) => {
+                    const label = d.date || d.name || d.category || 'Item';
+                    const val = d.value || d.thisMonth || d.spend || 0;
+                    return `${label}:${val}`;
+                  }).join(',')
+                }
+                
+                const macro = `\n[UI: CHART | ${type} | ${title} | ${dataStr}]`
+                fullText += macro
+                setMessages(prev => {
+                  const newArr = [...prev]
+                  const last = newArr[newArr.length - 1]
+                  if (last && last.role === 'assistant' && last.id === botMsgId) {
+                    last.content = fullText
+                  }
+                  return newArr
+                })
+              }
+            } catch (err) {}
+          }
+        }
+      }
 
       // If the backend already saved it via AI tags, don't double-save
-      if (!data.action_taken && intent.action) {
+      if (intent.action) {
         // Phase 3 guarantee: call the dedicated action endpoint directly
         try {
           const actionResult = await api.post<any>('/api/v1/chat/action', {
@@ -238,31 +345,28 @@ export default function ChatPanel() {
       }
 
       // Always trigger UI refresh after any chat with goal-related content
-      const responseText = (data.message?.content || '').toLowerCase()
+      const responseText = fullText.toLowerCase()
       const goalKeywords = ['goal', 'saving', 'added', 'created', 'target', 'progress', 'watch', 'laptop', 'trip']
-      if (data.action_taken || intent.action || goalKeywords.some(kw => responseText.includes(kw))) {
+      if (intent.action || goalKeywords.some(kw => responseText.includes(kw))) {
         window.dispatchEvent(new Event('dekho_data_updated'))
       }
-
-      const assistantMsg: Message = {
-        role: 'assistant',
-        content: data.message.content,
-        id: data.message.id,
-        timestamp: data.message.timestamp,
-      }
-      setMessages((prev) => [...prev, assistantMsg])
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : String(err)
       console.error('[Ask Dekho] Chat error:', errMsg)
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: `Something went wrong: ${errMsg}`,
-          id: crypto.randomUUID(),
-          timestamp: new Date().toISOString(),
-        },
-      ])
+      setMessages((prev) => {
+        const arr = [...prev]
+        if (arr.length > 0 && arr[arr.length - 1].content === '') {
+           arr[arr.length - 1].content = `Something went wrong: ${errMsg}`
+        } else {
+           arr.push({
+             role: 'assistant',
+             content: `Something went wrong: ${errMsg}`,
+             id: crypto.randomUUID(),
+             timestamp: new Date().toISOString(),
+           })
+        }
+        return arr
+      })
     } finally {
       setIsLoading(false)
     }
@@ -392,15 +496,18 @@ export default function ChatPanel() {
 
             {/* Messages */}
             <div className={styles.messages}>
-              {messages.map((msg) => (
-                <ChatBubble
-                  key={msg.id}
-                  role={msg.role}
-                  content={msg.content}
-                  timestamp={msg.timestamp}
-                  showAvatar={msg.role === 'assistant'}
-                />
-              ))}
+              {messages.map((msg) => {
+                if (msg.role === 'assistant' && !msg.content) return null;
+                return (
+                  <ChatBubble
+                    key={msg.id}
+                    role={msg.role}
+                    content={msg.content}
+                    timestamp={msg.timestamp}
+                    showAvatar={msg.role === 'assistant'}
+                  />
+                );
+              })}
               {isLoading && <ChatBubble isTyping showAvatar />}
 
               {/* Phase 4: Disambiguation picker */}

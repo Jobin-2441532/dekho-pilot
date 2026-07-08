@@ -682,7 +682,6 @@ def expenses_pattern_caption(d: UserData) -> str:
         ])
     elif d.spends_more_on_weekends:
         return pick("cal_weekend", [
-            "You tend to spend more on weekends.",
             "Weekends are your higher-spend days — worth noticing.",
             "The darker squares cluster toward weekends.",
         ])

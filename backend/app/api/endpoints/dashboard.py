@@ -22,7 +22,7 @@ def get_transactions(
     category: Optional[str] = Query(None, description="Filter by category"),
     direction: Optional[str] = Query(None, description="Filter by direction: debit | credit"),
 ):
-    q = db.query(Transaction).filter(Transaction.user_id == current_user.id).order_by(Transaction.date.desc())
+    q = db.query(Transaction).filter(Transaction.user_id == current_user.id)
 
     if from_date:
         q = q.filter(Transaction.date >= from_date)
@@ -33,28 +33,27 @@ def get_transactions(
     if direction:
         q = q.filter(Transaction.direction == direction)
 
-    total = q.count()
-    rows = q.offset(skip).limit(limit).all()
+    rows = q.order_by(Transaction.date.desc()).offset(skip).limit(limit).all()
 
     return {
-        "total": total,
-        "skip": skip,
-        "limit": limit,
         "data": [
             {
-                "id": f"t{row.id}",
+                "id": row.id,
                 "date": row.date,
                 "merchant": row.merchant,
                 "amount": row.amount,
-                "category": row.category,
                 "direction": row.direction,
-                "paymentMode": row.payment_mode,
-                "sourceType": row.source_type,
+                "category": row.category,
+                "confidence": row.confidence,
+                "review_status": row.review_status,
+                "payment_mode": row.payment_mode,
                 "notes": row.notes,
+                "tags": row.tags,
             }
             for row in rows
-        ],
+        ]
     }
+
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -74,30 +73,37 @@ def create_transaction(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    tx = Transaction(
-        user_id=current_user.id,
-        amount=body.amount,
-        merchant=body.merchant,
-        category=body.category,
-        date=body.date,
-        notes=body.notes,
-        direction=body.direction,
-        payment_mode=body.payment_mode,
-        source_type=body.source_type,
-        confidence=1.0,
-        review_status="reviewed",
-    )
-    db.add(tx)
-    db.commit()
-    db.refresh(tx)
-    return {
-        "status": "success",
-        "data": {
-            "id": f"t{tx.id}",
-            "amount": tx.amount,
-            "merchant": tx.merchant,
+    try:
+        db_tx = Transaction(
+            user_id=current_user.id,
+            amount=body.amount,
+            merchant=body.merchant,
+            category=body.category,
+            date=body.date,
+            notes=body.notes,
+            direction=body.direction,
+            payment_mode=body.payment_mode,
+            source_type=body.source_type,
+            review_status="reviewed", # Auto-approve manual entries
+            raw_sms="",
+            confidence=1.0
+        )
+        db.add(db_tx)
+        db.commit()
+        db.refresh(db_tx)
+            
+        return {
+            "status": "success",
+            "data": {
+                "id": db_tx.id,
+                "amount": db_tx.amount,
+                "merchant": db_tx.merchant,
+            }
         }
-    }
+    except Exception as e:
+        db.rollback()
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/transactions/summary")
@@ -114,33 +120,32 @@ def get_transactions_summary(
     if to_date:
         q = q.filter(Transaction.date <= to_date)
 
-    all_txns = q.all()
-    total_debit = sum(t.amount for t in all_txns if t.direction == "debit")
-    total_credit = sum(t.amount for t in all_txns if t.direction == "credit")
+    rows = q.all()
+
+    total_income = 0.0
+    total_expense = 0.0
+
+    for row in rows:
+        if row.direction == "credit":
+            total_income += float(row.amount)
+        else:
+            total_expense += float(row.amount)
 
     # Category breakdown (debits only)
-    cat_q = (
-        db.query(Transaction.category, func.sum(Transaction.amount).label("total"))
-        .filter(Transaction.user_id == current_user.id, Transaction.direction == "debit")
-    )
-    if from_date:
-        cat_q = cat_q.filter(Transaction.date >= from_date)
-    if to_date:
-        cat_q = cat_q.filter(Transaction.date <= to_date)
+    cat_map = {}
+    for t in rows:
+        if t.direction == "debit":
+            cat_map[t.category] = cat_map.get(t.category, 0) + float(t.amount)
 
-    categories = cat_q.group_by(Transaction.category).order_by(func.sum(Transaction.amount).desc()).all()
+    categories = sorted([{"category": k, "total": round(v, 2)} for k, v in cat_map.items()], key=lambda x: x["total"], reverse=True)
 
     return {
         "period": {"from": from_date, "to": to_date},
-        "total_spend": round(total_debit, 2),
-        "total_credit": round(total_credit, 2),
-        "transaction_count": len(all_txns),
-        "category_breakdown": [
-            {"category": row.category, "total": round(row.total, 2)}
-            for row in categories
-        ],
+        "total_spend": round(total_expense, 2),
+        "total_credit": round(total_income, 2),
+        "transaction_count": len(rows),
+        "category_breakdown": categories,
     }
-
 
 # ---------------------------------------------------------------------------
 # Goals
@@ -274,33 +279,17 @@ def setup_auto_pay(
 
 
 # ---------------------------------------------------------------------------
-# Profile — income now derived from income_range
-# ---------------------------------------------------------------------------
-INCOME_RANGE_MAP = {
-    "0-3L": 20000,
-    "3-5L": 35000,
-    "5-10L": 65000,
-    "10-15L": 105000,
-    "15-25L": 165000,
-    "25L+": 250000,
-}
-
 @router.get("/profile")
 def get_profile(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user = current_user  # JWT-scoped — always the right user
-
-    # Derive monthly income from income_range band; fall back to monthly_budget
-    monthly_income = INCOME_RANGE_MAP.get(user.income_range, user.monthly_budget or 0)
-
     return {
         "name": user.name.split()[0],
         "fullName": user.name,
-        "incomeRange": user.income_range,
-        "monthlyIncome": monthly_income,
         "stage": user.financial_stage,
         "purposes": user.goal_type.split(",") if user.goal_type else [],
         "monthlyBudget": user.monthly_budget,
         "dekhoWalletBalance": user.dekho_wallet_balance or 0.0,
+        "streak_days": user.current_streak_days or 0,
     }
 
 
@@ -318,6 +307,184 @@ def update_budget(
     db.commit()
     return {"monthly_budget": current_user.monthly_budget}
 
+
+# ---------------------------------------------------------------------------
+# Budgets
+# ---------------------------------------------------------------------------
+from app.models import Budget
+
+DEFAULT_BUDGETS = {
+    "Essentials": {
+        "subtitle": "NON-NEGOTIABLE",
+        "categories": [
+            {"label": "Housing & Household", "emoji": "🏠", "budget": 12000},
+            {"label": "Utilities", "emoji": "⚡", "budget": 2000},
+            {"label": "Bills", "emoji": "🧾", "budget": 1500},
+            {"label": "Food & Dining", "emoji": "🍴", "budget": 6000},
+            {"label": "Groceries", "emoji": "🛒", "budget": 2000},
+            {"label": "Transport", "emoji": "🚗", "budget": 1500},
+            {"label": "Health", "emoji": "💊", "budget": 0},
+            {"label": "Personal Care", "emoji": "🧴", "budget": 0},
+            {"label": "Insurance", "emoji": "🛡️", "budget": 0},
+            {"label": "Loan EMI", "emoji": "💳", "budget": 0},
+            {"label": "Credit Card", "emoji": "💳", "budget": 0},
+        ]
+    },
+    "Lifestyle": {
+        "subtitle": "FLEXIBLE",
+        "categories": [
+            {"label": "Shopping", "emoji": "🛍️", "budget": 4000},
+            {"label": "Entertainment", "emoji": "🎬", "budget": 2000},
+            {"label": "Travel", "emoji": "✈️", "budget": 3000},
+            {"label": "Subscriptions", "emoji": "📺", "budget": 500},
+            {"label": "Telecom", "emoji": "📱", "budget": 500},
+        ]
+    },
+    "Future-oriented": {
+        "subtitle": "GOALS",
+        "categories": [
+            {"label": "Investment", "emoji": "💰", "budget": 5000},
+        ]
+    },
+    "Buffer": {
+        "subtitle": "FLEXIBILITY",
+        "categories": [
+            {"label": "Others", "emoji": "🔮", "budget": 2000},
+            {"label": "Services", "emoji": "🛠️", "budget": 2000},
+            {"label": "Uncategorised", "emoji": "❓", "budget": 1000},
+        ]
+    }
+}
+
+@router.get("/budgets")
+def get_budgets(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # Check if user has any budgets
+    rows = db.query(Budget).filter(Budget.user_id == current_user.id).all()
+    if not rows:
+        # Seed defaults
+        import datetime
+        current_month = datetime.date.today().strftime("%Y-%m")
+        for section, data in DEFAULT_BUDGETS.items():
+            for cat in data["categories"]:
+                b = Budget(
+                    user_id=current_user.id,
+                    section=section,
+                    category=cat["label"] + "|" + cat["emoji"],
+                    monthly_limit=cat["budget"],
+                    month=current_month
+                )
+                db.add(b)
+        db.commit()
+        rows = db.query(Budget).filter(Budget.user_id == current_user.id).all()
+
+    # Get spent amount for current month
+    import datetime
+    current_month_str = datetime.date.today().strftime("%Y-%m")
+    tx_rows = db.query(Transaction.category, func.sum(Transaction.amount).label("spent")).filter(
+        Transaction.user_id == current_user.id,
+        Transaction.direction == "debit",
+        Transaction.date.startswith(current_month_str)
+    ).group_by(Transaction.category).all()
+    
+    spent_map = {row.category: row.spent for row in tx_rows}
+
+    # Group by section
+    section_map = {}
+    known_labels = set()
+    label_to_item = {}
+    for r in rows:
+        if r.section not in section_map:
+            section_map[r.section] = []
+        
+        parts = r.category.split("|")
+        label = parts[0]
+        emoji = parts[1] if len(parts) > 1 else "📌"
+        
+        amt = spent_map.get(label, 0.0)
+        item = {
+            "label": label,
+            "emoji": emoji,
+            "amount": amt,
+            "budget": r.monthly_limit,
+            "match": [label]
+        }
+        section_map[r.section].append(item)
+        known_labels.add(label)
+        label_to_item[label] = item
+
+    # Any spent categories not in known_labels go to Buffer, or fuzzy match
+    for label, amt in spent_map.items():
+        if label not in known_labels:
+            matched_kl = None
+            for kl in known_labels:
+                if label.lower() in kl.lower() or kl.lower() in label.lower():
+                    matched_kl = kl
+                    break
+            
+            if matched_kl:
+                label_to_item[matched_kl]["amount"] += amt
+            else:
+                if "Buffer" not in section_map:
+                    section_map["Buffer"] = []
+                section_map["Buffer"].append({
+                    "label": label,
+                    "emoji": "❓",
+                    "amount": amt,
+                    "budget": 0.0,
+                    "match": [label]
+                })
+
+    result = []
+    # Preserve order
+    for s in ["Essentials", "Lifestyle", "Future-oriented", "Buffer"]:
+        if s in section_map:
+            subs = section_map[s]
+            total_budget = sum([c["budget"] for c in subs])
+            total_spent = sum([c["amount"] for c in subs])
+            result.append({
+                "label": s,
+                "subtitle": DEFAULT_BUDGETS.get(s, {}).get("subtitle", ""),
+                "spent": total_spent,
+                "budget": total_budget,
+                "subcategories": subs
+            })
+    return result
+
+class CategoryCreateOrUpdate(BaseModel):
+    section: str
+    label: str
+    emoji: str
+    budget: float
+
+@router.post("/budgets/category")
+def create_or_update_budget_category(
+    body: CategoryCreateOrUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    import datetime
+    current_month = datetime.date.today().strftime("%Y-%m")
+    category_full = f"{body.label}|{body.emoji}"
+    
+    b = db.query(Budget).filter(
+        Budget.user_id == current_user.id, 
+        Budget.category.startswith(body.label + "|")
+    ).first()
+    
+    if b:
+        b.monthly_limit = body.budget
+        b.category = category_full # in case emoji changed
+    else:
+        b = Budget(
+            user_id=current_user.id,
+            section=body.section,
+            category=category_full,
+            monthly_limit=body.budget,
+            month=current_month
+        )
+        db.add(b)
+    db.commit()
+    return {"status": "success"}
 
 # ---------------------------------------------------------------------------
 # Summary (all-time category totals)

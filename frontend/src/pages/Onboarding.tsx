@@ -14,14 +14,12 @@ const PURPOSES = [
   { emoji: '📈', label: 'Learn investing' },
 ]
 
-const INCOME_RANGES = ['Under ₹20k', '₹20k – ₹40k', '₹40k – ₹60k', '₹60k – ₹1L', 'Above ₹1L']
 const STAGES = ['Just starting out', 'Growing my savings', 'Building wealth']
 
 export default function Onboarding() {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [purposes, setPurposes] = useState<string[]>([])
-  const [income, setIncome] = useState('')
   const [stage, setStage] = useState('')
   const [budget, setBudget] = useState('')
 
@@ -132,25 +130,6 @@ export default function Onboarding() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
-              <div className={styles.optionGroup}>
-                <p className={styles.optionGroupLabel}>Monthly income</p>
-                <div className={styles.optionRow}>
-                  {INCOME_RANGES.map(r => (
-                    <div
-                      key={r}
-                      className={`${styles.option} ${income === r ? styles.selected : ''}`}
-                      onClick={() => setIncome(r)}
-                      role="radio"
-                      aria-checked={income === r}
-                      tabIndex={0}
-                      onKeyDown={e => e.key === 'Enter' && setIncome(r)}
-                    >
-                      {r}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className={styles.optionGroup}>
                 <p className={styles.optionGroupLabel}>Financial stage</p>
                 <div className={styles.optionRow}>

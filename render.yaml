@@ -4,7 +4,7 @@ services:
     name: dekho-api
     env: python
     plan: free
-    buildCommand: pip install --no-cache-dir -r backend/requirements.txt
+    buildCommand: pip install --no-cache-dir -r backend/requirements.txt && pip install --no-cache-dir -r Dekho_Chatbot_2.0/chatbot-backend/requirements.txt
     startCommand: bash start-render.sh
     envVars:
       - key: DATABASE_URL
@@ -17,5 +17,4 @@ services:
         value: http://127.0.0.1:8001 # Points to the background ML service
       - key: PYTHON_VERSION
         value: 3.11.0
-
 

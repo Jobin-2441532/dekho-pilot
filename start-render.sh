@@ -13,5 +13,12 @@ export PYTHONPATH=$(pwd)
   python -m uvicorn main:app --host 127.0.0.1 --port 8001
 ) &
 
+# Start Chatbot sidecar in background
+(
+  cd ../Dekho_Chatbot_2.0/chatbot-backend
+  export PYTHONPATH=$(pwd)
+  python -m uvicorn app.main:app --host 127.0.0.1 --port 8002
+) &
+
 # Start main backend — this process must stay alive for Render
 exec python -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-10000}"
