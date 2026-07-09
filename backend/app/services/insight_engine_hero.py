@@ -118,9 +118,22 @@ def mode_c_forecast(d: UserData, greeting: str) -> dict:
     day_name = datetime.now().strftime("%A")
     headline = f"Approaching {day_name}."
     
-    status = "You're on track to meet your monthly goal." if d.remaining_budget >= 0 else "You've exceeded your monthly budget."
-    
-    subtext = f"You have {fmt(d.remaining_budget)} left for the month. Enjoy the day, intentionally."
+    if d.month_budget > 0:
+        status = "You're on track to meet your monthly goal." if d.remaining_budget >= 0 else "You've exceeded your monthly budget."
+        subtext = f"You have {fmt(d.remaining_budget)} left for the month. Enjoy the day, intentionally."
+        points = [
+            f"Remaining budget: {fmt(d.remaining_budget)}",
+            f"Current average pace: {fmt(d.avg_daily_spend)}/day",
+            status
+        ]
+    else:
+        subtext = f"You're currently spending {fmt(d.avg_daily_spend)} per day. A good time to set a budget!"
+        points = [
+            f"Current average pace: {fmt(d.avg_daily_spend)}/day",
+            "Setting a budget helps you spend intentionally.",
+            "Tap the 'Budgets' tab to get started."
+        ]
+        
     return {
         "mode": "Mode C",
         "greeting": greeting,
@@ -129,11 +142,7 @@ def mode_c_forecast(d: UserData, greeting: str) -> dict:
         "breakdown_type": "Forward-Looking",
         "breakdown_data": {
             "title": "Looking Ahead",
-            "points": [
-                f"Remaining budget: {fmt(d.remaining_budget)}",
-                f"Current average pace: {fmt(d.avg_daily_spend)}/day",
-                status
-            ]
+            "points": points
         }
     }
 

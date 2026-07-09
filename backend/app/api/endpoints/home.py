@@ -96,6 +96,7 @@ def get_home_reflection(
         week_spend=week_spend,
         week_vs_last_week_pct=week_vs_last_week_pct,
         remaining_budget=remaining_budget,
+        month_budget=monthly_budget,
         primary_pattern=SpendingPattern.COMFORT_SPENDING,
     )
     
