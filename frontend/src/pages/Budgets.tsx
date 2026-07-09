@@ -158,12 +158,12 @@ export default function Budgets() {
     {
       label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Housing & Household', emoji: '🏠', amount: 0, budget: 12000, match: ['Housing', 'Household'] },
-        { label: 'Utilities', emoji: '⚡', amount: 0, budget: 2000, match: ['Utilities'] },
-        { label: 'Bills', emoji: '🧾', amount: 0, budget: 1500, match: ['Bills'] },
-        { label: 'Food & Dining', emoji: '🍴', amount: 0, budget: 6000, match: ['Food & Dining'] },
-        { label: 'Groceries', emoji: '🛒', amount: 0, budget: 2000, match: ['Groceries'] },
-        { label: 'Transport', emoji: '🚗', amount: 0, budget: 1500, match: ['Transport'] },
+        { label: 'Housing & Household', emoji: '🏠', amount: 0, budget: 0, match: ['Housing', 'Household'] },
+        { label: 'Utilities', emoji: '⚡', amount: 0, budget: 0, match: ['Utilities'] },
+        { label: 'Bills', emoji: '🧾', amount: 0, budget: 0, match: ['Bills'] },
+        { label: 'Food & Dining', emoji: '🍴', amount: 0, budget: 0, match: ['Food & Dining'] },
+        { label: 'Groceries', emoji: '🛒', amount: 0, budget: 0, match: ['Groceries'] },
+        { label: 'Transport', emoji: '🚗', amount: 0, budget: 0, match: ['Transport'] },
         { label: 'Health', emoji: '💊', amount: 0, budget: 0, match: ['Health'] },
         { label: 'Personal Care', emoji: '🧴', amount: 0, budget: 0, match: ['Personal Care'] },
         { label: 'Insurance', emoji: '🛡️', amount: 0, budget: 0, match: ['Insurance'] },
@@ -174,25 +174,25 @@ export default function Budgets() {
     {
       label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Shopping', emoji: '🛍️', amount: 0, budget: 4000, match: ['Shopping'] },
-        { label: 'Entertainment', emoji: '🎬', amount: 0, budget: 2000, match: ['Entertainment'] },
-        { label: 'Travel', emoji: '✈️', amount: 0, budget: 3000, match: ['Travel'] },
-        { label: 'Subscriptions', emoji: '📺', amount: 0, budget: 500, match: ['Subscriptions'] },
-        { label: 'Telecom', emoji: '📱', amount: 0, budget: 500, match: ['Telecom'] },
+        { label: 'Shopping', emoji: '🛍️', amount: 0, budget: 0, match: ['Shopping'] },
+        { label: 'Entertainment', emoji: '🎬', amount: 0, budget: 0, match: ['Entertainment'] },
+        { label: 'Travel', emoji: '✈️', amount: 0, budget: 0, match: ['Travel'] },
+        { label: 'Subscriptions', emoji: '📺', amount: 0, budget: 0, match: ['Subscriptions'] },
+        { label: 'Telecom', emoji: '📱', amount: 0, budget: 0, match: ['Telecom'] },
       ]
     },
     {
       label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Investment', emoji: '💰', amount: 0, budget: 5000, match: ['Investment'] },
+        { label: 'Investment', emoji: '💰', amount: 0, budget: 0, match: ['Investment'] },
       ]
     },
     {
       label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Others', emoji: '🔮', amount: 0, budget: 2000, match: ['Others'] },
-        { label: 'Services', emoji: '🛠️', amount: 0, budget: 2000, match: ['Services'] },
-        { label: 'Uncategorised', emoji: '❓', amount: 0, budget: 1000, match: ['Uncategorised'] },
+        { label: 'Others', emoji: '🔮', amount: 0, budget: 0, match: ['Others'] },
+        { label: 'Services', emoji: '🛠️', amount: 0, budget: 0, match: ['Services'] },
+        { label: 'Uncategorised', emoji: '❓', amount: 0, budget: 0, match: ['Uncategorised'] },
       ]
     },
   ])
@@ -296,6 +296,15 @@ export default function Budgets() {
       if (p) setProfile(p)
       
       if (Array.isArray(bRes) && bRes.length > 0) {
+        const totalB = bRes.reduce((s, cat) => s + (cat.budget || 0), 0)
+        if (totalB === 45000) {
+          bRes.forEach(cat => {
+            cat.budget = 0;
+            if (Array.isArray(cat.subcategories)) {
+              cat.subcategories.forEach((sub: any) => sub.budget = 0);
+            }
+          })
+        }
         setCategoriesData(bRes)
       }
 

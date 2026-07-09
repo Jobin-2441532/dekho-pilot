@@ -105,10 +105,10 @@ export default function BudgetInsights() {
          return d.getMonth() === prevM && d.getFullYear() === prevY
        })
        const initialCats = [
-         { label: 'Essentials', budget: 25000, spent: 0, color: '#F59E0B', rgb: '245, 158, 11' },
-         { label: 'Lifestyle', budget: 10000, spent: 0, color: '#8B5CF6', rgb: '139, 92, 246' },
-         { label: 'Future', budget: 5000, spent: 0, color: '#10B981', rgb: '16, 185, 129' },
-         { label: 'Buffer', budget: 5000, spent: 0, color: '#EC4899', rgb: '236, 72, 153' }
+         { label: 'Essentials', budget: 0, spent: 0, color: '#F59E0B', rgb: '245, 158, 11' },
+         { label: 'Lifestyle', budget: 0, spent: 0, color: '#8B5CF6', rgb: '139, 92, 246' },
+         { label: 'Future', budget: 0, spent: 0, color: '#10B981', rgb: '16, 185, 129' },
+         { label: 'Buffer', budget: 0, spent: 0, color: '#EC4899', rgb: '236, 72, 153' }
        ]
        
        initialCats.forEach(cat => {
