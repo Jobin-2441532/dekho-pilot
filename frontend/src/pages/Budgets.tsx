@@ -514,6 +514,50 @@ export default function Budgets() {
         </div>
       </div>
 
+      {/* Edit Budget Modal */}
+      {editingCatData && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Edit {editingCatData.label} Budget</h3>
+            {editingCatData.subcategories.map((sub: any, idx: number) => (
+              <div key={sub.label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '20px' }}>{sub.emoji}</span>
+                <span style={{ flex: 1, fontSize: '14px', color: 'var(--color-on-surface)' }}>{sub.label}</span>
+                <input
+                  type="number"
+                  value={sub.budget === 0 && !sub._edited ? '' : sub.budget}
+                  onChange={(e) => {
+                    const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                    const newData = { ...editingCatData };
+                    newData.subcategories[idx].budget = val;
+                    newData.subcategories[idx]._edited = true;
+                    setEditingCatData(newData);
+                  }}
+                  placeholder="₹0"
+                  style={{ width: '100px', padding: '8px', borderRadius: '8px', border: '1px solid var(--color-outline)' }}
+                />
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button onClick={() => setEditingCatData(null)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--color-outline)', background: 'transparent' }}>Cancel</button>
+              <button onClick={async () => {
+                try {
+                  await Promise.all(editingCatData.subcategories.map((sub: any) =>
+                    api.post('/api/v1/dashboard/budgets/category', {
+                      section: editingCatData.label,
+                      label: sub.label,
+                      emoji: sub.emoji,
+                      budget: sub.budget || 0
+                    })
+                  ));
+                  setEditingCatData(null);
+                  loadData();
+                } catch { alert('Failed to save budgets') }
+              }} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'var(--color-primary)', color: 'white', fontWeight: 'bold' }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

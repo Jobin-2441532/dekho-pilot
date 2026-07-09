@@ -81,8 +81,11 @@ export default function BudgetInsights() {
 
   useEffect(() => {
     const loadData = () => {
-      api.get<any>('/api/v1/dashboard/transactions', { limit: 200 }).then(txRes => {
-         const txList = txRes?.data || []
+      Promise.all([
+        api.get<any>('/api/v1/dashboard/transactions', { limit: 200 }).catch(() => ({ data: [] })),
+        api.get<any[]>('/api/v1/dashboard/budgets').catch(() => [])
+      ]).then(([txRes, bRes]) => {
+        const txList = txRes?.data || []
        const now = new Date()
        const dims = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
        const cd = now.getDate()
@@ -107,19 +110,27 @@ export default function BudgetInsights() {
        const initialCats = [
          { label: 'Essentials', budget: 0, spent: 0, color: '#F59E0B', rgb: '245, 158, 11' },
          { label: 'Lifestyle', budget: 0, spent: 0, color: '#8B5CF6', rgb: '139, 92, 246' },
-         { label: 'Future', budget: 0, spent: 0, color: '#10B981', rgb: '16, 185, 129' },
+         { label: 'Future-oriented', budget: 0, spent: 0, color: '#10B981', rgb: '16, 185, 129' },
          { label: 'Buffer', budget: 0, spent: 0, color: '#EC4899', rgb: '236, 72, 153' }
        ]
-       
-       initialCats.forEach(cat => {
-          const saved = localStorage.getItem(`dekho_budget_${cat.label}`)
-          if (saved) cat.budget = parseFloat(saved)
-       })
+
+       // Handle legacy "Future" label from local storage vs "Future-oriented" from backend
+       if (Array.isArray(bRes) && bRes.length > 0) {
+         const totalB = bRes.reduce((s, cat) => s + (cat.budget || 0), 0)
+         if (totalB !== 45000) {
+           initialCats.forEach(cat => {
+             const bCat = bRes.find((b: any) => b.label === cat.label || (b.label === 'Future-oriented' && cat.label === 'Future'))
+             if (bCat) {
+               cat.budget = bCat.budget
+             }
+           })
+         }
+       }
 
        const matchRules: Record<string, string[]> = {
          'Essentials': ['Housing', 'Household', 'Utilities', 'Bills', 'Food & Dining', 'Groceries', 'Transport', 'Health', 'Personal Care', 'Insurance', 'Loan EMI', 'Credit Card'],
          'Lifestyle': ['Shopping', 'Entertainment', 'Travel', 'Subscriptions', 'Telecom'],
-         'Future': ['Investment']
+         'Future-oriented': ['Investment']
        }
        
        let tSpent = 0
@@ -163,6 +174,9 @@ export default function BudgetInsights() {
        
        // Calculate MoM Data
        const newMomData = []
+       const prevMonthShort = new Date(prevY, prevM, 1).toLocaleString('en-US', { month: 'short' })
+       const curMonthShort = now.toLocaleString('en-US', { month: 'short' })
+
        for (const cat of initialCats) {
          let lastSpent = 0
          lastMonthTxs.forEach((tx: any) => {
@@ -192,7 +206,7 @@ export default function BudgetInsights() {
            isGood = false
          }
          
-         newMomData.push({ name: cat.label, last: lastSpent, current, change: changeText, isGood })
+         newMomData.push({ name: cat.label, last: lastSpent, current, change: changeText, isGood, prevMonthShort, curMonthShort })
        }
        setMomData(newMomData)
       })
@@ -269,7 +283,7 @@ export default function BudgetInsights() {
                   <div key={cat.label} className={styles.bubble} style={{ width: size, height: size, backgroundColor: `rgba(${cat.rgb}, 0.25)`, border: `2px solid ${cat.color}`, left: pos.left, top: pos.top }}>
                     <span className={styles.bubbleName}>{cat.label}</span>
                     <span className={styles.bubbleAmount}>₹{(cat.budget/1000)}k</span>
-                    <div className={styles.bubbleBadge}>{pct}%</div>
+                    <div className={styles.bubbleBadge}>{cat.budget > 0 ? Math.round((cat.spent / cat.budget) * 100) : 0}%</div>
                   </div>
                 )
               })}
@@ -376,10 +390,10 @@ export default function BudgetInsights() {
                     style={{ left: `${leftPct}%`, width: `${widthPct}%` }} 
                   />
                   <div className={`${styles.dot} ${styles.dotMay}`} style={{ left: `calc(${lastPct}% - 6px)` }}>
-                    <div className={styles.dotTooltip}>May</div>
+                    <div className={styles.dotTooltip}>{d.prevMonthShort}</div>
                   </div>
                   <div className={`${styles.dot} ${styles.dotJun}`} style={{ left: `calc(${currentPct}% - 6px)` }}>
-                    <div className={`${styles.dotTooltip} ${styles.dotTooltipCurrent}`}>Jun</div>
+                    <div className={`${styles.dotTooltip} ${styles.dotTooltipCurrent}`}>{d.curMonthShort}</div>
                   </div>
                 </div>
                 <div className={`${styles.dotChange} ${d.isGood ? styles.changeGood : styles.changeBad}`}>

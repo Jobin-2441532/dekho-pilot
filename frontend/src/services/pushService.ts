@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : '';
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BPIqG4zf_oqPqUVNUlBxzKioQEdqhlNrfuoP2DuzvyJezEi2jXhyIgSIzq7FYn7kknvv_c7qBmzx682NOprC38Q';
 
 // Convert VAPID key to Uint8Array
 function urlBase64ToUint8Array(base64String: string) {
