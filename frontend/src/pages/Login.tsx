@@ -187,7 +187,7 @@ export default function Login() {
         const res  = await fetch(`${BASE_URL}/api/v1/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name.trim(), email, password, monthly_budget: 50000 }),
+          body: JSON.stringify({ name: name.trim(), email, password, monthly_budget: 0 }),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(parseApiError(data, 'Registration failed'))
