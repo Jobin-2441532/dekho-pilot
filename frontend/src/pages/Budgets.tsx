@@ -156,7 +156,7 @@ export default function Budgets() {
 
   const [categoriesData, setCategoriesData] = useState<any[]>([
     {
-      label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 25000,
+      label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 0,
       subcategories: [
         { label: 'Housing & Household', emoji: '🏠', amount: 0, budget: 12000, match: ['Housing', 'Household'] },
         { label: 'Utilities', emoji: '⚡', amount: 0, budget: 2000, match: ['Utilities'] },
@@ -172,7 +172,7 @@ export default function Budgets() {
       ]
     },
     {
-      label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 10000,
+      label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 0,
       subcategories: [
         { label: 'Shopping', emoji: '🛍️', amount: 0, budget: 4000, match: ['Shopping'] },
         { label: 'Entertainment', emoji: '🎬', amount: 0, budget: 2000, match: ['Entertainment'] },
@@ -182,13 +182,13 @@ export default function Budgets() {
       ]
     },
     {
-      label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 5000,
+      label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 0,
       subcategories: [
         { label: 'Investment', emoji: '💰', amount: 0, budget: 5000, match: ['Investment'] },
       ]
     },
     {
-      label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 5000,
+      label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 0,
       subcategories: [
         { label: 'Others', emoji: '🔮', amount: 0, budget: 2000, match: ['Others'] },
         { label: 'Services', emoji: '🛠️', amount: 0, budget: 2000, match: ['Services'] },

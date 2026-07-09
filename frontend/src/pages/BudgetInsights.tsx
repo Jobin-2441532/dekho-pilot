@@ -66,6 +66,8 @@ export default function BudgetInsights() {
 
   const [viewMode, setViewMode] = useState<'bubbles' | 'gauges'>('bubbles')
   const [paceData, setPaceData] = useState<any[]>([])
+  const [momData, setMomData] = useState<any[]>([])
+  const [currentMonthStr, setCurrentMonthStr] = useState<string>('')
   const [currentSpendDay, setCurrentSpendDay] = useState(1)
   const [daysInMonth, setDaysInMonth] = useState(30)
   const [totalSpent, setTotalSpent] = useState(0)
@@ -86,10 +88,21 @@ export default function BudgetInsights() {
        const cd = now.getDate()
        setDaysInMonth(dims)
        setCurrentSpendDay(cd)
+       
+       const monthName = now.toLocaleString('en-US', { month: 'long' }).toUpperCase()
+       setCurrentMonthStr(`${monthName} ${now.getFullYear()}`)
 
        const thisMonthTxs = txList.filter((tx: any) => {
          const d = new Date(tx.date)
          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+       })
+       
+       let prevM = now.getMonth() - 1
+       let prevY = now.getFullYear()
+       if (prevM < 0) { prevM = 11; prevY -= 1; }
+       const lastMonthTxs = txList.filter((tx: any) => {
+         const d = new Date(tx.date)
+         return d.getMonth() === prevM && d.getFullYear() === prevY
        })
        const initialCats = [
          { label: 'Essentials', budget: 25000, spent: 0, color: '#F59E0B', rgb: '245, 158, 11' },
@@ -135,7 +148,7 @@ export default function BudgetInsights() {
        const tBudget = initialCats.reduce((acc, cat) => acc + cat.budget, 0)
        setTotalBudget(tBudget)
 
-       let cumulativeSpend = 0
+        let cumulativeSpend = 0
        const newPaceData = []
        for (let i = 1; i <= dims; i++) {
          const ideal = (tBudget / dims) * i
@@ -147,6 +160,41 @@ export default function BudgetInsights() {
          newPaceData.push({ day: i, ideal, actual })
        }
        setPaceData(newPaceData)
+       
+       // Calculate MoM Data
+       const newMomData = []
+       for (const cat of initialCats) {
+         let lastSpent = 0
+         lastMonthTxs.forEach((tx: any) => {
+           if (tx.direction === 'credit' || (tx.amount ?? 0) < 0) return
+           let isCat = false
+           if (matchRules[cat.label]?.includes(tx.category)) isCat = true
+           if (!isCat && cat.label === 'Buffer' && !Object.values(matchRules).flat().includes(tx.category)) isCat = true
+           
+           if (isCat) lastSpent += (tx.amount || 0)
+         })
+         
+         const current = cat.spent
+         let changeText = '0% change'
+         let isGood = true
+         if (lastSpent > 0) {
+           const diff = current - lastSpent
+           const pct = Math.round(Math.abs(diff / lastSpent * 100))
+           if (diff > 0) {
+             changeText = `${pct}% more`
+             isGood = false // spending more is generally bad
+           } else {
+             changeText = `${pct}% less`
+             isGood = true
+           }
+         } else if (current > 0) {
+           changeText = `100% more`
+           isGood = false
+         }
+         
+         newMomData.push({ name: cat.label, last: lastSpent, current, change: changeText, isGood })
+       }
+       setMomData(newMomData)
       })
     }
     
@@ -156,12 +204,7 @@ export default function BudgetInsights() {
   }, [])
 
   // Diverging Dot Plot Data (MoM)
-  const momData = [
-    { name: 'Essentials', last: 8240, current: 516, change: '94% less', isGood: true },
-    { name: 'Lifestyle', last: 4200, current: 2650, change: '37% less', isGood: true },
-    { name: 'Future', last: 5000, current: 0, change: '100% less', isGood: false },
-    { name: 'Buffer', last: 200, current: 850, change: '325% more', isGood: false },
-  ]
+  // Computed dynamically in loadData
   const maxSpend = 10000
 
   return (
@@ -169,9 +212,9 @@ export default function BudgetInsights() {
       {/* Header */}
       <header className={styles.header}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          <ArrowLeft size={24} color="#1A1A1A" />
+          <ArrowLeft size={24} color="var(--color-on-surface)" />
         </button>
-        <div className={styles.monthPill}>JUNE 2026</div>
+        <div className={styles.monthPill}>{currentMonthStr}</div>
       </header>
 
       {/* Section 1 — Hero Narrative Card */}

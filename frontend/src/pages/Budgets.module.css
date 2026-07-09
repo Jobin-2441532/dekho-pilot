@@ -136,7 +136,7 @@
 /* Summary Row */
 .summaryRow {
   display: flex;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 16px 8px;
   margin-bottom: 32px;
@@ -213,7 +213,7 @@
 /* Category Cards (Redesign) */
 .categoryList { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
 .categoryCard {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--color-outline-var);
   border-radius: 16px;
   padding: 16px;

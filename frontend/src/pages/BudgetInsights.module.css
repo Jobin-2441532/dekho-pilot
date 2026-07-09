@@ -1,12 +1,12 @@
 /* BudgetInsights.module.css */
 
 .container {
-  background-color: #F5EFE6;
+  background-color: var(--bg-base);
   min-height: 100vh;
   padding: 20px;
   padding-bottom: 32px;
   font-family: 'Public Sans', 'Inter', sans-serif;
-  color: #1A1A1A;
+  color: var(--color-on-surface);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -50,8 +50,8 @@
 }
 
 .monthPill {
-  background: #EBE1D5;
-  color: #5C2E0E;
+  background: var(--bg-surface-high);
+  color: var(--color-on-surface);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -62,7 +62,7 @@
 
 /* Cards */
 .card {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(92, 46, 14, 0.07);
@@ -70,7 +70,7 @@
 }
 
 .cardHero {
-  color: #1A1A1A;
+  color: var(--color-on-surface);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(92, 46, 14, 0.07);
@@ -80,8 +80,8 @@
 }
 
 .cardCallout {
-  background-color: #FDF7E7;
-  color: #1A1A1A;
+  background-color: var(--bg-surface-high);
+  color: var(--color-on-surface);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(92, 46, 14, 0.07);
@@ -93,7 +93,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #8A7F74;
+  color: var(--color-muted);
   font-weight: 600;
   margin-bottom: 6px;
   display: block;

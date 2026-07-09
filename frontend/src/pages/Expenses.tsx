@@ -131,6 +131,8 @@ export default function Expenses() {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([])
   const [reviewCount, setReviewCount] = useState(0)
   const [monthTotal, setMonthTotal] = useState(0)
+  const [trendPct, setTrendPct] = useState(0)
+  const [trendDir, setTrendDir] = useState<'up'|'down'>('up')
 
   // Transaction editing state
   const [editTx, setEditTx] = useState<any>(null)
@@ -198,6 +200,31 @@ export default function Expenses() {
     // Total spend
     const total = monthDebits.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
     setMonthTotal(total)
+
+    // Calculate previous month total
+    const [selYear, selMon] = selectedMonth.split('-').map(Number)
+    if (selYear && selMon) {
+      let prevM = selMon - 1
+      let prevY = selYear
+      if (prevM === 0) {
+        prevM = 12
+        prevY -= 1
+      }
+      const prevMonthStr = `${prevY}-${String(prevM).padStart(2, '0')}`
+      const prevMonthDebits = allTransactions.filter(tx =>
+        String(tx.date || '').startsWith(prevMonthStr) && tx.direction === 'debit'
+      )
+      const prevTotal = prevMonthDebits.reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+      
+      if (prevTotal > 0) {
+        const diff = total - prevTotal
+        setTrendPct(Math.round(Math.abs((diff / prevTotal) * 100)))
+        setTrendDir(diff >= 0 ? 'up' : 'down')
+      } else {
+        setTrendPct(0)
+        setTrendDir('up')
+      }
+    }
 
     sessionStorage.setItem('dekho_selected_month', selectedMonth)
 
@@ -378,9 +405,11 @@ export default function Expenses() {
         <div className={styles.outflowCard}>
           <div className={styles.outflowHeader}>
             <span className={styles.outflowLabel}>TOTAL OUTFLOW</span>
-            <div className={styles.trendBadge}>
-              <span className={styles.trendIcon}>↗</span> 12% higher
-            </div>
+            {trendPct > 0 && (
+              <div className={styles.trendBadge}>
+                <span className={styles.trendIcon}>{trendDir === 'up' ? '↗' : '↘'}</span> {trendPct}% {trendDir === 'up' ? 'higher' : 'lower'}
+              </div>
+            )}
           </div>
           <div className={styles.outflowAmounts}>
             <p className={styles.bigAmount}>₹{monthTotal.toLocaleString('en-IN')}</p>
