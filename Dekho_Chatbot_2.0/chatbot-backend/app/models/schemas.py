@@ -24,7 +24,7 @@ class Transaction(BaseModel):
     id: str
     user_id: str
     amount: float
-    type: Literal["expense"]
+    type: str
     category: str
     subcategory: Optional[str] = None
     description: Optional[str] = None
