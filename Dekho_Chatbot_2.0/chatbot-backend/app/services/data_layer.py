@@ -16,6 +16,11 @@ class DataLayer:
         self.conn = None
         self.ctx = None
 
+    def _uid(self, user_id: str) -> int:
+        import re
+        m = re.search(r'\d+', str(user_id))
+        return int(m.group()) if m else 1
+
     async def __aenter__(self):
         pool = get_pool()
         self.ctx = pool.acquire()
@@ -32,7 +37,7 @@ class DataLayer:
     async def get_user_profile(self, user_id: str) -> UserProfile:
         row = await self.conn.fetchrow(
             "SELECT id, name, monthly_budget FROM users WHERE id = $1", 
-            int(user_id)
+            self._uid(user_id)
         )
         if not row:
             return UserProfile(
@@ -55,7 +60,7 @@ class DataLayer:
         # In the main database schema, expenses are direction = 'debit' and income is direction = 'credit'
         rows = await self.conn.fetch(
             "SELECT category, sum(amount) as total FROM transactions WHERE user_id = $1 AND direction = 'debit' AND date >= $2 GROUP BY category",
-            int(user_id), str(first_day)
+            self._uid(user_id), str(first_day)
         )
         
         by_category = {row["category"]: float(row["total"]) for row in rows if row["category"]}
@@ -71,7 +76,7 @@ class DataLayer:
     async def get_monthly_snapshots(self, user_id: str, limit_months: int = 6) -> list[MonthlySnapshot]:
         rows = await self.conn.fetch(
             "SELECT category, amount, date, direction FROM transactions WHERE user_id = $1 ORDER BY date DESC",
-            int(user_id)
+            self._uid(user_id)
         )
         
         months_data = {}
@@ -101,14 +106,14 @@ class DataLayer:
     async def get_budget_status(self, user_id: str) -> list[BudgetEntry]:
         budgets_rows = await self.conn.fetch(
             "SELECT category, monthly_limit FROM budgets WHERE user_id = $1",
-            int(user_id)
+            self._uid(user_id)
         )
         
         now = datetime.now()
         month_prefix = now.strftime("%Y-%m")
         spent_rows = await self.conn.fetch(
             "SELECT category, SUM(amount) as spent FROM transactions WHERE user_id = $1 AND direction = 'debit' AND date LIKE $2 GROUP BY category",
-            int(user_id), f"{month_prefix}%"
+            self._uid(user_id), f"{month_prefix}%"
         )
         
         spent_map = {}
@@ -135,7 +140,7 @@ class DataLayer:
     async def get_goals(self, user_id: str) -> list[SavingsGoal]:
         rows = await self.conn.fetch(
             "SELECT id, name, target_amount, current_amount FROM savings_goals WHERE user_id = $1",
-            int(user_id)
+            self._uid(user_id)
         )
         return [
             SavingsGoal(
@@ -151,7 +156,7 @@ class DataLayer:
         first_day = now.replace(day=1).isoformat()
         rows = await self.conn.fetch(
             "SELECT id, amount, category, date, direction as type, merchant FROM transactions WHERE user_id = $1 AND direction = 'debit' AND date >= $2 ORDER BY amount DESC LIMIT $3",
-            int(user_id), first_day, limit
+            self._uid(user_id), first_day, limit
         )
         return [
             Transaction(
@@ -169,7 +174,7 @@ class DataLayer:
         start_date = (date.today() - timedelta(days=days)).isoformat()
         rows = await self.conn.fetch(
             "SELECT id, amount, category, date, direction as type, merchant FROM transactions WHERE user_id = $1 AND date >= $2 ORDER BY date DESC LIMIT $3",
-            int(user_id), start_date, limit
+            self._uid(user_id), start_date, limit
         )
         return [
             Transaction(
@@ -191,7 +196,7 @@ class DataLayer:
         start_date = (date.today() - timedelta(days=30)).isoformat()
         rows = await self.conn.fetch(
             "SELECT amount, date FROM transactions WHERE user_id = $1 AND direction = 'debit' AND date >= $2",
-            int(user_id), start_date
+            self._uid(user_id), start_date
         )
         if not rows:
             return stats
