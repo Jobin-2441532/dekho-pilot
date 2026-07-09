@@ -12,11 +12,8 @@ import {
   User as UserIcon,
   Search,
   CheckCircle,
-  AlertCircle,
-  HelpCircle
+  AlertCircle
 } from 'lucide-react'
-import Card from "./components/ui/Card";
-import GlobalLoader from "./components/ui/GlobalLoader";
 import api from "./lib/api";
 import Button from './components/ui/Button'
 
