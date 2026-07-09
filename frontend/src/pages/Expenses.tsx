@@ -229,7 +229,6 @@ export default function Expenses() {
     sessionStorage.setItem('dekho_selected_month', selectedMonth)
 
     // Calculate last 6 months history for outflow chart
-    const [selYear, selMon] = selectedMonth.split('-').map(Number)
     if (selYear && selMon) {
       const historyData = []
       const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
