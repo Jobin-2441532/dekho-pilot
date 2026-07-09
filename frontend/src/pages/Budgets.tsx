@@ -296,15 +296,24 @@ export default function Budgets() {
       if (p) setProfile(p)
       
       if (Array.isArray(bRes) && bRes.length > 0) {
-        const totalB = bRes.reduce((s, cat) => s + (cat.budget || 0), 0)
-        if (totalB === 45000) {
-          bRes.forEach(cat => {
-            cat.budget = 0;
-            if (Array.isArray(cat.subcategories)) {
-              cat.subcategories.forEach((sub: any) => sub.budget = 0);
-            }
-          })
-        }
+        const legacyBudgets: Record<string, number> = {
+          'Housing & Household': 12000, 'Utilities': 2000, 'Bills': 1500,
+          'Food & Dining': 6000, 'Groceries': 2000, 'Transport': 1500,
+          'Shopping': 4000, 'Entertainment': 2000, 'Travel': 3000,
+          'Subscriptions': 500, 'Telecom': 500, 'Investment': 5000,
+          'Others': 2000, 'Services': 2000, 'Uncategorised': 1000
+        };
+        
+        bRes.forEach(cat => {
+          if (Array.isArray(cat.subcategories)) {
+            cat.subcategories.forEach((sub: any) => {
+              if (legacyBudgets[sub.label] && sub.budget === legacyBudgets[sub.label]) {
+                sub.budget = 0;
+              }
+            });
+          }
+          cat.budget = cat.subcategories ? cat.subcategories.reduce((s:number, sub:any)=> s + (sub.budget||0), 0) : 0;
+        });
         setCategoriesData(bRes)
       }
 
@@ -527,7 +536,7 @@ export default function Budgets() {
                   type="number"
                   value={sub.budget === 0 && !sub._edited ? '' : sub.budget}
                   onChange={(e) => {
-                    const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                    const val = e.target.value === '' ? '' : parseFloat(e.target.value);
                     const newData = { ...editingCatData };
                     newData.subcategories[idx].budget = val;
                     newData.subcategories[idx]._edited = true;

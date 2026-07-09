@@ -374,7 +374,7 @@ export default function Home() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', opacity: 0.6, fontSize: '11px' }}>
             <span>Spent {fmtINR(monthTotal)}</span>
-            <span>Budget {fmtINR(budget)}</span>
+            <span>{budget === 0 ? 'Budget Not Set' : `Budget ${fmtINR(budget)}`}</span>
           </div>
 
           <div style={{ height: 'var(--space-4)' }} />
@@ -383,13 +383,13 @@ export default function Home() {
 
           <div className={styles.remainingRow}>
             <p className={styles.progressLabel}>
-              {isOverBudget ? '⚠️ Over Budget' : '✅ Remaining Budget'}
+              {budget === 0 ? 'Budget' : (isOverBudget ? '⚠️ Over Budget' : '✅ Remaining Budget')}
             </p>
             <p
               className={styles.remainingAmt}
-              style={{ color: isOverBudget ? 'var(--color-negative, #e53935)' : undefined }}
+              style={{ color: isOverBudget && budget > 0 ? 'var(--color-negative, #e53935)' : undefined }}
             >
-              {isOverBudget ? `-${fmtINR(monthTotal - budget)}` : fmtINR(remaining)}
+              {budget === 0 ? 'Not Set' : (isOverBudget ? `-${fmtINR(monthTotal - budget)}` : fmtINR(remaining))}
             </p>
           </div>
         </div>
