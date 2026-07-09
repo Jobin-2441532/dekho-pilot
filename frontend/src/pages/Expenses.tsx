@@ -348,13 +348,8 @@ export default function Expenses() {
   const handleDelete = async (id: number | string) => {
     if (!window.confirm('Delete this transaction?')) return
     const rawId = String(id).replace(/^t/, '')
-    const userId = localStorage.getItem('dekho_user_id') || 1
     try {
-      const res = await fetch(`${API}/ml/api/transactions/${rawId}?user_id=${userId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('dekho_token')}` }
-      })
-      if (!res.ok) throw new Error("Failed to delete")
+      await api.delete(`/api/v1/dashboard/transactions/${rawId}`)
       loadData()
     } catch {
       alert('Failed to delete')

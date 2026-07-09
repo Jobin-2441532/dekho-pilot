@@ -415,14 +415,16 @@ export default function Budgets() {
             <div className={`${styles.summaryIcon} ${styles.rem}`}><Shield size={16} strokeWidth={2.5} /></div>
             <div className={styles.summaryText}>
               <span className={styles.summaryLabel}>Remaining</span>
-              <span className={styles.summaryVal}>{fmt(buffer)}</span>
+              <span className={styles.summaryVal}>{totalBudget > 0 ? fmt(buffer) : 'N/A'}</span>
             </div>
           </div>
           <div className={styles.summaryCol}>
             <div className={`${styles.summaryIcon} ${styles.used}`}><Percent size={16} strokeWidth={2.5} /></div>
             <div className={styles.summaryText}>
               <span className={styles.summaryLabel}>Used</span>
-              <span className={styles.summaryVal}>{overallPct}%</span>
+              <span className={styles.summaryVal} style={totalBudget === 0 ? {fontSize: '11px', whiteSpace: 'nowrap'} : {}}>
+                {totalBudget > 0 ? `${overallPct}%` : 'Budget Not Set'}
+              </span>
             </div>
           </div>
         </div>
@@ -461,19 +463,27 @@ export default function Budgets() {
                   
                   <div className={styles.catProgressCol}>
                     <div className={styles.catAmts}>
-                      {fmt(cat.spent)} <span>/ {fmt(cat.budget)}</span>
+                      {cat.budget > 0 ? (
+                        <>{fmt(cat.spent)} <span>/ {fmt(cat.budget)}</span></>
+                      ) : (
+                        <span style={{ color: 'var(--color-on-surface-variant)', fontSize: '13px' }}>Budget Not Set</span>
+                      )}
                     </div>
-                    <div className={styles.catTrack}>
-                      <div
-                        className={`${styles.catFill} ${styles['cat_' + cat.label]}`}
-                        style={{ width: `${pct}%`, background: isOver ? 'var(--color-negative)' : '' }}
-                      />
-                    </div>
+                    {cat.budget > 0 && (
+                      <div className={styles.catTrack}>
+                        <div
+                          className={`${styles.catFill} ${styles['cat_' + cat.label]}`}
+                          style={{ width: `${pct}%`, background: isOver ? 'var(--color-negative)' : '' }}
+                        />
+                      </div>
+                    )}
                   </div>
                   
-                  <div className={`${styles.catPctPill} ${styles['cat_' + cat.label]}`}>
-                    {pct}%
-                  </div>
+                  {cat.budget > 0 && (
+                    <div className={`${styles.catPctPill} ${styles['cat_' + cat.label]}`}>
+                      {pct}%
+                    </div>
+                  )}
                   
                   <button 
                     className={styles.catEditBtn}
@@ -488,20 +498,30 @@ export default function Budgets() {
                   <div className={styles.subCatList}>
                     <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold', color: 'var(--color-on-surface)', paddingLeft: '12px', gridColumn: '1 / -1' }}>Subcategories</p>
                     {cat.subcategories.map((sub: any) => {
-                      const subPct = Math.min(Math.round((sub.amount / (sub.budget || 1)) * 100), 100)
-                      const isOver = sub.amount > sub.budget
-                      const dashOffset = 87.96 - (subPct / 100) * 87.96
+                      const hasBudget = sub.budget > 0;
+                      const subPct = hasBudget ? Math.min(Math.round((sub.amount / sub.budget) * 100), 100) : 0;
+                      const isOver = hasBudget && sub.amount > sub.budget;
+                      const dashOffset = 87.96 - (subPct / 100) * 87.96;
+                      
                       return (
                         <div key={sub.label} className={styles.subCatGridItem}>
                           <div style={{ position: 'relative', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <svg width="32" height="32" viewBox="0 0 32 32" style={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)' }}>
-                              <circle cx="16" cy="16" r="14" stroke="var(--bg-surface-high)" strokeWidth="3" fill="none" />
-                              <circle cx="16" cy="16" r="14" stroke={isOver ? 'var(--color-negative)' : 'var(--color-primary)'} strokeWidth="3" fill="none" strokeDasharray="87.96" strokeDashoffset={dashOffset} style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
-                            </svg>
-                            <span style={{ fontSize: '14px' }}>{sub.emoji}</span>
+                            {hasBudget ? (
+                              <svg width="32" height="32" viewBox="0 0 32 32" style={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)' }}>
+                                <circle cx="16" cy="16" r="14" stroke="var(--bg-surface-high)" strokeWidth="3" fill="none" />
+                                <circle cx="16" cy="16" r="14" stroke={isOver ? 'var(--color-negative)' : 'var(--color-primary)'} strokeWidth="3" fill="none" strokeDasharray="87.96" strokeDashoffset={dashOffset} style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
+                              </svg>
+                            ) : (
+                              <div style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-surface-high)' }} />
+                            )}
+                            <span style={{ fontSize: '14px', zIndex: 1 }}>{sub.emoji}</span>
                           </div>
                           <span className={styles.subCatLabel}>{sub.label}</span>
-                          <span className={styles.subCatAmt}>{fmt(sub.amount)}<br/><span style={{ color: 'var(--color-muted)', fontWeight: 'normal' }}>/ {fmt(sub.budget)}</span></span>
+                          {hasBudget ? (
+                            <span className={styles.subCatAmt}>{fmt(sub.amount)}<br/><span style={{ color: 'var(--color-muted)', fontWeight: 'normal' }}>/ {fmt(sub.budget)}</span></span>
+                          ) : (
+                            <span className={styles.subCatAmt}>{fmt(sub.amount)}<br/><span style={{ color: 'var(--color-muted)', fontWeight: 'normal', fontSize: '10px' }}>Budget Not Set</span></span>
+                          )}
                         </div>
                       )
                     })}

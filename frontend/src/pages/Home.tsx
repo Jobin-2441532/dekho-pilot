@@ -325,11 +325,15 @@ export default function Home() {
               <span className={styles.focusCat}>{topCategory.name}</span>
               <span className={styles.focusIcon}>
                 {
-                  ({
-                    'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
-                    'Entertainment': '🎬', 'Bills': '⚡', 'Health': '💊',
-                    'Housing': '🏠', 'Travel': '✈️', 'Others': '💰', 'Uncategorised': '❓'
-                  } as Record<string, string>)[topCategory.name] || '💰'
+                  (() => {
+                    const map: Record<string, string> = {
+                      'food & dining': '🍴', 'shopping': '🛍️', 'transport': '🚗',
+                      'entertainment': '🎬', 'bills': '⚡', 'health': '💊',
+                      'housing': '🏠', 'travel': '✈️', 'others': '💰', 'uncategorised': '❓'
+                    }
+                    const key = topCategory.name ? topCategory.name.toLowerCase().trim() : ''
+                    return map[key] || '💰'
+                  })()
                 }
               </span>
             </div>

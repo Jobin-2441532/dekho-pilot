@@ -70,20 +70,20 @@
 .contentScroll {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px 24px;
+  padding: 0 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 /* Amount Card */
 .amountCard {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
@@ -102,7 +102,7 @@
 }
 
 .amountValue {
-  font-size: 40px;
+  font-size: 32px;
   color: #7e7368;
   font-weight: 400;
   max-width: 250px;
@@ -112,9 +112,9 @@
 
 .calcIconWrap {
   background: #f5efe6;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,25 +123,25 @@
 /* Selectors Row */
 .selectorsRow {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .selectCard {
   flex: 1;
   background: transparent;
   border: 1px solid #eae2d6;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   position: relative;
   cursor: pointer;
 }
 
 .selectIcon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
 }
 
@@ -149,18 +149,18 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
   overflow: hidden;
 }
 
 .selectInfo p {
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   color: #7e7368;
 }
 
 .selectInfo span {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #4a4238;
   white-space: nowrap;
@@ -180,22 +180,22 @@
 .notesCard {
   background: transparent;
   border: 1px solid #eae2d6;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .notesHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .notesHeader span {
-  font-size: 12px;
+  font-size: 11px;
   color: #7e7368;
 }
 
@@ -203,11 +203,12 @@
   border: none;
   background: transparent;
   resize: none;
-  font-size: 14px;
+  font-size: 13px;
   color: #4a4238;
   outline: none;
   font-family: inherit;
-  min-height: 40px;
+  min-height: 24px;
+  line-height: 1.2;
 }
 
 .notesArea::placeholder {
@@ -215,7 +216,7 @@
 }
 
 .notesCount {
-  font-size: 11px;
+  font-size: 10px;
   color: #7e7368;
   align-self: flex-end;
 }
@@ -223,9 +224,9 @@
 /* Quick Categories */
 .quickCatsRow {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
   flex-shrink: 0;
 }
 
@@ -236,13 +237,13 @@
 .quickCatBtn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 8px 12px;
   border: 1px solid #eae2d6;
-  border-radius: 20px;
+  border-radius: 16px;
   background: transparent;
   color: #4a4238;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
@@ -257,20 +258,20 @@
 .numpadGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
+  margin-top: 4px;
   flex-shrink: 0;
 }
 
 .numBtn, .numBtnEquals {
   background: #fdfaf6;
   border: 1px solid #f0e9df;
-  border-radius: 16px;
-  height: 64px;
+  border-radius: 12px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   color: #333;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);

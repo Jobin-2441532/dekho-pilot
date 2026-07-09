@@ -59,6 +59,10 @@ async function request<T>(endpoint: string, options: ApiOptions = {}): Promise<T
     throw new Error(error || `HTTP ${response.status}`)
   }
 
+  if (response.status === 204) {
+    return null as any;
+  }
+
   return response.json()
 }
 
