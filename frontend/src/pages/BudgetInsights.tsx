@@ -250,9 +250,9 @@ export default function BudgetInsights() {
             <h2 className={styles.cardTitle}>Where your budget lives</h2>
             <p className={styles.cardSubtitle}>Size = budget allocated. Shade = how much used.</p>
           </div>
-          <div style={{ display: 'flex', gap: '8px', background: '#F5EFE6', padding: '4px', borderRadius: '12px' }}>
-            <button onClick={() => setViewMode('bubbles')} style={{ padding: '6px 10px', borderRadius: '8px', border: 'none', background: viewMode === 'bubbles' ? '#FFFFFF' : 'transparent', fontWeight: viewMode === 'bubbles' ? 'bold' : 'normal', fontSize: '12px', cursor: 'pointer', boxShadow: viewMode === 'bubbles' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', color: '#1A1A1A' }}>Bubbles</button>
-            <button onClick={() => setViewMode('gauges')} style={{ padding: '6px 10px', borderRadius: '8px', border: 'none', background: viewMode === 'gauges' ? '#FFFFFF' : 'transparent', fontWeight: viewMode === 'gauges' ? 'bold' : 'normal', fontSize: '12px', cursor: 'pointer', boxShadow: viewMode === 'gauges' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', color: '#1A1A1A' }}>Gauges</button>
+          <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-base)', padding: '4px', borderRadius: '12px' }}>
+            <button onClick={() => setViewMode('bubbles')} style={{ padding: '6px 10px', borderRadius: '8px', border: 'none', background: viewMode === 'bubbles' ? 'var(--bg-card)' : 'transparent', fontWeight: viewMode === 'bubbles' ? 'bold' : 'normal', fontSize: '12px', cursor: 'pointer', boxShadow: viewMode === 'bubbles' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', color: 'var(--color-on-surface)' }}>Bubbles</button>
+            <button onClick={() => setViewMode('gauges')} style={{ padding: '6px 10px', borderRadius: '8px', border: 'none', background: viewMode === 'gauges' ? 'var(--bg-card)' : 'transparent', fontWeight: viewMode === 'gauges' ? 'bold' : 'normal', fontSize: '12px', cursor: 'pointer', boxShadow: viewMode === 'gauges' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', color: 'var(--color-on-surface)' }}>Gauges</button>
           </div>
         </div>
 

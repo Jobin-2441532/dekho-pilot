@@ -317,12 +317,12 @@ DEFAULT_BUDGETS = {
     "Essentials": {
         "subtitle": "NON-NEGOTIABLE",
         "categories": [
-            {"label": "Housing & Household", "emoji": "🏠", "budget": 12000},
-            {"label": "Utilities", "emoji": "⚡", "budget": 2000},
-            {"label": "Bills", "emoji": "🧾", "budget": 1500},
-            {"label": "Food & Dining", "emoji": "🍴", "budget": 6000},
-            {"label": "Groceries", "emoji": "🛒", "budget": 2000},
-            {"label": "Transport", "emoji": "🚗", "budget": 1500},
+            {"label": "Housing & Household", "emoji": "🏠", "budget": 0},
+            {"label": "Utilities", "emoji": "⚡", "budget": 0},
+            {"label": "Bills", "emoji": "🧾", "budget": 0},
+            {"label": "Food & Dining", "emoji": "🍴", "budget": 0},
+            {"label": "Groceries", "emoji": "🛒", "budget": 0},
+            {"label": "Transport", "emoji": "🚗", "budget": 0},
             {"label": "Health", "emoji": "💊", "budget": 0},
             {"label": "Personal Care", "emoji": "🧴", "budget": 0},
             {"label": "Insurance", "emoji": "🛡️", "budget": 0},
@@ -333,25 +333,25 @@ DEFAULT_BUDGETS = {
     "Lifestyle": {
         "subtitle": "FLEXIBLE",
         "categories": [
-            {"label": "Shopping", "emoji": "🛍️", "budget": 4000},
-            {"label": "Entertainment", "emoji": "🎬", "budget": 2000},
-            {"label": "Travel", "emoji": "✈️", "budget": 3000},
-            {"label": "Subscriptions", "emoji": "📺", "budget": 500},
-            {"label": "Telecom", "emoji": "📱", "budget": 500},
+            {"label": "Shopping", "emoji": "🛍️", "budget": 0},
+            {"label": "Entertainment", "emoji": "🎬", "budget": 0},
+            {"label": "Travel", "emoji": "✈️", "budget": 0},
+            {"label": "Subscriptions", "emoji": "📺", "budget": 0},
+            {"label": "Telecom", "emoji": "📱", "budget": 0},
         ]
     },
     "Future-oriented": {
         "subtitle": "GOALS",
         "categories": [
-            {"label": "Investment", "emoji": "💰", "budget": 5000},
+            {"label": "Investment", "emoji": "💰", "budget": 0},
         ]
     },
     "Buffer": {
         "subtitle": "FLEXIBILITY",
         "categories": [
-            {"label": "Others", "emoji": "🔮", "budget": 2000},
-            {"label": "Services", "emoji": "🛠️", "budget": 2000},
-            {"label": "Uncategorised", "emoji": "❓", "budget": 1000},
+            {"label": "Others", "emoji": "🔮", "budget": 0},
+            {"label": "Services", "emoji": "🛠️", "budget": 0},
+            {"label": "Uncategorised", "emoji": "❓", "budget": 0},
         ]
     }
 }
