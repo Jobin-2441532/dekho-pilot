@@ -314,17 +314,6 @@ export default function Home() {
           </div>
         </div>
         
-        {budget > 0 ? (
-          <div className={styles.balanceAmts}>
-            <div><span className={styles.balLbl}>Remaining</span><br/><span className={styles.balVal}>₹{(remaining).toLocaleString('en-IN')}</span></div>
-            <div style={{textAlign:'right'}}><span className={styles.balLbl}>Used</span><br/><span className={styles.balVal}>{budgetPct}%</span></div>
-          </div>
-        ) : (
-          <div className={styles.balanceAmts}>
-            <div><span className={styles.balLbl}>Remaining</span><br/><span className={styles.balVal}>Not Set</span></div>
-            <div style={{textAlign:'right'}}><span className={styles.balLbl}>Used</span><br/><span className={styles.balVal}>N/A</span></div>
-          </div>
-        )}
       </div>
 
       {/* ── Top Focus + vs Last Month ── */}
