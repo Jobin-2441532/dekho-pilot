@@ -62,19 +62,50 @@ async function request<T>(endpoint: string, options: ApiOptions = {}): Promise<T
   return response.json()
 }
 
-const cache = new Map<string, { data: any, timestamp: number }>();
-const CACHE_DURATION = 60 * 1000; // 60 seconds
-const clearCache = () => cache.clear();
+const CACHE_KEY_PREFIX = 'dekho_cache_';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const getCache = (key: string) => {
+  try {
+    const item = localStorage.getItem(CACHE_KEY_PREFIX + key);
+    if (item) {
+      const parsed = JSON.parse(item);
+      if (Date.now() - parsed.timestamp < CACHE_DURATION) {
+        return parsed.data;
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
+const setCache = (key: string, data: any) => {
+  try {
+    localStorage.setItem(CACHE_KEY_PREFIX + key, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch (e) {}
+}
+
+const clearCache = () => {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k?.startsWith(CACHE_KEY_PREFIX)) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch (e) {}
+}
 
 export const api = {
   get: async <T>(endpoint: string, params?: Record<string, string | number | boolean>) => {
     const key = endpoint + JSON.stringify(params || {});
-    const cached = cache.get(key);
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return cached.data as T;
+    const cached = getCache(key);
+    if (cached) {
+      return cached as T;
     }
     const res = await request<T>(endpoint, { method: 'GET', params });
-    cache.set(key, { data: res, timestamp: Date.now() });
+    setCache(key, res);
     return res;
   },
 
