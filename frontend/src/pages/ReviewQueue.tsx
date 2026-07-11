@@ -8,15 +8,9 @@ const CATEGORIES = [
   "Food & Dining", "Transport", "Shopping", "Groceries", "Entertainment",
   "Travel", "Health", "Utilities", "Telecom", "Insurance", "Investment",
   "Loan EMI", "Credit Card", "Income", "Refund", "Cash Withdrawal",
-  "Wallet", "Personal Transfer", "Personal Care", "Household",
   "Services", "Uncategorised",
 ];
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
-  'Entertainment': '🎬', 'Utilities': '⚡', 'Health': '💊',
-  'Household': '🏠', 'Travel': '✈️', 'Uncategorised': '💰',
-}
+import { getCategoryEmoji } from '../utils/categoryUtils'
 
 export default function ReviewQueue() {
   const navigate = useNavigate()
@@ -133,7 +127,7 @@ export default function ReviewQueue() {
 
                   <div className={styles.aiSuggestion}>
                     <span className={styles.aiLabel}>AI suggested:</span>
-                    <span className={styles.tag}>{CATEGORY_EMOJI[tx.category] || '💰'} {tx.category}</span>
+                    <span className={styles.tag}>{getCategoryEmoji(tx.category)} {tx.category}</span>
                     <span className={isHighConf ? styles.confidenceHigh : styles.confidenceLow}>
                       {c}% confident
                     </span>

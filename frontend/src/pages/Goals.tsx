@@ -9,7 +9,8 @@ import { PageHeader, Section, Grid2 } from '../components/layout/AppShell'
 import { SkeletonCard, ErrorState } from '../components/ui/LoadingState'
 import GlobalLoader from '../components/ui/GlobalLoader'
 import { api } from '../lib/api'
-import { BUDGETS, CATEGORY_EMOJI, CATEGORY_BG, CATEGORY_COLOR, type SavingsGoal } from '../data/mockData'
+import { BUDGETS, CATEGORY_BG, CATEGORY_COLOR, type SavingsGoal } from '../data/mockData'
+import { getCategoryEmoji } from '../utils/categoryUtils'
 import { Plus, X } from 'lucide-react'
 
 export default function Goals() {
@@ -181,7 +182,7 @@ export default function Goals() {
                         background: CATEGORY_BG[b.category] ?? '#F3F4F6',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px',
                       }}>
-                        {CATEGORY_EMOJI[b.category] ?? '💰'}
+                        {getCategoryEmoji(b.category)}
                       </span>
                       <span style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>{b.category}</span>
                     </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Settings, Check } from 'lucide-react'
 import { SkeletonCard } from '../components/ui/LoadingState'
+import { getCategoryEmoji } from '../utils/categoryUtils'
+import TopNav from '../components/layout/TopNav'
 import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
 import { ReflectionCard } from '../components/ui/ReflectionCard'
@@ -324,17 +326,7 @@ export default function Home() {
             <div className={styles.focusVal}>
               <span className={styles.focusCat}>{topCategory.name}</span>
               <span className={styles.focusIcon}>
-                {
-                  (() => {
-                    const map: Record<string, string> = {
-                      'food & dining': '🍴', 'shopping': '🛍️', 'transport': '🚗',
-                      'entertainment': '🎬', 'bills': '⚡', 'health': '💊',
-                      'housing': '🏠', 'travel': '✈️', 'others': '💰', 'uncategorised': '❓'
-                    }
-                    const key = topCategory.name ? topCategory.name.toLowerCase().trim() : ''
-                    return map[key] || '💰'
-                  })()
-                }
+                {getCategoryEmoji(topCategory.name)}
               </span>
             </div>
           </div>

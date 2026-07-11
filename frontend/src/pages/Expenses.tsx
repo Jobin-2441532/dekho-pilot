@@ -8,14 +8,9 @@ import { SkeletonCard } from '../components/ui/LoadingState'
 import GlobalLoader from '../components/ui/GlobalLoader'
 import api from '../lib/api'
 import styles from './Expenses.module.css'
+import { getCategoryEmoji, normalizeCategory } from '../utils/categoryUtils'
 
 type InsightTab = 'Total' | 'By Category' | 'Ad hoc Period' | 'None'
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
-  'Entertainment': '🎬', 'Bills': '⚡', 'Health': '💊',
-  'Housing': '🏠', 'Travel': '✈️', 'Others': '💰', 'Uncategorised': '❓'
-}
 
 const CATEGORY_COLOR: Record<string, string> = {
   'Food & Dining': '#8B6347', 'Shopping': '#6C482D', 'Transport': '#A0785A',
@@ -432,7 +427,7 @@ export default function Expenses() {
       {/* ── AI Insight card ── */}
       <div className={styles.px}>
         <div className={styles.aiCard}>
-          <div className={styles.aiWatermark}>🍴</div>
+          <div className={styles.aiWatermark}>{getCategoryEmoji(topCat.category)}</div>
           <p className={styles.aiCardLabel}>INSIGHT</p>
           <div className={styles.aiCardContent}>
             <p className={styles.aiCardTitle}>
@@ -606,7 +601,7 @@ export default function Expenses() {
           {displayTransactions.map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
-                {CATEGORY_EMOJI[tx.category] ?? '💰'}
+                {getCategoryEmoji(tx.category)}
               </div>
               <div className={styles.txInfo}>
                 <p className={styles.txMerchant}>{tx.merchant}</p>

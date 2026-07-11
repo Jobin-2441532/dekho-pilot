@@ -115,10 +115,10 @@ export default function AddTransactionFAB() {
   }
 
   const QUICK_CATS = [
-    { label: 'Food', icon: Utensils },
-    { label: 'Transport', icon: Car },
-    { label: 'Shopping', icon: ShoppingBag },
-    { label: 'Bills', icon: ReceiptText },
+    { label: 'Food', category: 'Food & Dining', icon: Utensils },
+    { label: 'Transport', category: 'Transport', icon: Car },
+    { label: 'Shopping', category: 'Shopping', icon: ShoppingBag },
+    { label: 'Bills', category: 'Bills', icon: ReceiptText },
   ]
 
   const formattedDate = useMemo(() => {
@@ -312,12 +312,12 @@ export default function AddTransactionFAB() {
                 <div className={styles.quickCatsRow}>
                   {QUICK_CATS.map(cat => {
                     const Icon = cat.icon
-                    const isActive = category.includes(cat.label)
+                    const isActive = category === cat.category || category === cat.label
                     return (
                       <button 
                         key={cat.label} 
                         className={`${styles.quickCatBtn} ${isActive ? styles.quickCatActive : ''}`}
-                        onClick={() => setCategory(cat.label)}
+                        onClick={() => setCategory(cat.category)}
                       >
                         <Icon size={16} />
                         {cat.label}

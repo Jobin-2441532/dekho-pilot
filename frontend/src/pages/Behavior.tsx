@@ -6,10 +6,8 @@ import { PageHeader, Section, Grid2 } from '../components/layout/AppShell'
 import { SkeletonCard, ErrorState } from '../components/ui/LoadingState'
 import GlobalLoader from '../components/ui/GlobalLoader'
 import { api } from '../lib/api'
-import {
-  CATEGORY_COLOR, CATEGORY_BG, CATEGORY_EMOJI,
-  getCategoryTotals, type Transaction
-} from '../data/mockData'
+import { CATEGORY_COLOR, CATEGORY_BG, getCategoryTotals, type Transaction } from '../data/mockData'
+import { getCategoryEmoji } from '../utils/categoryUtils'
 
 // Weekly day labels
 const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -176,7 +174,7 @@ export default function Behavior() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '14px', flexShrink: 0,
                       }}>
-                        {CATEGORY_EMOJI[category] ?? '💰'}
+                        {getCategoryEmoji(category)}
                       </span>
                       <div>
                         <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>{category}</p>

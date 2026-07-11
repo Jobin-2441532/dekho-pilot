@@ -6,6 +6,19 @@ import { PostHogProvider } from 'posthog-js/react'
 import App from './App'
 import './index.css'
 
+/* ── Handle Vite chunk loading errors ── */
+window.addEventListener('vite:preloadError', (event) => {
+  console.warn('Vite preload error, reloading page...', event);
+  window.location.reload();
+});
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason && event.reason.message && event.reason.message.match(/Failed to fetch dynamically imported module/i)) {
+    console.warn('Chunk load error, reloading page...');
+    event.preventDefault();
+    window.location.reload();
+  }
+});
+
 /* ── PostHog Initialization ── */
 // Using Vite env vars instead of NEXT_PUBLIC since this is a Vite app
 if (typeof window !== 'undefined') {

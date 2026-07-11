@@ -5,14 +5,9 @@ import { SkeletonCard } from '../components/ui/LoadingState'
 import GlobalLoader from '../components/ui/GlobalLoader'
 import { useInsights } from '../hooks/useInsights'
 import styles from './Expenses.module.css'
+import { getCategoryEmoji } from '../utils/categoryUtils'
 
 const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Food & Dining': '🍴', 'Shopping': '🛍️', 'Transport': '🚗',
-  'Entertainment': '🎬', 'Bills': '⚡', 'Health': '💊',
-  'Housing': '🏠', 'Travel': '✈️', 'Others': '💰', 'Uncategorised': '❓'
-}
 
 const CATEGORIES = [
   "Food & Dining","Transport","Shopping","Groceries","Entertainment",
@@ -215,7 +210,7 @@ export default function TransactionsList() {
           }).map((tx: any) => (
             <div key={tx.id} className={styles.txRow}>
               <div className={styles.txIcon}>
-                {CATEGORY_EMOJI[tx.category] ?? '💰'}
+                {getCategoryEmoji(tx.category)}
               </div>
               <div className={styles.txInfo}>
                 <p className={styles.txMerchant}>{tx.merchant}</p>

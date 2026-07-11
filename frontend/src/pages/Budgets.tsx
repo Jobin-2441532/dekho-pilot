@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Bell, Plus, Edit2, Trash2, Wallet, Shield, Percent, Home, ShoppingBag, Target, PiggyBank, Settings2, Activity } from 'lucide-react'
+import { Bell, Plus, Edit2, Trash2, Wallet, Shield, Percent, Home, ShoppingBag, Target, PiggyBank, Settings2, Activity, ChevronDown, TrendingUp, X } from 'lucide-react'
+import { getCategoryEmoji } from '../utils/categoryUtils'
 import { useAppStore } from '../store/appStore'
 import { SkeletonCard } from '../components/ui/LoadingState'
 import GlobalLoader from '../components/ui/GlobalLoader'
@@ -158,41 +159,41 @@ export default function Budgets() {
     {
       label: 'Essentials', subtitle: 'NON-NEGOTIABLE', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Housing & Household', emoji: '🏠', amount: 0, budget: 0, match: ['Housing', 'Household'] },
-        { label: 'Utilities', emoji: '⚡', amount: 0, budget: 0, match: ['Utilities'] },
-        { label: 'Bills', emoji: '🧾', amount: 0, budget: 0, match: ['Bills'] },
-        { label: 'Food & Dining', emoji: '🍴', amount: 0, budget: 0, match: ['Food & Dining'] },
-        { label: 'Groceries', emoji: '🛒', amount: 0, budget: 0, match: ['Groceries'] },
-        { label: 'Transport', emoji: '🚗', amount: 0, budget: 0, match: ['Transport'] },
-        { label: 'Health', emoji: '💊', amount: 0, budget: 0, match: ['Health'] },
-        { label: 'Personal Care', emoji: '🧴', amount: 0, budget: 0, match: ['Personal Care'] },
-        { label: 'Insurance', emoji: '🛡️', amount: 0, budget: 0, match: ['Insurance'] },
-        { label: 'Loan EMI', emoji: '💳', amount: 0, budget: 0, match: ['Loan EMI'] },
-        { label: 'Credit Card', emoji: '💳', amount: 0, budget: 0, match: ['Credit Card'] },
+        { label: 'Housing & Household', emoji: getCategoryEmoji('Housing'), amount: 0, budget: 0, match: ['Housing', 'Household'] },
+        { label: 'Utilities', emoji: getCategoryEmoji('Utilities'), amount: 0, budget: 0, match: ['Utilities'] },
+        { label: 'Bills', emoji: getCategoryEmoji('Bills'), amount: 0, budget: 0, match: ['Bills'] },
+        { label: 'Food & Dining', emoji: getCategoryEmoji('Food & Dining'), amount: 0, budget: 0, match: ['Food & Dining'] },
+        { label: 'Groceries', emoji: getCategoryEmoji('Groceries'), amount: 0, budget: 0, match: ['Groceries'] },
+        { label: 'Transport', emoji: getCategoryEmoji('Transport'), amount: 0, budget: 0, match: ['Transport'] },
+        { label: 'Health', emoji: getCategoryEmoji('Health'), amount: 0, budget: 0, match: ['Health'] },
+        { label: 'Personal Care', emoji: getCategoryEmoji('Personal Care'), amount: 0, budget: 0, match: ['Personal Care'] },
+        { label: 'Insurance', emoji: getCategoryEmoji('Insurance'), amount: 0, budget: 0, match: ['Insurance'] },
+        { label: 'Loan EMI', emoji: getCategoryEmoji('Loan EMI'), amount: 0, budget: 0, match: ['Loan EMI'] },
+        { label: 'Credit Card', emoji: getCategoryEmoji('Credit Card'), amount: 0, budget: 0, match: ['Credit Card'] },
       ]
     },
     {
       label: 'Lifestyle', subtitle: 'FLEXIBLE', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Shopping', emoji: '🛍️', amount: 0, budget: 0, match: ['Shopping'] },
-        { label: 'Entertainment', emoji: '🎬', amount: 0, budget: 0, match: ['Entertainment'] },
-        { label: 'Travel', emoji: '✈️', amount: 0, budget: 0, match: ['Travel'] },
-        { label: 'Subscriptions', emoji: '📺', amount: 0, budget: 0, match: ['Subscriptions'] },
-        { label: 'Telecom', emoji: '📱', amount: 0, budget: 0, match: ['Telecom'] },
+        { label: 'Shopping', emoji: getCategoryEmoji('Shopping'), amount: 0, budget: 0, match: ['Shopping'] },
+        { label: 'Entertainment', emoji: getCategoryEmoji('Entertainment'), amount: 0, budget: 0, match: ['Entertainment'] },
+        { label: 'Travel', emoji: getCategoryEmoji('Travel'), amount: 0, budget: 0, match: ['Travel'] },
+        { label: 'Subscriptions', emoji: getCategoryEmoji('Subscriptions'), amount: 0, budget: 0, match: ['Subscriptions'] },
+        { label: 'Telecom', emoji: getCategoryEmoji('Telecom'), amount: 0, budget: 0, match: ['Telecom'] },
       ]
     },
     {
       label: 'Future-oriented', subtitle: 'GOALS', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Investment', emoji: '💰', amount: 0, budget: 0, match: ['Investment'] },
+        { label: 'Investment', emoji: getCategoryEmoji('Investment'), amount: 0, budget: 0, match: ['Investment'] },
       ]
     },
     {
       label: 'Buffer', subtitle: 'FLEXIBILITY', spent: 0, budget: 0,
       subcategories: [
-        { label: 'Others', emoji: '🔮', amount: 0, budget: 0, match: ['Others'] },
-        { label: 'Services', emoji: '🛠️', amount: 0, budget: 0, match: ['Services'] },
-        { label: 'Uncategorised', emoji: '❓', amount: 0, budget: 0, match: ['Uncategorised'] },
+        { label: 'Others', emoji: getCategoryEmoji('Others'), amount: 0, budget: 0, match: ['Others'] },
+        { label: 'Services', emoji: getCategoryEmoji('Services'), amount: 0, budget: 0, match: ['Services'] },
+        { label: 'Uncategorised', emoji: getCategoryEmoji('Uncategorised'), amount: 0, budget: 0, match: ['Uncategorised'] },
       ]
     },
   ])
