@@ -11,7 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Check } from 'lucide-react'
 import api from '../lib/api'
 
-const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const API = ''
+
 
 const CATEGORIES = [
   "Food & Dining","Transport","Shopping","Groceries","Entertainment",

@@ -9,7 +9,8 @@ import { useInsights } from '../hooks/useInsights'
 import api from '../lib/api'
 import styles from './Budgets.module.css'
 
-const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const API = ''
+
 
 interface BudgetCategory {
   label: string

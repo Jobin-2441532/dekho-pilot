@@ -2,9 +2,13 @@
  * Dekho API Client
  * Centralised HTTP client for all backend calls.
  * Automatically attaches JWT Bearer token from localStorage.
- * Uses the Vite proxy in dev (/api → http://localhost:8000)
+ * 
+ * In production: Vercel rewrites /api/* → https://dekho-api.onrender.com/api/*
+ * In dev: Vite proxy rewrites /api/* → http://localhost:8000/api/*
+ * Always use relative URLs so the correct proxy handles routing.
  */
-const BASE_URL = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const BASE_URL = ''
+
 
 interface ApiOptions extends RequestInit {
   params?: Record<string, string | number | boolean>

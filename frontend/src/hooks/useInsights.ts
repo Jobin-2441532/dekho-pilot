@@ -7,7 +7,8 @@
  */
 import { useState, useEffect } from 'react'
 
-const BASE = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const BASE = ''
+
 
 export interface InsightsData {
   home: {

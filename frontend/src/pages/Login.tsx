@@ -6,7 +6,8 @@ import Button from '../components/ui/Button'
 import FloatingInput from '../components/ui/FloatingInput'
 import styles from './Onboarding.module.css'
 
-const BASE_URL = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const BASE_URL = ''
+
 
 /* ── Types ───────────────────────────────────────────────────────────────── */
 interface StatementMeta {

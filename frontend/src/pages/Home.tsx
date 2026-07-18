@@ -10,7 +10,8 @@ import { ReflectionCard } from '../components/ui/ReflectionCard'
 import GlobalLoader from '../components/ui/GlobalLoader'
 import styles from './Home.module.css'
 
-const API = import.meta.env.PROD ? (import.meta.env.VITE_API_URL || '') : ''
+const API = ''
+
 
 function getGreeting() {
   const h = new Date().getHours()
