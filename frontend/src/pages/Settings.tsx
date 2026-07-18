@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import styles from './Settings.module.css'
 
-import { subscribeUserToPush } from '../services/pushService'
+import { subscribeUserToPush, unsubscribeUserFromPush } from '../services/pushService'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -28,7 +28,13 @@ export default function Settings() {
 
   const togglePush = async () => {
     if (pushEnabled) {
-      alert("To disable push notifications, please revoke permission in your browser settings.")
+      try {
+        await unsubscribeUserFromPush()
+        setPushEnabled(false)
+      } catch (e: any) {
+        console.error(e)
+        alert(`Could not disable push notifications: ${e.message}`)
+      }
     } else {
       try {
         await subscribeUserToPush()

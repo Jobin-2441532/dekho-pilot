@@ -37,6 +37,22 @@ def subscribe(
     
     return {"status": "subscribed"}
 
+class PushUnsubscribeRequest(BaseModel):
+    endpoint: str
+
+@router.post("/unsubscribe")
+def unsubscribe(
+    sub_data: PushUnsubscribeRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    db.query(PushSubscription).filter_by(
+        user_id=current_user.id,
+        endpoint=sub_data.endpoint
+    ).delete()
+    db.commit()
+    return {"status": "unsubscribed"}
+
 @router.post("/test-all")
 def test_all_push(db: Session = Depends(get_db)):
     from app.tasks.notification_engine import send_web_push

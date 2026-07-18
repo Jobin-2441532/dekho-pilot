@@ -70,3 +70,21 @@ export async function markNotificationRead(id: string) {
   if (!res.ok) throw new Error('Failed to mark read');
   return res.json();
 }
+
+export async function unsubscribeUserFromPush() {
+  if (!('serviceWorker' in navigator)) return;
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription();
+  if (subscription) {
+    await subscription.unsubscribe();
+    const token = localStorage.getItem('dekho_token');
+    await fetch(`${API_URL}/api/v1/push/unsubscribe`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ endpoint: subscription.endpoint })
+    });
+  }
+}

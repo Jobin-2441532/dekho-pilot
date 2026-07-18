@@ -151,10 +151,31 @@ class NormalizationService:
         Returns the list of created Transaction objects.
         """
         created = []
+        from app.models import Budget
+        custom_categories = db.query(Budget.category).filter(Budget.user_id == user_id).all()
+        custom_labels = []
+        for cc in custom_categories:
+            parts = cc[0].split("|")
+            custom_labels.append(parts[0])
 
         for row in parsed_rows:
             merchant = _normalise_merchant(row.get("description", ""))
-            category = _auto_categorize(merchant + " " + row.get("description", ""))
+            
+            # Match user's custom categories first (case-insensitive)
+            desc_lower = (merchant + " " + row.get("description", "")).lower()
+            matched_cat = None
+            for cl in custom_labels:
+                if cl.lower() in desc_lower:
+                    matched_cat = cl
+                    break
+            
+            confidence = 0.0
+            if matched_cat:
+                category = matched_cat
+                confidence = 1.0
+            else:
+                category = _auto_categorize(merchant + " " + row.get("description", ""))
+
             amount = float(row.get("amount", 0))
             direction = row.get("direction", "debit")
             date_str = _parse_date_safe(row.get("date"))
@@ -173,6 +194,7 @@ class NormalizationService:
                 source_reference_id=str(source_reference_id) if source_reference_id else None,
                 payment_mode="",
                 notes=row.get("description", ""),
+                confidence=confidence,
             )
             db.add(txn)
             created.append(txn)

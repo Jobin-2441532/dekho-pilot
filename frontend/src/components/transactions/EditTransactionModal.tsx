@@ -90,7 +90,25 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
     setSubmitStatus('saving')
     try {
       const paymentMode = account === 'Select Account' ? 'Cash' : account
-      const finalCat = category === 'Select Category' ? 'Others' : category
+      let finalCat = category === 'Select Category' ? 'Others' : category
+
+      if (finalCat === 'Others' || finalCat === 'Select Category') {
+        const cleanedNotes = notes.trim().toLowerCase()
+        if (cleanedNotes) {
+          for (const section of budgets) {
+            if (Array.isArray(section.subcategories)) {
+              const matchedSub = section.subcategories.find(
+                (sub: any) => sub.label && sub.label.toLowerCase() === cleanedNotes
+              )
+              if (matchedSub) {
+                finalCat = matchedSub.label
+                break
+              }
+            }
+          }
+        }
+      }
+
       await api.put(`/api/v1/dashboard/transactions/${tx.id}`, {
         amount: finalAmount,
         merchant: notes || finalCat,
