@@ -47,6 +47,7 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
   const [isAddingCustomCategory, setIsAddingCustomCategory] = useState(false)
   const [newCustomCategoryName, setNewCustomCategoryName] = useState('')
   const [newCustomCategorySection, setNewCustomCategorySection] = useState('Essentials')
+  const [isSavingCategory, setIsSavingCategory] = useState(false)
   const getCategoryEmoji = useCategoryEmoji()
   
   useEffect(() => {
@@ -141,7 +142,7 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
   }
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, display: 'flex', alignItems: 'stretch', justifyContent: 'center' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} onClick={onClose} />
       
       <motion.div 
@@ -150,7 +151,7 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-        style={{ position: 'relative', width: '100%', maxWidth: '450px', height: '90vh', background: 'var(--bg-base)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+        style={{ position: 'relative', width: '100%', height: '100dvh', background: 'var(--bg-base)', borderTopLeftRadius: '0px', borderTopRightRadius: '0px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
       >
         {submitStatus !== 'idle' && (
           <div style={{ position: 'absolute', inset: 0, background: 'var(--bg-surface)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -259,7 +260,8 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
                 </button>
                 <button
                   onClick={async () => {
-                    if (!newCustomCategoryName.trim()) return;
+                    if (!newCustomCategoryName.trim() || isSavingCategory) return;
+                    setIsSavingCategory(true);
                     try {
                       await api.post('/api/v1/dashboard/budgets/category', {
                         section: newCustomCategorySection,
@@ -276,11 +278,14 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
                       setNewCustomCategoryName('');
                     } catch (err) {
                       alert('Failed to add category');
+                    } finally {
+                      setIsSavingCategory(false);
                     }
                   }}
-                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--color-primary, #6b4e71)', color: 'white', fontWeight: 'bold' }}
+                  disabled={isSavingCategory}
+                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: isSavingCategory ? '#ccc' : 'var(--color-primary, #6b4e71)', color: 'white', fontWeight: 'bold', cursor: isSavingCategory ? 'default' : 'pointer' }}
                 >
-                  Add
+                  {isSavingCategory ? 'Adding...' : 'Add'}
                 </button>
               </div>
             </div>

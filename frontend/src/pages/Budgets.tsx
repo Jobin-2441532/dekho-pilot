@@ -514,7 +514,7 @@ export default function Budgets() {
                     {cat.subcategories.map((sub: any) => {
                       const hasBudget = sub.budget > 0;
                       const subPct = hasBudget ? Math.min(Math.round((sub.amount / sub.budget) * 100), 100) : 0;
-                      const isOver = hasBudget && sub.amount > sub.budget;
+                      const isOver = hasBudget && sub.amount >= sub.budget + 1;
                       const dashOffset = 87.96 - (subPct / 100) * 87.96;
                       
                       return (

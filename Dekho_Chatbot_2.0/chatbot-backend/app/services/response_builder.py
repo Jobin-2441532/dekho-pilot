@@ -250,6 +250,7 @@ async def build_response_package(
     intent_result: IntentResult,
     llm_text: str,
     is_session_start: bool = False,
+    user_query: str = "",
 ) -> dict:
     """
     Assemble the full response package: text + chart + quick replies + alert.
@@ -257,6 +258,11 @@ async def build_response_package(
     """
     # Chart — only if LLM actually has relevant data to show
     chart_type = should_include_chart(intent_result.intent, intent_result.slots)
+    if intent_result.intent == "SPENDING_QUERY" and user_query:
+        uq_lower = user_query.lower()
+        if "category" in uq_lower or "categories" in uq_lower or "breakdown" in uq_lower or "split" in uq_lower:
+            chart_type = "pie"
+
     chart = None
     if chart_type and _is_chart_eligible(intent_result.intent, llm_text):
         if chart_type == "pie":

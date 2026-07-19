@@ -125,13 +125,13 @@ def get_user_admin_details(
         })
 
     # Calculate stats
+    cat_spent = {cat: amount for cat, amount in category_totals}
     budgets = db.query(Budget).filter(Budget.user_id == user_id).all()
     total_budgets = len(budgets)
     safe_budgets = 0
-    cat_spent = {cat: amount for cat, amount in category_totals}
     for b in budgets:
         spent = cat_spent.get(b.category, 0)
-        if spent <= b.monthly_limit:
+        if spent < b.monthly_limit + 1:
             safe_budgets += 1
             
     unique_days = len(set(t.date for t in transactions))

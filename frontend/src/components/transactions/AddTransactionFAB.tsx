@@ -32,6 +32,7 @@ export default function AddTransactionFAB() {
   const [newCustomCategorySection, setNewCustomCategorySection] = useState('Essentials')
   const [showAccountSelector, setShowAccountSelector] = useState(false)
   const [showCategorySelector, setShowCategorySelector] = useState(false)
+  const [isSavingCategory, setIsSavingCategory] = useState(false)
   
   // Fetch budgets when modal opens
   useEffect(() => {
@@ -295,7 +296,8 @@ export default function AddTransactionFAB() {
                     </button>
                     <button
                       onClick={async () => {
-                        if (!newCustomCategoryName.trim()) return;
+                        if (!newCustomCategoryName.trim() || isSavingCategory) return;
+                        setIsSavingCategory(true);
                         try {
                           await api.post('/api/v1/dashboard/budgets/category', {
                             section: newCustomCategorySection,
@@ -319,11 +321,14 @@ export default function AddTransactionFAB() {
                           setNewCustomCategoryName('');
                         } catch (err) {
                           alert('Failed to add category');
+                        } finally {
+                          setIsSavingCategory(false);
                         }
                       }}
-                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--color-primary, #6b4e71)', color: 'white', fontWeight: 'bold' }}
+                      disabled={isSavingCategory}
+                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: isSavingCategory ? '#ccc' : 'var(--color-primary, #6b4e71)', color: 'white', fontWeight: 'bold', cursor: isSavingCategory ? 'default' : 'pointer' }}
                     >
-                      Add
+                      {isSavingCategory ? 'Adding...' : 'Add'}
                     </button>
                   </div>
                 </div>

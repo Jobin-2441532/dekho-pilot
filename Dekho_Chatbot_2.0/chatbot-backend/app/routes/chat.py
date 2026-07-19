@@ -167,7 +167,7 @@ async def run_chat_pipeline(
         is_fallback = True
 
     # 6. Response package
-    package = await build_response_package(ctx, intent_result, llm_text, is_session_start)
+    package = await build_response_package(ctx, intent_result, llm_text, is_session_start, user_query=message)
     package["is_fallback"] = is_fallback
     package["session_id"] = session_id
     package["latency_ms"] = int((time.time() - start_time) * 1000)
@@ -287,7 +287,7 @@ async def stream_generator(
             yield _sse_event("fallback", json.dumps({"reason": reason}))
 
         # Build package (chart + quick replies + alerts)
-        package = await build_response_package(ctx, intent_result, full_text, is_session_start)
+        package = await build_response_package(ctx, intent_result, full_text, is_session_start, user_query=message)
         latency_ms = int((time.time() - start_time) * 1000)
 
         # Emit chart data if present

@@ -464,17 +464,19 @@ def create_or_update_budget_category(
     current_user: User = Depends(get_current_user)
 ):
     import datetime
+    from sqlalchemy import func
     current_month = datetime.date.today().strftime("%Y-%m")
-    category_full = f"{body.label}|{body.emoji}"
+    clean_label = body.label.strip()
+    category_full = f"{clean_label}|{body.emoji}"
     
     b = db.query(Budget).filter(
         Budget.user_id == current_user.id, 
-        Budget.category.startswith(body.label + "|")
+        func.lower(Budget.category).like(func.lower(clean_label) + "|%")
     ).first()
     
     if b:
         b.monthly_limit = body.budget
-        b.category = category_full # in case emoji changed
+        b.category = category_full # in case emoji or case changed
     else:
         b = Budget(
             user_id=current_user.id,

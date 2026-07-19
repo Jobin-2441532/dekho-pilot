@@ -282,7 +282,8 @@ export default function Home() {
       cat.subcategories.forEach((sub: any) => {
         totalBudgetsCount++;
         const spent = categorySpends[sub.label] || 0;
-        if (spent <= sub.budget) {
+        const hasBudget = sub.budget > 0;
+        if (!hasBudget || spent < sub.budget + 1) {
           safeBudgetsCount++;
         }
       });
@@ -292,14 +293,14 @@ export default function Home() {
     const categoryBudgets: Record<string, number> = {
       'Housing & Household': 12000, 'Utilities': 2000, 'Bills': 1500,
       'Food & Dining': 6000, 'Groceries': 2000, 'Transport': 1500,
-      'Health': 0, 'Personal Care': 0, 'Insurance': 0, 'Loan EMI': 0, 'Credit Card': 0,
       'Shopping': 4000, 'Entertainment': 2000, 'Travel': 3000,
       'Subscriptions': 500, 'Telecom': 500, 'Investment': 5000,
       'Others': 2000, 'Services': 2000, 'Uncategorised': 1000
     };
     totalBudgetsCount = Object.keys(categoryBudgets).length;
     safeBudgetsCount = Object.entries(categoryBudgets).filter(([cat, budgetLimit]) => {
-      return (categorySpends[cat] || 0) <= budgetLimit;
+      const spent = categorySpends[cat] || 0;
+      return budgetLimit <= 0 || spent < budgetLimit + 1;
     }).length;
   }
   
