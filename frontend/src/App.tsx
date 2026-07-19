@@ -33,8 +33,7 @@ const MonthlyWrap = lazy(() => import('./pages/MonthlyWrap'))
 const Settings    = lazy(() => import('./pages/Settings'))
 const AskDekho    = lazy(() => import('./pages/AskDekho'))
 import GlobalLoader from './components/ui/GlobalLoader'
-import SplashLoader from './components/ui/SplashLoader'
-import { AnimatePresence } from 'framer-motion'
+
 
 function PageLoader() {
   return <GlobalLoader />
@@ -75,19 +74,12 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1200)
-    return () => clearTimeout(timer)
-  }, [])
 
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <AnimatePresence mode="wait">
-        {showSplash && <SplashLoader key="splash-loader" />}
-      </AnimatePresence>
+
       <Routes>
         {/* ── Login — outside shell ── */}
         <Route path="/login"      element={<Login />} />
