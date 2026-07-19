@@ -14,6 +14,7 @@
 
 [data-theme="light"],
 :root {
+  color-scheme: only light;
   /* ── Backgrounds ── */
   --bg-base:               #FEF8F2;  /* page canvas */
   --bg-surface:            #F9F3ED;  /* sections */
@@ -78,6 +79,7 @@
 
 /* ─── DARK THEME ─── Dark Editorial Organicism */
 [data-theme="dark"] {
+  color-scheme: only dark;
   /* ── Backgrounds ── */
   --bg-base:               #1a1714;
   --bg-surface:            #24201c;

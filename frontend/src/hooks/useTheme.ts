@@ -10,6 +10,7 @@ export function useTheme() {
   useEffect(() => {
     const root = document.documentElement
     root.setAttribute('data-theme', theme)
+    root.style.colorScheme = theme === 'light' ? 'only light' : 'only dark'
 
     // Update PWA theme-color meta tag
     const meta = document.querySelector('meta[name="theme-color"]')
