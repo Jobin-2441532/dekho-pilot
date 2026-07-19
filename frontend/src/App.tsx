@@ -81,14 +81,8 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('dekho_token')
-    if (!token) {
-      const timer = setTimeout(() => setShowSplash(false), 800)
-      return () => clearTimeout(timer)
-    } else {
-      const timer = setTimeout(() => setShowSplash(false), 2000)
-      return () => clearTimeout(timer)
-    }
+    const timer = setTimeout(() => setShowSplash(false), 3800)
+    return () => clearTimeout(timer)
   }, [])
 
   return (

@@ -4,7 +4,7 @@ import styles from './SplashLoader.module.css'
 export default function SplashLoader() {
   return (
     <motion.div
-      className={styles.splashOverlay}
+      className={styles.loaderScreen}
       initial={{ opacity: 1 }}
       exit={{ 
         opacity: 0,
@@ -12,48 +12,57 @@ export default function SplashLoader() {
         transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } 
       }}
     >
-      <div className={styles.glowBg} />
-      <div className={styles.splashContent}>
-        {/* Animated Logo */}
-        <motion.div
-          className={styles.logoWrapper}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 1,
-            transition: { 
-              duration: 0.8, 
-              ease: [0.34, 1.56, 0.64, 1] // elastic scale-in
-            } 
-          }}
-        >
-          <img src="/logo-nobg.png" alt="Dekho Logo" className={styles.logoImg} />
-        </motion.div>
+      <div className={styles.logoColumn}>
+        <div className={styles.logoWrap}>
+          <svg viewBox="0 0 400 400" width="220" height="220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="walnutGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#5C3A21"/>
+                <stop offset="100%" stopColor="#B8834E"/>
+              </linearGradient>
+            </defs>
 
-        {/* Animated Brand Text */}
-        <motion.h1
-          className={styles.brandTitle}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            transition: { delay: 0.3, duration: 0.6, ease: 'easeOut' }
-          }}
-        >
-          DEKHO
-        </motion.h1>
+            {/* Outer D arc */}
+            <g id="outerArc" className={`${styles.piece} ${styles.outerArc}`}>
+              <path d="M 175 90
+                       L 175 310
+                       C 260 310, 320 265, 320 200
+                       C 320 135, 260 90, 175 90 Z"
+                    fill="none" stroke="url(#walnutGradient)" strokeWidth="26" strokeLinejoin="round"/>
+            </g>
 
-        {/* Elegant Micro-Spinner */}
-        <motion.div
-          className={styles.spinnerWrapper}
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: 1,
-            transition: { delay: 0.5, duration: 0.4 }
-          }}
-        >
-          <div className={styles.spinner} />
-        </motion.div>
+            {/* Inner D arc */}
+            <g id="innerArc" className={`${styles.piece} ${styles.innerArc}`}>
+              <path d="M 195 130
+                       L 195 270
+                       C 245 270, 280 240, 280 200
+                       C 280 160, 245 130, 195 130 Z"
+                    fill="none" stroke="url(#walnutGradient)" strokeWidth="14" strokeLinejoin="round"/>
+            </g>
+
+            {/* Vertical spine */}
+            <g id="spine" className={`${styles.piece} ${styles.spine}`}>
+              <rect x="163" y="90" width="24" height="220" fill="url(#walnutGradient)" rx="4"/>
+            </g>
+
+            {/* Top-left flourish */}
+            <g id="flourish" className={`${styles.piece} ${styles.flourish}`}>
+              <rect x="110" y="140" width="14" height="70" fill="url(#walnutGradient)" rx="4"/>
+              <rect x="88" y="192" width="90" height="16" fill="url(#walnutGradient)" rx="4"/>
+            </g>
+
+            {/* Bottom-left foot */}
+            <g id="foot" className={`${styles.piece} ${styles.foot}`}>
+              <rect x="118" y="255" width="60" height="16" fill="url(#walnutGradient)" rx="4"/>
+            </g>
+
+            {/* Center dot */}
+            <g id="dot" className={`${styles.piece} ${styles.dot}`}>
+              <circle cx="223" cy="200" r="15" fill="#5C3A21" className={styles.dotCircle}/>
+            </g>
+          </svg>
+        </div>
+        <div className={styles.tagline}>the habit is the plan</div>
       </div>
     </motion.div>
   )
