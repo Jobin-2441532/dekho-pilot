@@ -34,6 +34,11 @@
   display: flex;
   flex-direction: column;
   color: var(--color-on-surface);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
 .headerRow {
@@ -408,4 +413,126 @@
   color: var(--color-on-surface);
   font-family: inherit;
   width: 100%;
+}
+
+/* Custom Select Overlay */
+.customSelectOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.customSelectContent {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-base, #f9f6f0);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.customSelectHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-outline-var, #eae5dd);
+  padding-bottom: 12px;
+}
+
+.customSelectHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4a4238;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-muted, #7e7368);
+  cursor: pointer;
+}
+
+.customSelectList {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 20px;
+}
+
+.customSelectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.customSelectGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-muted, #7e7368);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.customSelectItem {
+  background: transparent;
+  border: 1px solid var(--color-outline-var, #eae5dd);
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-on-surface, #4a4238);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+.customSelectItem:active {
+  background: var(--bg-surface-high, #eae5dd);
+}
+
+.customSelectItemActive {
+  background: var(--color-primary, #6b4e71);
+  color: var(--color-on-primary, #ffffff);
+  border-color: var(--color-primary, #6b4e71);
+}
+
+.customSelectAddBtn {
+  background: transparent;
+  border: 1px dashed var(--color-primary, #6b4e71);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary, #6b4e71);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+
+.customSelectAddBtn:active {
+  background: rgba(107, 78, 113, 0.05);
 }

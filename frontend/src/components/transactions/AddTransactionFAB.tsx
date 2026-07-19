@@ -30,6 +30,8 @@ export default function AddTransactionFAB() {
   const [isAddingCustomCategory, setIsAddingCustomCategory] = useState(false)
   const [newCustomCategoryName, setNewCustomCategoryName] = useState('')
   const [newCustomCategorySection, setNewCustomCategorySection] = useState('Essentials')
+  const [showAccountSelector, setShowAccountSelector] = useState(false)
+  const [showCategorySelector, setShowCategorySelector] = useState(false)
   
   // Fetch budgets when modal opens
   useEffect(() => {
@@ -231,74 +233,63 @@ export default function AddTransactionFAB() {
               {/* Selectors Row */}
               {!isAddingCustomCategory && (
                 <div className={styles.selectorsRow}>
-                  <label className={styles.selectCard}>
+                  <div className={styles.selectCard} onClick={() => setShowAccountSelector(true)}>
                     <Wallet size={20} className={styles.selectIcon} fill="#7e7368" stroke="#f9f6f0" />
                     <div className={styles.selectInfo}>
                       <p>Account</p>
                       <span>{account}</span>
                     </div>
                     <ChevronDown size={16} color="#7e7368" />
-                    <select className={styles.hiddenSelect} value={account} onChange={e => setAccount(e.target.value)}>
-                      <option value="Select Account" disabled>Select Account</option>
-                      <option value="Cash">Cash</option>
-                      <option value="UPI">UPI</option>
-                      <option value="Credit Card">Credit Card</option>
-                      <option value="Debit Card">Debit Card</option>
-                      <option value="Net Banking">Net Banking</option>
-                    </select>
-                  </label>
+                  </div>
                   
-                  <label className={styles.selectCard}>
+                  <div className={styles.selectCard} onClick={() => setShowCategorySelector(true)}>
                     <Tag size={20} className={styles.selectIcon} fill="#7e7368" stroke="#f9f6f0" />
                     <div className={styles.selectInfo}>
                       <p>Category</p>
                       <span>{category}</span>
                     </div>
                     <ChevronDown size={16} color="#7e7368" />
-                    <select className={styles.hiddenSelect} value={category} onChange={e => {
-                      if (e.target.value === 'ADD_CUSTOM') {
-                        setIsAddingCustomCategory(true)
-                      } else {
-                        setCategory(e.target.value)
-                      }
-                    }}>
-                      <option value="Select Category" disabled>Select Category</option>
-                      {budgets.map(section => (
-                        <optgroup key={section.label} label={section.label}>
-                          {section.subcategories?.map((sub: any) => (
-                            <option key={sub.label} value={sub.label}>{sub.label}</option>
-                          ))}
-                        </optgroup>
-                      ))}
-                      <option value="ADD_CUSTOM">+ Add Custom Category...</option>
-                    </select>
-                  </label>
+                  </div>
                 </div>
               )}
 
               {isAddingCustomCategory && (
-                <div style={{ padding: '12px', background: '#f5f3ef', borderRadius: '12px', marginBottom: '16px' }}>
+                <div style={{ padding: '16px', background: '#f5f3ef', borderRadius: '16px', marginBottom: '16px', border: '1px solid var(--color-outline-var)' }}>
                   <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', color: '#554d44' }}>New Custom Category</p>
                   <input
                     type="text"
                     placeholder="Category Name"
                     value={newCustomCategoryName}
                     onChange={e => setNewCustomCategoryName(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', marginBottom: '8px' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', marginBottom: '10px', background: '#fff', outline: 'none' }}
                   />
-                  <select
-                    value={newCustomCategorySection}
-                    onChange={e => setNewCustomCategorySection(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', marginBottom: '8px', appearance: 'none', background: 'white' }}
-                  >
+                  <p style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', color: '#7e7368' }}>Select Section</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
                     {budgets.map(section => (
-                      <option key={section.label} value={section.label}>{section.label}</option>
+                      <button
+                        key={section.label}
+                        type="button"
+                        onClick={() => setNewCustomCategorySection(section.label)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          border: `1px solid ${newCustomCategorySection === section.label ? 'var(--color-primary)' : '#dcd7d1'}`,
+                          background: newCustomCategorySection === section.label ? 'var(--color-primary)' : 'transparent',
+                          color: newCustomCategorySection === section.label ? 'white' : '#554d44',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {section.label}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       onClick={() => setIsAddingCustomCategory(false)}
-                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', background: 'transparent' }}
+                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', background: 'transparent', color: '#554d44', fontWeight: '500' }}
                     >
                       Cancel
                     </button>
@@ -413,6 +404,76 @@ export default function AddTransactionFAB() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {showAccountSelector && (
+        <div className={styles.customSelectOverlay} onClick={() => setShowAccountSelector(false)}>
+          <div className={styles.customSelectContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.customSelectHeader}>
+              <h3>Select Account</h3>
+              <button onClick={() => setShowAccountSelector(false)} className={styles.closeBtn}>×</button>
+            </div>
+            <div className={styles.customSelectList}>
+              {['Cash', 'UPI', 'Credit Card', 'Debit Card', 'Net Banking'].map(acc => (
+                <button
+                  key={acc}
+                  className={`${styles.customSelectItem} ${account === acc ? styles.customSelectItemActive : ''}`}
+                  onClick={() => {
+                    setAccount(acc)
+                    setShowAccountSelector(false)
+                  }}
+                >
+                  <span>{acc}</span>
+                  {account === acc && <Check size={16} />}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCategorySelector && (
+        <div className={styles.customSelectOverlay} onClick={() => setShowCategorySelector(false)}>
+          <div className={styles.customSelectContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.customSelectHeader}>
+              <h3>Select Category</h3>
+              <button onClick={() => setShowCategorySelector(false)} className={styles.closeBtn}>×</button>
+            </div>
+            <div className={styles.customSelectList}>
+              {budgets.map(section => (
+                <div key={section.label} className={styles.customSelectGroup}>
+                  <div className={styles.customSelectGroupLabel}>{section.label}</div>
+                  {section.subcategories?.map((sub: any) => (
+                    <button
+                      key={sub.label}
+                      className={`${styles.customSelectItem} ${category === sub.label ? styles.customSelectItemActive : ''}`}
+                      onClick={() => {
+                        setCategory(sub.label)
+                        setShowCategorySelector(false)
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{sub.emoji || getCategoryEmoji(sub.label)}</span>
+                        <span>{sub.label}</span>
+                      </span>
+                      {category === sub.label && <Check size={16} />}
+                    </button>
+                  ))}
+                </div>
+              ))}
+              <div style={{ height: '1px', background: 'var(--color-outline-var, #eae5dd)', margin: '8px 0', opacity: 0.5 }} />
+              <button
+                className={styles.customSelectAddBtn}
+                onClick={() => {
+                  setShowCategorySelector(false)
+                  setIsAddingCustomCategory(true)
+                }}
+              >
+                + Add Custom Category...
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
