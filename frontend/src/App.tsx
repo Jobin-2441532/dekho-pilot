@@ -32,15 +32,13 @@ const Goals       = lazy(() => import('./pages/Goals'))
 const MonthlyWrap = lazy(() => import('./pages/MonthlyWrap'))
 const Settings    = lazy(() => import('./pages/Settings'))
 const AskDekho    = lazy(() => import('./pages/AskDekho'))
-
-
 import GlobalLoader from './components/ui/GlobalLoader'
+import SplashLoader from './components/ui/SplashLoader'
+import { AnimatePresence } from 'framer-motion'
 
-/* ── Tiny spinner for Suspense fallback ── */
 function PageLoader() {
   return <GlobalLoader />
 }
-
 /* ── Auth guard — checks for JWT token ── */
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('dekho_token')
@@ -80,9 +78,25 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('dekho_token')
+    if (!token) {
+      const timer = setTimeout(() => setShowSplash(false), 800)
+      return () => clearTimeout(timer)
+    } else {
+      const timer = setTimeout(() => setShowSplash(false), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <AnimatePresence mode="wait">
+        {showSplash && <SplashLoader key="splash-loader" />}
+      </AnimatePresence>
       <Routes>
         {/* ── Login — outside shell ── */}
         <Route path="/login"      element={<Login />} />
