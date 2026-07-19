@@ -614,6 +614,44 @@ def delete_goal(
     from fastapi import HTTPException as _HE
     goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id, SavingsGoal.user_id == current_user.id).first()
     if not goal:
-        raise _HE(status_code=404, detail="Goal not found")
+      raise _HE(status_code=404, detail="Goal not found")
     db.delete(goal); db.commit()
     return None
+
+
+DEFAULT_CATEGORY_LABELS = {
+    "Housing & Household", "Utilities", "Bills", "Food & Dining", "Groceries", 
+    "Transport", "Health", "Personal Care", "Insurance", "Loan EMI", "Credit Card",
+    "Shopping", "Entertainment", "Travel", "Subscriptions", "Telecom", 
+    "Investment", "Others", "Services", "Uncategorised"
+}
+
+@router.delete("/budgets/category")
+def delete_budget_category(
+    label: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from fastapi import HTTPException
+    clean_label = label.strip()
+    if clean_label in DEFAULT_CATEGORY_LABELS:
+        raise HTTPException(status_code=400, detail="Cannot delete default category")
+        
+    # Check if any transactions are linked to this category
+    from sqlalchemy import func
+    tx_count = db.query(Transaction).filter(
+        Transaction.user_id == current_user.id,
+        func.lower(Transaction.category) == clean_label.lower()
+    ).count()
+    
+    if tx_count > 0:
+        raise HTTPException(status_code=400, detail="Expense already linked to that category")
+        
+    # Delete the category
+    db.query(Budget).filter(
+        Budget.user_id == current_user.id,
+        func.lower(Budget.category).like(clean_label.lower() + "|%")
+    ).delete(synchronize_session=False)
+    
+    db.commit()
+    return {"status": "success", "message": "Category deleted successfully"}

@@ -1,9 +1,16 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, X, Check, Calculator, Wallet, Tag, FileText, Calendar, Clock, Delete, Utensils, Car, ShoppingBag, ReceiptText, ChevronDown } from 'lucide-react'
+import { Plus, X, Check, Calculator, Wallet, Tag, FileText, Calendar, Clock, Delete, Utensils, Car, ShoppingBag, ReceiptText, ChevronDown, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '../../lib/api'
 import { useCategoryEmoji } from '../../utils/categoryUtils'
 import styles from './AddTransactionFAB.module.css'
+
+const DEFAULT_CATEGORIES = [
+  'Housing & Household', 'Utilities', 'Bills', 'Food & Dining', 'Groceries', 
+  'Transport', 'Health', 'Personal Care', 'Insurance', 'Loan EMI', 'Credit Card',
+  'Shopping', 'Entertainment', 'Travel', 'Subscriptions', 'Telecom', 
+  'Investment', 'Others', 'Services', 'Uncategorised'
+]
 
 export default function AddTransactionFAB() {
   const [isOpen, setIsOpen] = useState(false)
@@ -448,7 +455,7 @@ export default function AddTransactionFAB() {
                 <div key={section.label} className={styles.customSelectGroup}>
                   <div className={styles.customSelectGroupLabel}>{section.label}</div>
                   {section.subcategories?.map((sub: any) => (
-                    <button
+                    <div
                       key={sub.label}
                       className={`${styles.customSelectItem} ${category === sub.label ? styles.customSelectItemActive : ''}`}
                       onClick={() => {
@@ -460,8 +467,44 @@ export default function AddTransactionFAB() {
                         <span>{sub.emoji || getCategoryEmoji(sub.label)}</span>
                         <span>{sub.label}</span>
                       </span>
-                      {category === sub.label && <Check size={16} />}
-                    </button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {!DEFAULT_CATEGORIES.includes(sub.label) && (
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (window.confirm(`Delete custom category "${sub.label}"?`)) {
+                                try {
+                                  await api.delete(`/api/v1/dashboard/budgets/category?label=${encodeURIComponent(sub.label)}`);
+                                  const updatedBudgets = await api.get<any[]>('/api/v1/dashboard/budgets');
+                                  setBudgets(updatedBudgets);
+                                  if (category === sub.label) {
+                                    setCategory('Select Category');
+                                  }
+                                } catch (err: any) {
+                                  const errMsg = err?.response?.data?.detail || "Failed to delete category";
+                                  alert(errMsg);
+                                }
+                              }
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#ff4d4f',
+                              cursor: 'pointer',
+                              padding: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '4px',
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                        {category === sub.label && <Check size={16} />}
+                      </div>
+                    </div>
                   ))}
                 </div>
               ))}
