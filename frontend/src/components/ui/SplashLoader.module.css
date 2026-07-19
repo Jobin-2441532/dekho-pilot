@@ -25,10 +25,11 @@
 .piece {
   opacity: 0;
   transform: translateY(18px);
+  transform-box: view-box;
+  transform-origin: 0 0;
   animation-fill-mode: forwards;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   animation-duration: 1.0s;
-  transform-origin: center;
   will-change: opacity, transform;
 }
 
@@ -64,6 +65,7 @@
 /* Gentle idle breathing pulse on the dot once assembly settles at 3.6s */
 .dotCircle {
   animation: breathe 2.4s ease-in-out 3.6s infinite;
+  transform-box: fill-box;
   transform-origin: center;
 }
 

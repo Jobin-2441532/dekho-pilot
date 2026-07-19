@@ -46,10 +46,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return (token && onboarded) ? <>{children}</> : <Navigate to="/login" replace />
 }
 
-/* ── Disclaimer wrapper — shows splash once per session (REMOVED) ── */
-function DisclaimerWrapper({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
-}
+
 
 import { usePostHog } from 'posthog-js/react'
 
@@ -101,7 +98,6 @@ export default function App() {
           path="/*"
           element={
             <RequireAuth>
-              <DisclaimerWrapper>
               <AppShell>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
@@ -144,7 +140,6 @@ export default function App() {
                   </Routes>
                 </Suspense>
                 </AppShell>
-              </DisclaimerWrapper>
             </RequireAuth>
           }
         />

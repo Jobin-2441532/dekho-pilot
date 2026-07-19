@@ -4,8 +4,8 @@
   "description": "Your habit-first personal finance companion.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FDFBF7",
-  "theme_color": "#5C3D2E",
+  "background_color": "#FEF8F2",
+  "theme_color": "#5C3A21",
   "orientation": "portrait",
   "icons": [
     {
