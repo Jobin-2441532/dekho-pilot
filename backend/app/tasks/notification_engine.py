@@ -37,15 +37,39 @@ def send_web_push(subscription: PushSubscription, payload: dict):
                 db.commit()
 
 def dispatch_notification(db: Session, user: User, rule_type: str, title: str, message: str):
-    # Check limit of 3 per day
     today_start = datetime.combine(date.today(), datetime.min.time())
-    count_today = db.query(Notification).filter(
-        Notification.user_id == user.id,
-        Notification.created_at >= today_start
-    ).count()
+    
+    # Define rule categories for morning, afternoon, night
+    morning_rules = ["budget_checkin", "weekly_reset", "morning_checkin"]
+    afternoon_rules = ["daily_reflection", "big_spender", "afternoon_nudge"]
+    night_rules = ["milestone", "log_nudge", "weekend_pattern", "night_wrapup"]
+    
+    rule_category = []
+    if rule_type in morning_rules:
+        rule_category = morning_rules
+    elif rule_type in afternoon_rules:
+        rule_category = afternoon_rules
+    elif rule_type in night_rules:
+        rule_category = night_rules
 
-    if count_today >= 3:
-        return # Skip if already sent 3 today
+    if rule_category:
+        # Check if any notification from this specific time block was already sent today
+        already_sent = db.query(Notification).filter(
+            Notification.user_id == user.id,
+            Notification.rule_type.in_(rule_category),
+            Notification.created_at >= today_start
+        ).first()
+        
+        if already_sent:
+            return # Skip if this block's notification was already sent (prevents multiple worker duplicates)
+    else:
+        # Fallback generic limit
+        count_today = db.query(Notification).filter(
+            Notification.user_id == user.id,
+            Notification.created_at >= today_start
+        ).count()
+        if count_today >= 3:
+            return
 
     # Create DB record
     n = Notification(
