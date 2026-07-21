@@ -229,18 +229,18 @@ export default function AddTransactionFAB() {
                 {submitStatus === 'saving' ? (
                   <>
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#554d44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-surface)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                     </motion.div>
-                    <p style={{ marginTop: '16px', fontWeight: 'bold', color: '#554d44' }}>Adding expense...</p>
+                    <p style={{ marginTop: '16px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Adding expense...</p>
                   </>
                 ) : (
                   <>
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Check size={32} color="white" />
+                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--color-positive, #10B981)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Check size={32} color="var(--bg-base)" />
                       </div>
                     </motion.div>
-                    <p style={{ marginTop: '16px', fontWeight: 'bold', color: '#554d44' }}>Successfully added!</p>
+                    <p style={{ marginTop: '16px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Successfully added!</p>
                   </>
                 )}
               </div>
@@ -249,11 +249,11 @@ export default function AddTransactionFAB() {
             {/* Header */}
             <div className={styles.headerRow}>
               <button onClick={() => setIsOpen(false)} className={styles.iconBtn}>
-                <X size={24} color="#554d44" />
+                <X size={24} color="var(--color-on-surface)" />
               </button>
               <h2 className={styles.title}>Add Expense</h2>
               <button onClick={handleSubmit} className={styles.iconBtn} disabled={submitStatus !== 'idle'}>
-                <Check size={24} color="#554d44" />
+                <Check size={24} color="var(--color-on-surface)" />
               </button>
             </div>
 
@@ -264,7 +264,7 @@ export default function AddTransactionFAB() {
                 <div className={styles.amountRow}>
                   <div className={styles.amountValue}>₹{amountStr}</div>
                   <div className={styles.calcIconWrap}>
-                    <Calculator size={20} color="#7e7368" />
+                    <Calculator size={20} color="var(--color-muted)" />
                   </div>
                 </div>
               </div>
@@ -273,21 +273,21 @@ export default function AddTransactionFAB() {
               {!isAddingCustomCategory && (
                 <div className={styles.selectorsRow}>
                   <div className={styles.selectCard} onClick={() => setShowAccountSelector(true)}>
-                    <Wallet size={20} className={styles.selectIcon} fill="#7e7368" stroke="#f9f6f0" />
+                    <Wallet size={20} className={styles.selectIcon} fill="var(--color-muted)" stroke="var(--bg-surface)" />
                     <div className={styles.selectInfo}>
                       <p>Account</p>
                       <span>{account}</span>
                     </div>
-                    <ChevronDown size={16} color="#7e7368" />
+                    <ChevronDown size={16} color="var(--color-muted)" />
                   </div>
                   
                   <div className={styles.selectCard} onClick={() => setShowCategorySelector(true)}>
-                    <Tag size={20} className={styles.selectIcon} fill="#7e7368" stroke="#f9f6f0" />
+                    <Tag size={20} className={styles.selectIcon} fill="var(--color-muted)" stroke="var(--bg-surface)" />
                     <div className={styles.selectInfo}>
                       <p>Category</p>
                       <span>{category}</span>
                     </div>
-                    <ChevronDown size={16} color="#7e7368" />
+                    <ChevronDown size={16} color="var(--color-muted)" />
                   </div>
                 </div>
               )}

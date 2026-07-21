@@ -204,8 +204,8 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
             ) : (
               <>
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Check size={32} color="white" />
+                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--color-positive, #10B981)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={32} color="var(--bg-base)" />
                   </div>
                 </motion.div>
                 <p style={{ marginTop: '16px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>Successfully updated!</p>
@@ -258,16 +258,16 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
           )}
 
           {isAddingCustomCategory && (
-            <div style={{ padding: '16px', background: '#f5f3ef', borderRadius: '16px', marginBottom: '16px', border: '1px solid var(--color-outline-var)' }}>
-              <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', color: '#554d44' }}>New Custom Category</p>
+            <div style={{ padding: '16px', background: 'var(--bg-surface-high)', borderRadius: '16px', marginBottom: '16px', border: '1px solid var(--color-outline-var)' }}>
+              <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--color-on-surface)' }}>New Custom Category</p>
               <input
                 type="text"
                 placeholder="Category Name"
                 value={newCustomCategoryName}
                 onChange={e => setNewCustomCategoryName(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', marginBottom: '10px', background: '#fff', outline: 'none' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-outline-var)', marginBottom: '10px', background: 'var(--bg-card)', color: 'var(--color-on-surface)', outline: 'none' }}
               />
-              <p style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', color: '#7e7368' }}>Select Section</p>
+              <p style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', color: 'var(--color-muted)' }}>Select Section</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
                 {budgets.map(section => (
                   <button
@@ -277,9 +277,9 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
                     style={{
                       padding: '6px 12px',
                       borderRadius: '20px',
-                      border: `1px solid ${newCustomCategorySection === section.label ? 'var(--color-primary)' : '#dcd7d1'}`,
+                      border: `1px solid ${newCustomCategorySection === section.label ? 'var(--color-primary)' : 'var(--color-outline-var)'}`,
                       background: newCustomCategorySection === section.label ? 'var(--color-primary)' : 'transparent',
-                      color: newCustomCategorySection === section.label ? 'white' : '#554d44',
+                      color: newCustomCategorySection === section.label ? 'var(--color-on-primary, white)' : 'var(--color-on-surface)',
                       fontSize: '12px',
                       fontWeight: '600',
                       cursor: 'pointer',
@@ -293,7 +293,7 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={() => setIsAddingCustomCategory(false)}
-                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #dcd7d1', background: 'transparent', color: '#554d44', fontWeight: '500' }}
+                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--color-outline-var)', background: 'transparent', color: 'var(--color-on-surface)', fontWeight: '500' }}
                 >
                   Cancel
                 </button>
@@ -322,7 +322,7 @@ export default function EditTransactionModal({ tx, onClose }: EditTransactionMod
                     }
                   }}
                   disabled={isSavingCategory}
-                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: isSavingCategory ? '#ccc' : 'var(--color-primary, #6b4e71)', color: 'white', fontWeight: 'bold', cursor: isSavingCategory ? 'default' : 'pointer' }}
+                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: isSavingCategory ? 'var(--color-muted)' : 'var(--color-primary, #6b4e71)', color: 'var(--color-on-primary, white)', fontWeight: 'bold', cursor: isSavingCategory ? 'default' : 'pointer' }}
                 >
                   {isSavingCategory ? 'Adding...' : 'Add'}
                 </button>
