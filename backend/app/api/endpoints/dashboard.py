@@ -58,6 +58,16 @@ def get_transactions(
 from pydantic import BaseModel
 from datetime import datetime
 
+class TransactionUpdate(BaseModel):
+    amount: Optional[float] = None
+    merchant: Optional[str] = None
+    category: Optional[str] = None
+    date: Optional[str] = None
+    notes: Optional[str] = None
+    direction: Optional[str] = None
+    payment_mode: Optional[str] = None
+    source_type: Optional[str] = None
+
 class TransactionCreate(BaseModel):
     amount: float
     merchant: str
@@ -584,6 +594,40 @@ def get_review_queue(db: Session = Depends(get_db), current_user: User = Depends
     ]
 
 
+# ---------------------------------------------------------------------------
+# Update transaction (JWT-scoped)
+# ---------------------------------------------------------------------------
+@router.put("/transactions/{transaction_id}")
+def update_transaction(
+    transaction_id: int,
+    tx_update: TransactionUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from fastapi import HTTPException as _HE
+    tx = db.query(Transaction).filter(Transaction.id == transaction_id, Transaction.user_id == current_user.id).first()
+    if not tx:
+        raise _HE(status_code=404, detail="Transaction not found")
+        
+    if tx_update.amount is not None:
+        tx.amount = tx_update.amount
+    if tx_update.merchant is not None:
+        tx.merchant = tx_update.merchant
+    if tx_update.category is not None:
+        tx.category = tx_update.category
+    if tx_update.date is not None:
+        tx.date = tx_update.date
+    if tx_update.notes is not None:
+        tx.notes = tx_update.notes
+    if tx_update.direction is not None:
+        tx.direction = tx_update.direction
+    if tx_update.payment_mode is not None:
+        tx.payment_mode = tx_update.payment_mode
+    if tx_update.source_type is not None:
+        tx.source_type = tx_update.source_type
+        
+    db.commit()
+    return {"status": "success", "message": "Transaction updated"}
 
 # ---------------------------------------------------------------------------
 # Delete transaction (JWT-scoped)
