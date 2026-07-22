@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug, Lightbulb, MessageSquare, PhoneCall } from 'lucide-react';
-import api from '../utils/api';
+import { api } from '../lib/api';
 
 const feedbackOptions = [
   { id: 'bug', icon: Bug, title: 'Report a Bug 🐞', description: 'Allow users to report problems.' },
