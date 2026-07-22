@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride'
+import { Joyride, CallBackProps, STATUS, Step } from 'react-joyride'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../../store/appStore'
 import api from '../../lib/api'
