@@ -54,7 +54,24 @@ export default function ChatPanel() {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
 
-  const [sessionId, setSessionId] = useState<string>(() => generateId())
+  const getOrCreateSessionId = () => {
+    const ONE_HOUR = 60 * 60 * 1000;
+    const storedSession = localStorage.getItem('dekho_chat_session');
+    const storedTime = localStorage.getItem('dekho_chat_session_time');
+    
+    if (storedSession && storedTime) {
+      if (Date.now() - parseInt(storedTime, 10) < ONE_HOUR) {
+        return storedSession;
+      }
+    }
+    
+    const newId = generateId();
+    localStorage.setItem('dekho_chat_session', newId);
+    localStorage.setItem('dekho_chat_session_time', Date.now().toString());
+    return newId;
+  }
+
+  const [sessionId, setSessionId] = useState<string>(() => getOrCreateSessionId())
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Phase 6: Load chat history from DB when panel opens
@@ -111,6 +128,8 @@ export default function ChatPanel() {
 
   const handleSelectSession = async (newSessionId: string) => {
     setSessionId(newSessionId)
+    localStorage.setItem('dekho_chat_session', newSessionId)
+    localStorage.setItem('dekho_chat_session_time', Date.now().toString())
     setIsLoading(true)
     try {
       const rows = await api.get<any[]>(`/api/chat/sessions/${newSessionId}`)
@@ -132,7 +151,10 @@ export default function ChatPanel() {
   }
 
   const handleNewChat = () => {
-    setSessionId(generateId())
+    const newId = generateId()
+    setSessionId(newId)
+    localStorage.setItem('dekho_chat_session', newId)
+    localStorage.setItem('dekho_chat_session_time', Date.now().toString())
     setMessages([WELCOME])
     setDisambiguation(null)
   }
@@ -278,6 +300,8 @@ export default function ChatPanel() {
 
     try {
       const botMsgId = generateId()
+      localStorage.setItem('dekho_chat_session_time', Date.now().toString())
+      
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: '',
