@@ -21,7 +21,7 @@ export default function FloatingDock() {
       <div className={styles.inner}>
         {navItems.map(({ to, icon: Icon, label, center, comingSoon }) => (
           <NavLink
-            id={to === '/budgets' ? 'tour-budgets-nav' : undefined}
+            id={to === '/budgets' ? 'tour-budgets-nav' : to === '/expenses' ? 'tour-expenses-nav' : undefined}
             key={to}
             to={to}
             className={({ isActive }) =>
