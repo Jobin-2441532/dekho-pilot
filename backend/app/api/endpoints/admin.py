@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.core.database import get_db
-from app.models import User, Transaction, RawRecord, UploadedFile, Budget, ChatSession
+from app.models import User, Transaction, RawRecord, UploadedFile, Budget
 from app.api.endpoints.auth import get_current_user
 
 router = APIRouter()
@@ -135,7 +135,7 @@ def get_user_admin_details(
             safe_budgets += 1
             
     unique_days = len(set(t.date for t in transactions))
-    chat_sessions_count = db.query(ChatSession).filter(ChatSession.user_id == user_id).count()
+    chat_sessions_count = 0
 
     return {
         "user": {

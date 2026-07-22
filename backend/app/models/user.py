@@ -29,5 +29,4 @@ class User(Base):
     recommendations = relationship("Recommendation", back_populates="user")
     merchant_mappings = relationship("MerchantMapping", back_populates="user")
     feedback_logs = relationship("FeedbackLog", back_populates="user")
-    chat_sessions = relationship("ChatSession", back_populates="user")
 

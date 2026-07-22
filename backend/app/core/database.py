@@ -129,7 +129,6 @@ def get_all_models():
         models.Recommendation,
         models.MerchantMapping,
         models.FeedbackLog,
-        models.ChatSession,
         models.UploadedFile,
         models.RawRecord,
     ]
