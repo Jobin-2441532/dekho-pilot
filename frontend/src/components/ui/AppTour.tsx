@@ -47,7 +47,7 @@ export default function AppTour() {
     },
     {
       target: '#tour-settings',
-      content: 'Let us head over to Settings to configure your app.',
+      content: 'Click NEXT to head over to Settings to configure your app.',
       placement: 'bottom',
     },
     {
@@ -57,7 +57,7 @@ export default function AppTour() {
     },
     {
       target: '#tour-theme',
-      content: 'You can easily toggle between Light and Dark mode here.',
+      content: 'You can easily toggle between Light and Dark mode here. Click NEXT to continue.',
       placement: 'bottom',
     },
     {
@@ -72,7 +72,7 @@ export default function AppTour() {
 
     if (type === 'step:after' && action === 'next') {
       // Cross-page navigation handling
-      if (index === 2) {
+      if (index === 3) {
         // Going from home to settings
         navigate('/settings')
       }
@@ -101,19 +101,23 @@ export default function AppTour() {
       callback={handleJoyrideCallback}
       styles={{
         options: {
-          primaryColor: '#000000',
-          textColor: '#333333',
-          backgroundColor: '#ffffff',
+          primaryColor: 'var(--color-primary)',
+          textColor: 'var(--text-primary)',
+          backgroundColor: 'var(--bg-card)',
+          arrowColor: 'var(--bg-card)',
           zIndex: 10000,
         },
         tooltipContainer: {
           textAlign: 'left',
+          fontSize: '14px',
         },
         buttonNext: {
-          backgroundColor: 'var(--color-primary)',
+          borderRadius: '8px',
+          fontWeight: 600,
         },
         buttonBack: {
           marginRight: 10,
+          color: 'var(--text-secondary)',
         },
       }}
     />
