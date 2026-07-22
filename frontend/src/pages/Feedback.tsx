@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug, Lightbulb, MessageSquare, PhoneCall } from 'lucide-react';
 import { api } from '../lib/api';
+import CustomDialog from '../components/ui/CustomDialog';
 
 const feedbackOptions = [
   { id: 'bug', icon: Bug, title: 'Report a Bug 🐞', description: 'Allow users to report problems.' },
@@ -16,9 +17,15 @@ export default function Feedback() {
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [expectedBehavior, setExpectedBehavior] = useState('');
   const [rating, setRating] = useState<number>(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [dialogConfig, setDialogConfig] = useState<{isOpen: boolean, title: string, message: string, isSuccess: boolean}>({
+    isOpen: false,
+    title: '',
+    message: '',
+    isSuccess: false
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,20 +38,36 @@ export default function Feedback() {
       feedback_type: selectedType,
       title: title || undefined,
       description,
-      expected_behavior: expectedBehavior || undefined,
       device_info: deviceInfo,
       rating: selectedType === 'general' ? rating : undefined,
     };
 
     try {
       await api.post('/api/v1/feedback/app', payload);
-      alert('Thank you for your feedback!');
-      navigate('/settings');
+      setDialogConfig({
+        isOpen: true,
+        title: 'Thank You!',
+        message: 'Your feedback has been successfully submitted.',
+        isSuccess: true
+      });
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      alert('Failed to submit feedback. Please try again later.');
+      setDialogConfig({
+        isOpen: true,
+        title: 'Submission Failed',
+        message: 'Failed to submit feedback. Please try again later.',
+        isSuccess: false
+      });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const closeDialog = () => {
+    if (dialogConfig.isSuccess) {
+      navigate('/settings');
+    } else {
+      setDialogConfig({ ...dialogConfig, isOpen: false });
     }
   };
 
@@ -92,12 +115,8 @@ export default function Feedback() {
             <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} placeholder="What happened?" />
           </div>
           <div>
-            <label style={labelStyle}>Steps to reproduce (optional)</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '100px' }} placeholder="1. Go to...&#10;2. Click on..." />
-          </div>
-          <div>
-            <label style={labelStyle}>Expected behavior</label>
-            <textarea required value={expectedBehavior} onChange={(e) => setExpectedBehavior(e.target.value)} style={{ ...inputStyle, minHeight: '80px' }} placeholder="What should have happened?" />
+            <label style={labelStyle}>Explain the issue</label>
+            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '150px' }} placeholder="Please describe the problem you encountered..." />
           </div>
           <p style={{ fontSize: '12px', color: 'var(--color-muted)', margin: 0 }}>Device Information will be automatically included.</p>
           <button type="submit" disabled={isSubmitting} style={{ ...btnStyle, opacity: isSubmitting ? 0.7 : 1 }}>
@@ -260,6 +279,14 @@ export default function Feedback() {
           </div>
         )}
       </div>
+
+      <CustomDialog
+        isOpen={dialogConfig.isOpen}
+        title={dialogConfig.title}
+        message={dialogConfig.message}
+        onConfirm={closeDialog}
+        confirmText="OK"
+      />
     </div>
   );
 }

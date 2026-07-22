@@ -141,6 +141,7 @@ export default function Settings() {
 
         <div className={styles.versionInfo}>
           <p>Dekho v1.0.0</p>
+          <p style={{ marginTop: '4px' }}>Contact: jobinsambmv99@gmail.com</p>
         </div>
       </div>
     </div>
