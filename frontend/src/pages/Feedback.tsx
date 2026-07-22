@@ -14,7 +14,6 @@ export default function Feedback() {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   
-  // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [expectedBehavior, setExpectedBehavior] = useState('');
@@ -26,8 +25,6 @@ export default function Feedback() {
     if (!selectedType) return;
     
     setIsSubmitting(true);
-    
-    // Automatically capture device info if possible
     const deviceInfo = `${navigator.userAgent}`;
 
     const payload = {
@@ -51,26 +48,59 @@ export default function Feedback() {
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    padding: '12px 16px',
+    background: 'var(--bg-surface-high)',
+    border: '1px solid var(--bg-surface-highest, transparent)',
+    borderRadius: '12px',
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+    fontFamily: 'inherit',
+    fontSize: '14px',
+    marginTop: '6px'
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: 600,
+    color: 'var(--color-on-surface)'
+  };
+
+  const btnStyle = {
+    width: '100%',
+    padding: '14px',
+    background: 'var(--color-primary)',
+    color: 'var(--color-on-primary)',
+    border: 'none',
+    borderRadius: '12px',
+    fontWeight: 600,
+    marginTop: '16px',
+    cursor: 'pointer',
+    fontSize: '15px'
+  };
+
   const renderForm = () => {
     if (!selectedType) return null;
 
     if (selectedType === 'bug') {
       return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">Bug Title</label>
-            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none" placeholder="What happened?" />
+            <label style={labelStyle}>Bug Title</label>
+            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} placeholder="What happened?" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Steps to reproduce (optional)</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none min-h-[100px]" placeholder="1. Go to...&#10;2. Click on..." />
+            <label style={labelStyle}>Steps to reproduce (optional)</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '100px' }} placeholder="1. Go to...&#10;2. Click on..." />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Expected behavior</label>
-            <textarea required value={expectedBehavior} onChange={(e) => setExpectedBehavior(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none min-h-[80px]" placeholder="What should have happened?" />
+            <label style={labelStyle}>Expected behavior</label>
+            <textarea required value={expectedBehavior} onChange={(e) => setExpectedBehavior(e.target.value)} style={{ ...inputStyle, minHeight: '80px' }} placeholder="What should have happened?" />
           </div>
-          <p className="text-xs text-text-muted">Device Information will be automatically included.</p>
-          <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-primary text-primary-content rounded-xl font-medium mt-4">
+          <p style={{ fontSize: '12px', color: 'var(--color-muted)', margin: 0 }}>Device Information will be automatically included.</p>
+          <button type="submit" disabled={isSubmitting} style={{ ...btnStyle, opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Submitting...' : 'Submit Bug Report'}
           </button>
         </form>
@@ -79,16 +109,16 @@ export default function Feedback() {
 
     if (selectedType === 'feature') {
       return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">Feature Title</label>
-            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none" placeholder="Short name for the feature" />
+            <label style={labelStyle}>Feature Title</label>
+            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} placeholder="Short name for the feature" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description & Why would this help you?</label>
-            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none min-h-[150px]" placeholder="Describe the feature and its benefits..." />
+            <label style={labelStyle}>Description & Why would this help you?</label>
+            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '150px' }} placeholder="Describe the feature and its benefits..." />
           </div>
-          <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-primary text-primary-content rounded-xl font-medium mt-4">
+          <button type="submit" disabled={isSubmitting} style={{ ...btnStyle, opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Submitting...' : 'Suggest Feature'}
           </button>
         </form>
@@ -97,22 +127,29 @@ export default function Feedback() {
 
     if (selectedType === 'general') {
       return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2 text-center">How has your experience been with Dekho?</label>
-            <div className="flex justify-center space-x-2">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+            <label style={{ ...labelStyle, marginBottom: '12px', fontSize: '15px' }}>How has your experience been with Dekho?</label>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
               {[1, 2, 3, 4, 5].map((star) => (
-                <button type="button" key={star} onClick={() => setRating(star)} className={`text-3xl ${rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}>
+                <button 
+                  type="button" 
+                  key={star} 
+                  onClick={() => setRating(star)} 
+                  style={{ 
+                    background: 'none', border: 'none', fontSize: '32px', cursor: 'pointer', padding: 0,
+                    color: rating >= star ? '#F59E0B' : '#D1D5DB' 
+                  }}>
                   ★
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Comments</label>
-            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none min-h-[150px]" placeholder="Tell us what you think..." />
+            <label style={labelStyle}>Comments</label>
+            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '150px' }} placeholder="Tell us what you think..." />
           </div>
-          <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-primary text-primary-content rounded-xl font-medium mt-4">
+          <button type="submit" disabled={isSubmitting} style={{ ...btnStyle, opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
           </button>
         </form>
@@ -121,16 +158,16 @@ export default function Feedback() {
 
     if (selectedType === 'support') {
       return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input type="text" className="w-full p-3 bg-surface-high rounded-xl outline-none" placeholder="Your name (optional)" />
+            <label style={labelStyle}>Name</label>
+            <input type="text" style={inputStyle} placeholder="Your name (optional)" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Message</label>
-            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-3 bg-surface-high rounded-xl outline-none min-h-[150px]" placeholder="How can we help you?" />
+            <label style={labelStyle}>Message</label>
+            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: '150px' }} placeholder="How can we help you?" />
           </div>
-          <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-primary text-primary-content rounded-xl font-medium mt-4">
+          <button type="submit" disabled={isSubmitting} style={{ ...btnStyle, opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Submitting...' : 'Send Message'}
           </button>
         </form>
@@ -141,19 +178,35 @@ export default function Feedback() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-surface text-text-primary pb-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-bg-surface/80 backdrop-blur-md px-6 py-4 flex items-center shadow-sm">
-        <button onClick={() => selectedType ? setSelectedType(null) : navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-surface-high transition-colors">
-          <ArrowLeft className="w-6 h-6" />
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--bg-base)',
+      color: 'var(--color-on-surface)',
+      fontFamily: 'var(--font-body, system-ui, sans-serif)'
+    }}>
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: 'var(--bg-base)',
+        padding: '16px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        borderBottom: '1px solid var(--bg-surface-high)'
+      }}>
+        <button 
+          onClick={() => selectedType ? setSelectedType(null) : navigate(-1)} 
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', marginLeft: '-8px' }}
+        >
+          <ArrowLeft size={24} />
         </button>
-        <h1 className="text-xl font-bold ml-2">Feedback & Support</h1>
+        <h1 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 0 12px' }}>Feedback & Support</h1>
       </div>
 
-      <div className="px-6 pt-6">
+      <div style={{ padding: '24px' }}>
         {!selectedType ? (
-          <div className="space-y-4">
-            <p className="text-text-secondary mb-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p style={{ color: 'var(--color-muted)', fontSize: '14px', margin: '0 0 8px 0', lineHeight: 1.5 }}>
               We'd love to hear your thoughts! Select an option below to let us know how we can improve.
             </p>
             {feedbackOptions.map((option) => (
@@ -166,21 +219,41 @@ export default function Feedback() {
                   setExpectedBehavior('');
                   setRating(5);
                 }}
-                className="w-full flex items-center p-4 bg-surface-high rounded-2xl hover:bg-surface-high/80 transition-colors text-left"
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '16px',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--bg-surface-high)',
+                  borderRadius: '16px',
+                  textAlign: 'left',
+                  cursor: 'pointer'
+                }}
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mr-4 flex-shrink-0">
-                  <option.icon className="w-6 h-6 text-primary" />
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'var(--bg-surface-highest)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: '16px',
+                  flexShrink: 0
+                }}>
+                  <option.icon size={24} color="var(--color-primary)" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">{option.title}</h3>
-                  <p className="text-sm text-text-secondary">{option.description}</p>
+                  <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0', color: 'var(--color-on-surface)' }}>{option.title}</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--color-muted)', margin: 0 }}>{option.description}</p>
                 </div>
               </button>
             ))}
           </div>
         ) : (
-          <div className="animate-in fade-in duration-300">
-            <h2 className="text-2xl font-bold mb-6">
+          <div>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 24px 0' }}>
               {feedbackOptions.find(o => o.id === selectedType)?.title}
             </h2>
             {renderForm()}
