@@ -142,9 +142,6 @@ export default function AppTour() {
         blockTargetInteraction: true, // Default to true, overridden on specific steps
       }}
       styles={{
-        options: {
-          zIndex: 10000,
-        },
         tooltip: {
           fontFamily: 'Inter, system-ui, sans-serif',
           borderRadius: '12px',
