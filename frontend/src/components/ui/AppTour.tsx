@@ -135,7 +135,7 @@ export default function AppTour() {
         showProgress: true,
         buttons: ['back', 'close', 'primary', 'skip'],
         primaryColor: 'var(--color-primary, #6C482D)',
-        textColor: 'var(--text-primary, #1D1B18)',
+        textColor: 'var(--color-on-surface, #1D1B18)',
         backgroundColor: 'var(--bg-surface-high, #EDE7E1)',
         arrowColor: 'var(--bg-surface-high, #EDE7E1)',
         zIndex: 10000,
@@ -157,7 +157,7 @@ export default function AppTour() {
         },
         buttonBack: {
           marginRight: 10,
-          color: 'var(--text-secondary)',
+          color: 'var(--color-on-surface-var)',
         },
       }}
     />
