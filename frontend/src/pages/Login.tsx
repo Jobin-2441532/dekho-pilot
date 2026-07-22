@@ -1,7 +1,7 @@
 /* ── Login / Sign-up with mandatory bank statement selection ── */
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Lock, CheckCircle2, FileText, ChevronRight } from 'lucide-react'
+import { Lock, CheckCircle2, FileText, ChevronRight, Eye, EyeOff } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Button from '../components/ui/Button'
 import FloatingInput from '../components/ui/FloatingInput'
@@ -137,12 +137,19 @@ function StatementCard({
 export default function Login() {
   const navigate = useNavigate()
 
+  useEffect(() => {
+    if (localStorage.getItem('dekho_token') && localStorage.getItem('dekho_onboarded')) {
+      navigate('/home', { replace: true })
+    }
+  }, [navigate])
+
   // Step: 'pick' = choosing statement | 'auth' = credentials form
   const [step,      setStep]      = useState<'pick' | 'auth'>('auth')
   const [isLogin,   setIsLogin]   = useState(true)
   const [name,      setName]      = useState('')
   const [email,     setEmail]     = useState('')
   const [password,  setPassword]  = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error,     setError]     = useState('')
   const [loading,   setLoading]   = useState(false)
   const [importing, setImporting] = useState(false)
@@ -237,7 +244,7 @@ export default function Login() {
         }
       }
 
-      navigate('/home')
+      navigate('/home', { replace: true })
     } catch (e: any) {
       setError(e.message || 'Something went wrong')
     } finally {
@@ -428,7 +435,29 @@ export default function Login() {
             <FloatingInput label="Full name" type="text" value={name} onChange={e => setName(e.target.value)} />
           )}
           <FloatingInput label="Email address" type="email"    value={email}    onChange={e => setEmail(e.target.value)}    />
-          <FloatingInput label="Password"      type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          <FloatingInput 
+            label="Password"      
+            type={showPassword ? "text" : "password"} 
+            value={password} 
+            onChange={e => setPassword(e.target.value)}
+            iconRight={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: 'var(--color-muted)',
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            }
+          />
         </div>
 
         {error && (
