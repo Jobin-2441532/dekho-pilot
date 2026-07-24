@@ -26,7 +26,7 @@ export async function subscribeUserToPush() {
     throw new Error('Push notifications are not supported in this browser. If on iOS, please install this app to your Home Screen using the Share button first.');
   }
 
-  const registration = await navigator.serviceWorker.register('/service-worker.js');
+  const registration = await navigator.serviceWorker.register('/sw.js');
   
   // Wait for the service worker to become active before subscribing
   await navigator.serviceWorker.ready;

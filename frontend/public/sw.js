@@ -82,3 +82,48 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Push Event
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const title = data.title || 'Dekho Notification';
+    const options = {
+      body: data.body || '',
+      icon: '/logo-nobg.png',
+      badge: '/icons.svg',
+      data: {
+        url: data.url || '/'
+      }
+    };
+    
+    event.waitUntil(self.registration.showNotification(title, options));
+  } catch (e) {
+    console.error('[Service Worker] Error parsing push data', e);
+  }
+});
+
+// Notification Click Event
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Check if there is already a window/tab open with the target URL
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If no window/tab is open, open a new one
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
