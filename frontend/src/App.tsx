@@ -74,6 +74,8 @@ function ScrollToTop() {
   return null
 }
 
+import { subscribeUserToPush } from './services/pushService'
+
 export default function App() {
   const [isMaintenance, setIsMaintenance] = useState<boolean | null>(null)
 
@@ -88,6 +90,12 @@ export default function App() {
       }
     }
     checkMaintenance()
+
+    // Auto-resubscribe to push notifications if permission was already granted
+    // This ensures the backend has the latest subscription token without user intervention.
+    if ('Notification' in window && Notification.permission === 'granted') {
+      subscribeUserToPush().catch(err => console.error('Auto push resubscribe failed:', err));
+    }
   }, [])
 
   if (isMaintenance === null) {
